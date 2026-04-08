@@ -125,7 +125,7 @@ export default function Invoices() {
             </TableHeader>
             <TableBody>
               {filtered.map((inv) => (
-                <TableRow key={inv.id} className="cursor-pointer" onClick={() => window.location.href = `/app/invoices/${inv.id}`}>
+                <TableRow key={inv.id} className="cursor-pointer" onClick={() => navigate(`/app/invoices/${inv.id}`)}>
                   <TableCell className="font-medium">{inv.invoice_number}</TableCell>
                   <TableCell>{inv.client_name}</TableCell>
                   <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
