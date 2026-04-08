@@ -15,6 +15,14 @@ import Terms from "@/pages/Terms";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
+import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
+import PolitePaymentReminder from "@/pages/templates/PolitePaymentReminder";
+import FinalInvoiceReminder from "@/pages/templates/FinalInvoiceReminder";
+import HowToFollowUp from "@/pages/templates/HowToFollowUp";
+import LatePaymentPolicy from "@/pages/templates/LatePaymentPolicy";
+import ReminderSchedule from "@/pages/templates/ReminderSchedule";
+import InvoiceFollowUpTips from "@/pages/templates/InvoiceFollowUpTips";
+import SmallBusinessWorkflow from "@/pages/templates/SmallBusinessWorkflow";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +44,14 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/templates" element={<TemplatesHub />} />
+            <Route path="/templates/past-due-invoice-email-template" element={<PastDueInvoiceEmail />} />
+            <Route path="/templates/polite-payment-reminder-email" element={<PolitePaymentReminder />} />
+            <Route path="/templates/final-invoice-reminder-template" element={<FinalInvoiceReminder />} />
+            <Route path="/templates/how-to-follow-up-on-unpaid-invoice" element={<HowToFollowUp />} />
+            <Route path="/templates/late-payment-policy-template" element={<LatePaymentPolicy />} />
+            <Route path="/templates/reminder-schedule-for-overdue-invoices" element={<ReminderSchedule />} />
+            <Route path="/templates/invoice-follow-up-tips-for-freelancers" element={<InvoiceFollowUpTips />} />
+            <Route path="/templates/small-business-late-payment-workflow" element={<SmallBusinessWorkflow />} />
           </Route>
 
           {/* Auth (no marketing layout) */}
