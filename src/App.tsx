@@ -21,6 +21,8 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/app/Dashboard";
 import Invoices from "@/pages/app/Invoices";
+import NewInvoice from "@/pages/app/NewInvoice";
+import InvoiceDetail from "@/pages/app/InvoiceDetail";
 import AppSettings from "@/pages/app/AppSettings";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
 import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
@@ -79,6 +81,8 @@ const App = () => (
             >
               <Route path="/app/dashboard" element={<Dashboard />} />
               <Route path="/app/invoices" element={<Invoices />} />
+              <Route path="/app/invoices/new" element={<NewInvoice />} />
+              <Route path="/app/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/app/settings" element={<AppSettings />} />
             </Route>
 
