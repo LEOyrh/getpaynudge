@@ -124,18 +124,16 @@ export default function Invoices() {
             </TableHeader>
             <TableBody>
               {filtered.map((inv) => (
-                <TableRow key={inv.id} className="cursor-pointer" asChild>
-                  <Link to={`/app/invoices/${inv.id}`} className="contents">
-                    <TableCell className="font-medium">{inv.invoice_number}</TableCell>
-                    <TableCell>{inv.client_name}</TableCell>
-                    <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
-                    <TableCell>{format(new Date(inv.due_date), "MMM d, yyyy")}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className={statusColors[inv.status]}>
-                        {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
-                      </Badge>
-                    </TableCell>
-                  </Link>
+                <TableRow key={inv.id} className="cursor-pointer" onClick={() => window.location.href = `/app/invoices/${inv.id}`}>
+                  <TableCell className="font-medium">{inv.invoice_number}</TableCell>
+                  <TableCell>{inv.client_name}</TableCell>
+                  <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
+                  <TableCell>{format(new Date(inv.due_date), "MMM d, yyyy")}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className={statusColors[inv.status]}>
+                      {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
+                    </Badge>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
