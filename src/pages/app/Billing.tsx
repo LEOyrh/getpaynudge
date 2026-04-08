@@ -1,0 +1,200 @@
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { CheckCircle2, CreditCard, ExternalLink, Loader2, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { plans } from "@/config/brand";
+import { stripePlans, planKeyFromProductId, StripePlanKey } from "@/config/stripe";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+
+export default function Billing() {
+  usePageMeta({ title: "Billing", description: "Manage your PayNudge subscription" });
+
+  const { subscription, checkSubscription } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const currentPlanKey = planKeyFromProductId(subscription.productId);
+
+  // Handle success/canceled query params
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      toast.success("Subscription activated! Welcome aboard.");
+      checkSubscription();
+      setSearchParams({}, { replace: true });
+    } else if (searchParams.get("canceled") === "true") {
+      toast.info("Checkout was canceled.");
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, checkSubscription, setSearchParams]);
+
+  const handleCheckout = async (planId: string) => {
+    if (!(planId in stripePlans)) return;
+    const priceId = stripePlans[planId as StripePlanKey].priceId;
+    setCheckoutLoading(planId);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to start checkout");
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handleManage = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to open billing portal");
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
+  const paidPlans = plans.filter((p) => p.price > 0);
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-heading text-2xl font-bold text-foreground">Billing</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage your subscription and payment details.
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => checkSubscription()}
+          disabled={subscription.loading}
+        >
+          <RefreshCw className={cn("mr-1 h-4 w-4", subscription.loading && "animate-spin")} />
+          Refresh
+        </Button>
+      </div>
+
+      {/* Current plan banner */}
+      <Card className="border-primary/30 bg-primary/5">
+        <CardContent className="flex items-center justify-between py-5">
+          <div className="flex items-center gap-3">
+            <CreditCard className="h-5 w-5 text-primary" />
+            <div>
+              <p className="font-heading font-semibold text-foreground">
+                {subscription.loading
+                  ? "Loading…"
+                  : `Current plan: ${currentPlanKey.charAt(0).toUpperCase() + currentPlanKey.slice(1)}`}
+              </p>
+              {subscription.subscriptionEnd && (
+                <p className="text-xs text-muted-foreground">
+                  Renews{" "}
+                  {new Date(subscription.subscriptionEnd).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+              )}
+            </div>
+          </div>
+          {subscription.subscribed && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleManage}
+              disabled={portalLoading}
+            >
+              {portalLoading ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+              ) : (
+                <ExternalLink className="mr-1 h-4 w-4" />
+              )}
+              Manage Subscription
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Plan cards */}
+      <div className="grid gap-6 sm:grid-cols-3">
+        {paidPlans.map((plan) => {
+          const isCurrentPlan = plan.id === currentPlanKey;
+          const isPlanInStripe = plan.id in stripePlans;
+
+          return (
+            <Card
+              key={plan.id}
+              className={cn(
+                "relative h-full transition-shadow",
+                isCurrentPlan
+                  ? "border-primary shadow-md ring-1 ring-primary"
+                  : "border-border hover:shadow-sm"
+              )}
+            >
+              {isCurrentPlan && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+                  Your Plan
+                </div>
+              )}
+              <CardContent className="pt-8 pb-6">
+                <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+                <div className="mt-4">
+                  <span className="font-heading text-4xl font-bold text-foreground">
+                    ${plan.price}
+                  </span>
+                  <span className="text-sm text-muted-foreground">/month</span>
+                </div>
+                <ul className="mt-5 space-y-2">
+                  {plan.features.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-start gap-2 text-sm text-muted-foreground"
+                    >
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                {isCurrentPlan ? (
+                  <Button className="mt-6 w-full" variant="outline" disabled>
+                    Current Plan
+                  </Button>
+                ) : isPlanInStripe ? (
+                  <Button
+                    className="mt-6 w-full"
+                    variant={plan.highlighted ? "default" : "outline"}
+                    onClick={() => handleCheckout(plan.id)}
+                    disabled={!!checkoutLoading}
+                  >
+                    {checkoutLoading === plan.id ? (
+                      <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                    ) : null}
+                    {subscription.subscribed ? "Switch Plan" : "Subscribe"}
+                  </Button>
+                ) : (
+                  <Button className="mt-6 w-full" variant="outline" asChild>
+                    <a href="mailto:support@paynudge.com">Contact Sales</a>
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
