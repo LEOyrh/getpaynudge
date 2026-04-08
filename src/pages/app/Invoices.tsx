@@ -31,6 +31,7 @@ function formatCurrency(amount: number, currency: string) {
 export default function Invoices() {
   usePageMeta({ title: "Invoices" });
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
