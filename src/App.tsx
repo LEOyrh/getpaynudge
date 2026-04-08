@@ -3,8 +3,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 import MarketingLayout from "@/layouts/MarketingLayout";
+import AppLayout from "@/layouts/AppLayout";
 import Index from "@/pages/Index";
 import HowItWorks from "@/pages/HowItWorks";
 import Pricing from "@/pages/Pricing";
@@ -14,6 +17,11 @@ import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import Dashboard from "@/pages/app/Dashboard";
+import Invoices from "@/pages/app/Invoices";
+import AppSettings from "@/pages/app/AppSettings";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
 import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
 import PolitePaymentReminder from "@/pages/templates/PolitePaymentReminder";
@@ -33,36 +41,51 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Marketing site */}
-          <Route element={<MarketingLayout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/templates" element={<TemplatesHub />} />
-            <Route path="/templates/past-due-invoice-email-template" element={<PastDueInvoiceEmail />} />
-            <Route path="/templates/polite-payment-reminder-email" element={<PolitePaymentReminder />} />
-            <Route path="/templates/final-invoice-reminder-template" element={<FinalInvoiceReminder />} />
-            <Route path="/templates/how-to-follow-up-on-unpaid-invoice" element={<HowToFollowUp />} />
-            <Route path="/templates/late-payment-policy-template" element={<LatePaymentPolicy />} />
-            <Route path="/templates/reminder-schedule-for-overdue-invoices" element={<ReminderSchedule />} />
-            <Route path="/templates/invoice-follow-up-tips-for-freelancers" element={<InvoiceFollowUpTips />} />
-            <Route path="/templates/small-business-late-payment-workflow" element={<SmallBusinessWorkflow />} />
-          </Route>
+        <AuthProvider>
+          <Routes>
+            {/* Marketing site */}
+            <Route element={<MarketingLayout />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/templates" element={<TemplatesHub />} />
+              <Route path="/templates/past-due-invoice-email-template" element={<PastDueInvoiceEmail />} />
+              <Route path="/templates/polite-payment-reminder-email" element={<PolitePaymentReminder />} />
+              <Route path="/templates/final-invoice-reminder-template" element={<FinalInvoiceReminder />} />
+              <Route path="/templates/how-to-follow-up-on-unpaid-invoice" element={<HowToFollowUp />} />
+              <Route path="/templates/late-payment-policy-template" element={<LatePaymentPolicy />} />
+              <Route path="/templates/reminder-schedule-for-overdue-invoices" element={<ReminderSchedule />} />
+              <Route path="/templates/invoice-follow-up-tips-for-freelancers" element={<InvoiceFollowUpTips />} />
+              <Route path="/templates/small-business-late-payment-workflow" element={<SmallBusinessWorkflow />} />
+            </Route>
 
-          {/* Auth (no marketing layout) */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+            {/* Auth (no layout) */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* App routes will be added in Phase 2+ */}
+            {/* App (protected) */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/app/dashboard" element={<Dashboard />} />
+              <Route path="/app/invoices" element={<Invoices />} />
+              <Route path="/app/settings" element={<AppSettings />} />
+            </Route>
 
-          {/* Catch-all */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* Catch-all */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
