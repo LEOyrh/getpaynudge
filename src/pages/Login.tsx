@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useAuth } from "@/contexts/AuthContext";
 import { brand } from "@/config/brand";
+import { toast } from "sonner";
 
 export default function Login() {
   usePageMeta({
@@ -12,15 +14,22 @@ export default function Login() {
     description: `Log in to your ${brand.name} account.`,
   });
 
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Will be wired to Supabase auth in Phase 2
-    setTimeout(() => setLoading(false), 1000);
+    const { error } = await signIn(email, password);
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      navigate("/app/dashboard");
+    }
   };
 
   return (

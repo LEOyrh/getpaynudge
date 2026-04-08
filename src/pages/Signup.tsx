@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useAuth } from "@/contexts/AuthContext";
 import { brand } from "@/config/brand";
+import { toast } from "sonner";
 
 export default function Signup() {
   usePageMeta({
@@ -12,16 +14,24 @@ export default function Signup() {
     description: `Create your free ${brand.name} account. Start sending automated invoice reminders in under 60 seconds.`,
   });
 
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Will be wired to Supabase auth in Phase 2
-    setTimeout(() => setLoading(false), 1000);
+    const { error } = await signUp(email, password, name);
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Check your email to confirm your account!");
+      navigate("/login");
+    }
   };
 
   return (
