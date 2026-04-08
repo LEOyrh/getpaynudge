@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send } from "lucide-react";
+import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -51,6 +51,7 @@ export default function InvoiceDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [sendingReminder, setSendingReminder] = useState(false);
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
@@ -89,6 +90,20 @@ export default function InvoiceDetail() {
     enabled: !!id && !!user,
   });
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("business_name, full_name")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const statusMutation = useMutation({
     mutationFn: async (newStatus: InvoiceStatus) => {
       const { error } = await supabase.from("invoices").update({ status: newStatus }).eq("id", id!);
@@ -124,6 +139,54 @@ export default function InvoiceDetail() {
     },
   });
 
+  const handleSendReminder = async () => {
+    if (!invoice?.client_email) {
+      toast.error("No client email on file");
+      return;
+    }
+    setSendingReminder(true);
+    try {
+      const businessName = profile?.business_name || profile?.full_name || "Your service provider";
+      const amount = formatCurrency(invoice.amount, invoice.currency);
+      const formattedDue = format(new Date(invoice.due_date), "MMMM d, yyyy");
+
+      const isOverdue = new Date(invoice.due_date) < new Date();
+      const tone = isOverdue ? "professional" : "friendly";
+
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "payment-reminder",
+          recipientEmail: invoice.client_email,
+          idempotencyKey: `manual-reminder-${invoice.id}-${Date.now()}`,
+          templateData: {
+            clientName: invoice.client_name,
+            invoiceNumber: invoice.invoice_number,
+            amount,
+            dueDate: formattedDue,
+            businessName,
+            tone,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      // Log activity
+      await supabase.from("invoice_activities").insert({
+        invoice_id: invoice.id,
+        activity_type: "reminder_sent",
+        description: `Manual payment reminder sent to ${invoice.client_email}`,
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["invoice-activities", id] });
+      toast.success("Reminder sent!");
+    } catch (err) {
+      toast.error("Failed to send reminder");
+    } finally {
+      setSendingReminder(false);
+    }
+  };
+
   if (isLoading) {
     return <div className="py-16 text-center text-muted-foreground">Loading…</div>;
   }
@@ -145,6 +208,8 @@ export default function InvoiceDetail() {
   if (invoice.status !== "cancelled" && invoice.status !== "paid") {
     statusActions.push({ label: "Cancel", status: "cancelled", icon: XCircle });
   }
+
+  const canSendReminder = invoice.client_email && (invoice.status === "sent" || invoice.status === "overdue");
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -173,22 +238,31 @@ export default function InvoiceDetail() {
       </Card>
 
       {/* Actions */}
-      {statusActions.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {statusActions.map((action) => (
-            <Button
-              key={action.status}
-              variant={action.status === "cancelled" ? "outline" : "default"}
-              size="sm"
-              onClick={() => statusMutation.mutate(action.status)}
-              disabled={statusMutation.isPending}
-            >
-              <action.icon className="mr-1.5 h-4 w-4" />
-              {action.label}
-            </Button>
-          ))}
-        </div>
-      )}
+      <div className="flex flex-wrap gap-2">
+        {statusActions.map((action) => (
+          <Button
+            key={action.status}
+            variant={action.status === "cancelled" ? "outline" : "default"}
+            size="sm"
+            onClick={() => statusMutation.mutate(action.status)}
+            disabled={statusMutation.isPending}
+          >
+            <action.icon className="mr-1.5 h-4 w-4" />
+            {action.label}
+          </Button>
+        ))}
+        {canSendReminder && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSendReminder}
+            disabled={sendingReminder}
+          >
+            <Bell className="mr-1.5 h-4 w-4" />
+            {sendingReminder ? "Sending…" : "Send Reminder Now"}
+          </Button>
+        )}
+      </div>
 
       {/* Reminder Cadence */}
       <Card>

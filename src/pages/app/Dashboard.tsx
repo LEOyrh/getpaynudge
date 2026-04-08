@@ -1,18 +1,77 @@
+import { useEffect, useState } from "react";
 import { FileText, Clock, DollarSign, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { format, startOfMonth, endOfMonth } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import type { Tables } from "@/integrations/supabase/types";
 
-const stats = [
-  { label: "Active Invoices", value: "0", icon: FileText, color: "text-primary" },
-  { label: "Overdue", value: "0", icon: Clock, color: "text-destructive" },
-  { label: "Paid This Month", value: "$0", icon: DollarSign, color: "text-green-600" },
-  { label: "Reminders Sent", value: "0", icon: Bell, color: "text-primary" },
-];
+type Invoice = Tables<"invoices">;
 
 export default function Dashboard() {
   usePageMeta({ title: "Dashboard" });
+  const { user } = useAuth();
+
+  const { data: invoices = [] } = useQuery({
+    queryKey: ["dashboard-invoices"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("invoices")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as Invoice[];
+    },
+    enabled: !!user,
+  });
+
+  const { data: recentActivities = [] } = useQuery({
+    queryKey: ["dashboard-activities"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("invoice_activities")
+        .select("*, invoices!inner(invoice_number)")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const activeCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
+  const overdueCount = invoices.filter((i) => i.status === "overdue").length;
+
+  const now = new Date();
+  const monthStart = startOfMonth(now).toISOString();
+  const monthEnd = endOfMonth(now).toISOString();
+  const paidThisMonth = invoices
+    .filter((i) => i.status === "paid" && i.updated_at >= monthStart && i.updated_at <= monthEnd)
+    .reduce((sum, i) => sum + Number(i.amount), 0);
+
+  const remindersSent = recentActivities.filter((a) => a.activity_type === "reminder_sent").length;
+
+  const stats = [
+    { label: "Active Invoices", value: String(activeCount), icon: FileText, color: "text-primary" },
+    { label: "Overdue", value: String(overdueCount), icon: Clock, color: "text-destructive" },
+    { label: "Paid This Month", value: `$${paidThisMonth.toLocaleString()}`, icon: DollarSign, color: "text-primary" },
+    { label: "Reminders Sent", value: String(remindersSent), icon: Bell, color: "text-primary" },
+  ];
+
+  const recentInvoices = invoices.slice(0, 5);
+
+  const statusColors: Record<string, string> = {
+    draft: "bg-muted text-muted-foreground",
+    sent: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    paid: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    overdue: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+    cancelled: "bg-muted text-muted-foreground",
+  };
 
   return (
     <div className="space-y-6">
@@ -37,18 +96,86 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <FileText className="mb-4 h-12 w-12 text-muted-foreground/50" />
-          <h3 className="mb-2 font-heading text-lg font-semibold">No invoices yet</h3>
-          <p className="mb-4 max-w-sm text-sm text-muted-foreground">
-            Add your first invoice and we'll start sending payment reminders automatically.
-          </p>
-          <Button asChild>
-            <Link to="/app/invoices/new">Add Your First Invoice</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      {invoices.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <FileText className="mb-4 h-12 w-12 text-muted-foreground/50" />
+            <h3 className="mb-2 font-heading text-lg font-semibold">No invoices yet</h3>
+            <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+              Add your first invoice and we'll start sending payment reminders automatically.
+            </p>
+            <Button asChild>
+              <Link to="/app/invoices/new">Add Your First Invoice</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Recent Invoices */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">Recent Invoices</CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/app/invoices">View all</Link>
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {recentInvoices.map((inv) => (
+                <Link
+                  key={inv.id}
+                  to={`/app/invoices/${inv.id}`}
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                >
+                  <div>
+                    <p className="text-sm font-medium">{inv.client_name}</p>
+                    <p className="text-xs text-muted-foreground">{inv.invoice_number}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      {new Intl.NumberFormat("en-US", { style: "currency", currency: inv.currency }).format(inv.amount)}
+                    </span>
+                    <Badge variant="secondary" className={`text-xs ${statusColors[inv.status]}`}>
+                      {inv.status}
+                    </Badge>
+                  </div>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentActivities.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No activity yet.</p>
+              ) : (
+                <div className="space-y-3">
+                  {recentActivities.map((act: any) => (
+                    <div key={act.id} className="flex gap-3">
+                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted">
+                        {act.activity_type === "reminder_sent" ? (
+                          <Bell className="h-3.5 w-3.5 text-muted-foreground" />
+                        ) : (
+                          <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm">{act.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {act.invoices?.invoice_number} · {format(new Date(act.created_at), "MMM d, h:mm a")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
