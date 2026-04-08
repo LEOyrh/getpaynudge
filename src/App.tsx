@@ -24,6 +24,7 @@ import Invoices from "@/pages/app/Invoices";
 import NewInvoice from "@/pages/app/NewInvoice";
 import InvoiceDetail from "@/pages/app/InvoiceDetail";
 import AppSettings from "@/pages/app/AppSettings";
+import Billing from "@/pages/app/Billing";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
 import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
 import PolitePaymentReminder from "@/pages/templates/PolitePaymentReminder";
@@ -86,6 +87,7 @@ const App = () => (
               <Route path="/app/invoices/new" element={<NewInvoice />} />
               <Route path="/app/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/app/settings" element={<AppSettings />} />
+              <Route path="/app/billing" element={<Billing />} />
             </Route>
 
             {/* Catch-all */}
