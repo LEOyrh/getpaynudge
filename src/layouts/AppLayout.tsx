@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/config/brand";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const sidebarLinks = [
   { label: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
   { label: "Invoices", href: "/app/invoices", icon: FileText },
+  { label: "Billing", href: "/app/billing", icon: CreditCard },
   { label: "Settings", href: "/app/settings", icon: Settings },
 ];
 
