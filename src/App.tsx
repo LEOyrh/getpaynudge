@@ -33,6 +33,7 @@ import LatePaymentPolicy from "@/pages/templates/LatePaymentPolicy";
 import ReminderSchedule from "@/pages/templates/ReminderSchedule";
 import InvoiceFollowUpTips from "@/pages/templates/InvoiceFollowUpTips";
 import SmallBusinessWorkflow from "@/pages/templates/SmallBusinessWorkflow";
+import Unsubscribe from "@/pages/Unsubscribe";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
 
             {/* App (protected) */}
             <Route
