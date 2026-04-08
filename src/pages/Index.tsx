@@ -1,16 +1,585 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Bell,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Link2,
+  Mail,
+  MousePointerClick,
+  PauseCircle,
+  Shield,
+  TrendingUp,
+  Users,
+  Zap,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { usePageMeta } from "@/hooks/usePageMeta";
+import { brand, plans } from "@/config/brand";
+import { cn } from "@/lib/utils";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
-  return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
-  );
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
 };
 
-const Index = PlaceholderIndex;
+const staggerContainer = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
-export default Index;
+export default function Index() {
+  usePageMeta({
+    title: brand.name,
+    description: brand.description,
+  });
+
+  return (
+    <>
+      <HeroSection />
+      <WhoItsForSection />
+      <HowItWorksSection />
+      <FeaturesSection />
+      <ReminderSequenceSection />
+      <PricingPreview />
+      <TrustSection />
+      <FAQPreview />
+      <FinalCTA />
+    </>
+  );
+}
+
+function HeroSection() {
+  return (
+    <section className="relative overflow-hidden py-20 md:py-32">
+      <div className="container relative z-10">
+        <motion.div
+          className="mx-auto max-w-3xl text-center"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
+          <motion.div variants={fadeIn}>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
+              <Bell className="h-3 w-3" />
+              Invoice reminders on autopilot
+            </span>
+          </motion.div>
+
+          <motion.h1
+            variants={fadeIn}
+            className="mt-6 font-heading text-4xl font-800 tracking-tight text-foreground sm:text-5xl md:text-6xl"
+          >
+            Get paid without the{" "}
+            <span className="text-primary">awkward follow-up</span>
+          </motion.h1>
+
+          <motion.p
+            variants={fadeIn}
+            className="mt-6 text-lg text-muted-foreground md:text-xl"
+          >
+            {brand.name} sends polite, escalating invoice reminders automatically — so you can
+            focus on your work instead of chasing payments.
+          </motion.p>
+
+          <motion.div
+            variants={fadeIn}
+            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          >
+            <Button size="lg" asChild>
+              <Link to="/signup">
+                Start Free <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/how-it-works">See How It Works</Link>
+            </Button>
+          </motion.div>
+
+          <motion.p variants={fadeIn} className="mt-4 text-sm text-muted-foreground">
+            Free plan available · No credit card required · Set up in under 60 seconds
+          </motion.p>
+        </motion.div>
+      </div>
+
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent))_0%,transparent_50%)]" />
+    </section>
+  );
+}
+
+function WhoItsForSection() {
+  const audiences = [
+    { icon: Users, label: "Freelancers" },
+    { icon: FileText, label: "Agencies" },
+    { icon: TrendingUp, label: "Consultants" },
+    { icon: Zap, label: "Designers & Developers" },
+    { icon: Mail, label: "Coaches" },
+    { icon: Clock, label: "Service Businesses" },
+  ];
+
+  return (
+    <section className="border-y border-border bg-secondary/30 py-12">
+      <div className="container">
+        <p className="mb-6 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground">
+          Built for people who send invoices
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+          {audiences.map((a) => (
+            <div key={a.label} className="flex items-center gap-2 text-muted-foreground">
+              <a.icon className="h-4 w-4" />
+              <span className="text-sm font-medium">{a.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HowItWorksSection() {
+  const steps = [
+    {
+      number: "1",
+      title: "Add your invoice",
+      description:
+        "Enter the client, amount, due date, and your payment link. It takes under 60 seconds.",
+      icon: FileText,
+    },
+    {
+      number: "2",
+      title: "Set your reminder cadence",
+      description:
+        "Choose when reminders go out — before the due date, on the due date, and at escalating intervals after.",
+      icon: Clock,
+    },
+    {
+      number: "3",
+      title: "Get paid automatically",
+      description:
+        "We send polite, professional reminders with your payment link. Reminders stop the moment you're paid.",
+      icon: CheckCircle2,
+    },
+  ];
+
+  return (
+    <section className="py-20 md:py-28">
+      <div className="container">
+        <motion.div
+          className="mx-auto max-w-2xl text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <motion.h2
+            variants={fadeIn}
+            className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl"
+          >
+            How it works
+          </motion.h2>
+          <motion.p variants={fadeIn} className="mt-4 text-lg text-muted-foreground">
+            Three steps. No complexity. Just consistent follow-up that gets results.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="mt-14 grid gap-8 md:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          {steps.map((step) => (
+            <motion.div key={step.number} variants={fadeIn}>
+              <Card className="relative h-full border-border bg-card">
+                <CardContent className="pt-8 pb-8">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
+                    <step.icon className="h-6 w-6 text-accent-foreground" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                    Step {step.number}
+                  </span>
+                  <h3 className="mt-2 font-heading text-xl font-bold text-foreground">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    {step.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function FeaturesSection() {
+  const features = [
+    {
+      icon: Bell,
+      title: "Automatic Reminders",
+      description: "Set it and forget it. Reminders go out on schedule without any manual work.",
+    },
+    {
+      icon: Link2,
+      title: "Your Payment Link",
+      description:
+        "Include your Stripe, QuickBooks, Xero, or custom payment link in every reminder.",
+    },
+    {
+      icon: TrendingUp,
+      title: "Escalating Tone",
+      description: "Start friendly, get firmer. Choose your tone and let the cadence do the work.",
+    },
+    {
+      icon: PauseCircle,
+      title: "Smart Auto-Stop",
+      description: "Reminders halt automatically when an invoice is marked paid or disputed.",
+    },
+    {
+      icon: MousePointerClick,
+      title: "Open & Click Tracking",
+      description: "See when clients open your reminders and click your payment link.",
+    },
+    {
+      icon: Shield,
+      title: "Professional & Compliant",
+      description:
+        "No threatening language. No harassment. Just polite, consistent follow-up you'd be proud to send.",
+    },
+  ];
+
+  return (
+    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+      <div className="container">
+        <motion.div
+          className="mx-auto max-w-2xl text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <motion.h2
+            variants={fadeIn}
+            className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl"
+          >
+            Everything you need to get paid on time
+          </motion.h2>
+          <motion.p variants={fadeIn} className="mt-4 text-lg text-muted-foreground">
+            Simple tools that handle the follow-up so you don't have to.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          {features.map((f) => (
+            <motion.div key={f.title} variants={fadeIn}>
+              <Card className="h-full border-border">
+                <CardContent className="pt-6 pb-6">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
+                    <f.icon className="h-5 w-5 text-accent-foreground" />
+                  </div>
+                  <h3 className="font-heading text-lg font-semibold text-foreground">{f.title}</h3>
+                  <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
+                    {f.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function ReminderSequenceSection() {
+  const sequence = [
+    { day: "Day -3", label: "Friendly heads-up", tone: "friendly" },
+    { day: "Due Date", label: "Polite reminder", tone: "professional" },
+    { day: "Day +3", label: "Gentle follow-up", tone: "professional" },
+    { day: "Day +7", label: "Firm reminder", tone: "firm" },
+    { day: "Day +14", label: "Final notice", tone: "firm" },
+  ];
+
+  return (
+    <section className="py-20 md:py-28">
+      <div className="container">
+        <motion.div
+          className="mx-auto max-w-2xl text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <motion.h2
+            variants={fadeIn}
+            className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl"
+          >
+            A reminder sequence that actually works
+          </motion.h2>
+          <motion.p variants={fadeIn} className="mt-4 text-lg text-muted-foreground">
+            Starts gentle, escalates gradually. You set it once — we handle the rest.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="mx-auto mt-14 max-w-xl space-y-4"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          {sequence.map((step, i) => (
+            <motion.div
+              key={step.day}
+              variants={fadeIn}
+              className="flex items-center gap-4 rounded-lg border border-border bg-card p-4"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">
+                {i + 1}
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">{step.label}</p>
+                <p className="text-xs text-muted-foreground">{step.day}</p>
+              </div>
+              <span
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium",
+                  step.tone === "friendly" && "bg-accent text-accent-foreground",
+                  step.tone === "professional" && "bg-secondary text-secondary-foreground",
+                  step.tone === "firm" && "bg-destructive/10 text-destructive"
+                )}
+              >
+                {step.tone}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          Reminders stop automatically when the invoice is marked as paid or disputed.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function PricingPreview() {
+  return (
+    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+      <div className="container">
+        <motion.div
+          className="mx-auto max-w-2xl text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <motion.h2
+            variants={fadeIn}
+            className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl"
+          >
+            Simple, transparent pricing
+          </motion.h2>
+          <motion.p variants={fadeIn} className="mt-4 text-lg text-muted-foreground">
+            Start free. Upgrade when you need more invoices.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          {plans.map((plan) => (
+            <motion.div key={plan.id} variants={fadeIn}>
+              <Card
+                className={cn(
+                  "relative h-full",
+                  plan.highlighted
+                    ? "border-primary shadow-lg ring-1 ring-primary"
+                    : "border-border"
+                )}
+              >
+                {plan.highlighted && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-primary-foreground">
+                    Most Popular
+                  </div>
+                )}
+                <CardContent className="pt-8 pb-6">
+                  <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+                  <div className="mt-4">
+                    <span className="font-heading text-4xl font-bold text-foreground">
+                      ${plan.price}
+                    </span>
+                    {plan.price > 0 && (
+                      <span className="text-sm text-muted-foreground">/month</span>
+                    )}
+                  </div>
+                  <ul className="mt-6 space-y-2">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className="mt-6 w-full"
+                    variant={plan.highlighted ? "default" : "outline"}
+                    asChild
+                  >
+                    <Link to="/signup">{plan.cta}</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          All plans include email reminders, pay link support, and activity tracking.{" "}
+          <Link to="/pricing" className="text-primary hover:underline">
+            Compare all features →
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function TrustSection() {
+  const items = [
+    {
+      icon: Shield,
+      title: "First-party follow-up only",
+      description: "PayNudge is for following up on invoices you issued to your own customers. This is not a debt collection service.",
+    },
+    {
+      icon: Mail,
+      title: "Professional communication",
+      description: "Every reminder is polite and professional. No threatening language, no harassment — just consistent follow-up.",
+    },
+    {
+      icon: PauseCircle,
+      title: "Instant stop on payment",
+      description: "Mark an invoice as paid or disputed and all future reminders are cancelled immediately.",
+    },
+  ];
+
+  return (
+    <section className="py-20 md:py-28">
+      <div className="container">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            Built on trust, not pressure
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Your reputation matters. {brand.name} helps you follow up professionally.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-8 md:grid-cols-3">
+          {items.map((item) => (
+            <div key={item.title} className="text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
+                <item.icon className="h-6 w-6 text-accent-foreground" />
+              </div>
+              <h3 className="font-heading text-lg font-semibold text-foreground">{item.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQPreview() {
+  const faqs = [
+    {
+      q: "Does PayNudge handle payments or hold funds?",
+      a: "No. PayNudge only sends reminder emails with your payment link. We never touch, process, or hold your clients' money.",
+    },
+    {
+      q: "Is this a debt collection service?",
+      a: "No. PayNudge is for businesses following up on invoices they issued to their own customers. It is not a debt collection agency.",
+    },
+    {
+      q: "What happens when my client pays?",
+      a: "Mark the invoice as paid in PayNudge. All future reminders are cancelled immediately.",
+    },
+    {
+      q: "Can I customize the reminder emails?",
+      a: "You can choose from three tones (friendly, professional, firm) and set custom cadence timing. Full template customization is coming soon.",
+    },
+  ];
+
+  return (
+    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+      <div className="container">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            Frequently asked questions
+          </h2>
+        </div>
+
+        <div className="mx-auto mt-12 max-w-2xl space-y-6">
+          {faqs.map((faq) => (
+            <div key={faq.q} className="border-b border-border pb-6">
+              <h3 className="font-heading text-base font-semibold text-foreground">{faq.q}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-8 text-center">
+          <Link to="/faq" className="text-sm text-primary hover:underline">
+            View all FAQs →
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function FinalCTA() {
+  return (
+    <section className="py-20 md:py-28">
+      <div className="container">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            Stop chasing. Start getting paid.
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Set up your first invoice reminder in under 60 seconds. Free plan included.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button size="lg" asChild>
+              <Link to="/signup">
+                Get Started Free <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/pricing">View Pricing</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
