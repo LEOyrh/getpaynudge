@@ -87,6 +87,7 @@ const App = () => (
               <Route path="/app/invoices/new" element={<NewInvoice />} />
               <Route path="/app/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/app/settings" element={<AppSettings />} />
+              <Route path="/app/billing" element={<Billing />} />
             </Route>
 
             {/* Catch-all */}
