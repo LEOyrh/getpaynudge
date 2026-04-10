@@ -1,3 +1,5 @@
+import { plans } from "@/config/brand";
+
 /** Stripe product ↔ price mapping for PayNudge plans */
 export const stripePlans = {
   starter: {
@@ -23,4 +25,10 @@ export function planKeyFromProductId(productId: string | null): StripePlanKey | 
     if (plan.productId === productId) return key as StripePlanKey;
   }
   return "free";
+}
+
+/** Get the active invoice limit for a plan key */
+export function getInvoiceLimit(planKey: StripePlanKey | "free"): number {
+  const plan = plans.find((p) => p.id === planKey);
+  return plan?.activeInvoices ?? 1;
 }
