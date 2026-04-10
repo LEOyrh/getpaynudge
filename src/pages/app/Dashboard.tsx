@@ -58,7 +58,7 @@ export default function Dashboard() {
   const remindersSent = recentActivities.filter((a) => a.activity_type === "reminder_sent").length;
 
   const stats = [
-    { label: "Active Invoices", value: String(activeCount), icon: FileText, color: "text-primary" },
+    { label: "Active Invoices", value: String(activeInvoiceCount), icon: FileText, color: "text-primary" },
     { label: "Overdue", value: String(overdueCount), icon: Clock, color: "text-destructive" },
     { label: "Paid This Month", value: `$${paidThisMonth.toLocaleString()}`, icon: DollarSign, color: "text-primary" },
     { label: "Reminders Sent", value: String(remindersSent), icon: Bell, color: "text-primary" },
