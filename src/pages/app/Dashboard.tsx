@@ -45,7 +45,7 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
-  const activeCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
+  const activeInvoiceCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
   const overdueCount = invoices.filter((i) => i.status === "overdue").length;
 
   const now = new Date();
