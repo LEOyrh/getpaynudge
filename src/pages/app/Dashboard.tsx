@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { FileText, Clock, DollarSign, Bell } from "lucide-react";
+import { FileText, Clock, DollarSign, Bell, ArrowUpRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -9,13 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { useInvoiceLimits } from "@/hooks/useInvoiceLimits";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Invoice = Tables<"invoices">;
 
 export default function Dashboard() {
   usePageMeta({ title: "Dashboard" });
-  const { user } = useAuth();
+  const { user, subscription } = useAuth();
+  const { planKey, activeCount, limit, isUnlimited, atLimit } = useInvoiceLimits();
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["dashboard-invoices"],
@@ -44,7 +45,7 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
-  const activeCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
+  const activeInvoiceCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
   const overdueCount = invoices.filter((i) => i.status === "overdue").length;
 
   const now = new Date();
@@ -57,7 +58,7 @@ export default function Dashboard() {
   const remindersSent = recentActivities.filter((a) => a.activity_type === "reminder_sent").length;
 
   const stats = [
-    { label: "Active Invoices", value: String(activeCount), icon: FileText, color: "text-primary" },
+    { label: "Active Invoices", value: String(activeInvoiceCount), icon: FileText, color: "text-primary" },
     { label: "Overdue", value: String(overdueCount), icon: Clock, color: "text-destructive" },
     { label: "Paid This Month", value: `$${paidThisMonth.toLocaleString()}`, icon: DollarSign, color: "text-primary" },
     { label: "Reminders Sent", value: String(remindersSent), icon: Bell, color: "text-primary" },
@@ -81,6 +82,41 @@ export default function Dashboard() {
           <Link to="/app/invoices/new">New Invoice</Link>
         </Button>
       </div>
+
+      {/* Upgrade banner for free users */}
+      {planKey === "free" && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="flex items-center justify-between py-4">
+            <div>
+              <p className="font-heading font-semibold text-foreground">
+                You're on the Free plan ({activeCount}/{limit} invoice{limit !== 1 ? "s" : ""} used)
+              </p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                Upgrade to unlock more invoices, custom reminder cadence, and activity tracking.
+              </p>
+            </div>
+            <Button size="sm" asChild>
+              <Link to="/app/billing">
+                Upgrade <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* At-limit warning for paid plans */}
+      {atLimit && planKey !== "free" && (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="flex items-center justify-between py-4">
+            <p className="text-sm font-medium text-foreground">
+              You've reached your {limit}-invoice limit. Upgrade to add more.
+            </p>
+            <Button size="sm" variant="outline" asChild>
+              <Link to="/app/billing">Upgrade</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (

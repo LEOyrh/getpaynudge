@@ -4,10 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, ArrowLeft } from "lucide-react";
+import { CalendarIcon, ArrowLeft, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { useInvoiceLimits } from "@/hooks/useInvoiceLimits";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ export default function NewInvoice() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const { atLimit, limit, activeCount, isUnlimited, planKey } = useInvoiceLimits();
 
   const form = useForm<InvoiceForm>({
     resolver: zodResolver(invoiceSchema),
@@ -83,6 +85,25 @@ export default function NewInvoice() {
         </Button>
         <h1 className="font-heading text-2xl font-bold text-foreground">New Invoice</h1>
       </div>
+
+      {atLimit && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardContent className="flex items-start gap-3 py-4">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+            <div>
+              <p className="font-semibold text-foreground">
+                Invoice limit reached ({activeCount}/{limit})
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Your {planKey.charAt(0).toUpperCase() + planKey.slice(1)} plan allows {limit} active invoice{limit !== 1 ? "s" : ""}. Upgrade to add more.
+              </p>
+              <Button size="sm" className="mt-2" asChild>
+                <Link to="/app/billing">Upgrade Plan</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>
@@ -170,7 +191,7 @@ export default function NewInvoice() {
               )} />
 
               <div className="flex gap-3 pt-2">
-                <Button type="submit" disabled={submitting}>
+                <Button type="submit" disabled={submitting || atLimit}>
                   {submitting ? "Creating…" : "Create Invoice"}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => navigate("/app/invoices")}>
