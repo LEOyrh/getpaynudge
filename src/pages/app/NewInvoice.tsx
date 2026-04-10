@@ -198,8 +198,6 @@ export default function NewInvoice() {
                   Cancel
                 </Button>
               </div>
-                </Button>
-              </div>
             </form>
           </Form>
         </CardContent>
