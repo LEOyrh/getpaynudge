@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useInvoiceLimits } from "@/hooks/useInvoiceLimits";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Invoice = Tables<"invoices">;
@@ -17,6 +18,7 @@ export default function Dashboard() {
   usePageMeta({ title: "Dashboard" });
   const { user, subscription } = useAuth();
   const { planKey, activeCount, limit, isUnlimited, atLimit } = useInvoiceLimits();
+  const { emailTracking, activityTimeline } = usePlanFeatures();
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["dashboard-invoices"],
@@ -99,8 +101,10 @@ export default function Dashboard() {
     { label: "Overdue", value: String(overdueCount), icon: Clock, color: "text-destructive" },
     { label: "Paid This Month", value: `$${paidThisMonth.toLocaleString()}`, icon: DollarSign, color: "text-primary" },
     { label: "Reminders Sent", value: String(remindersSent), icon: Bell, color: "text-primary" },
-    { label: "Email Opens", value: String(openCount), icon: Mail, color: "text-primary" },
-    { label: "Link Clicks", value: String(clickCount), icon: MousePointerClick, color: "text-primary" },
+    ...(emailTracking ? [
+      { label: "Email Opens", value: String(openCount), icon: Mail, color: "text-primary" },
+      { label: "Link Clicks", value: String(clickCount), icon: MousePointerClick, color: "text-primary" },
+    ] : []),
   ];
 
   const recentInvoices = invoices.slice(0, 5);
@@ -212,12 +216,12 @@ export default function Dashboard() {
                     <Badge variant="secondary" className={`text-xs ${statusColors[inv.status]}`}>
                       {inv.status}
                     </Badge>
-                    {openedInvoiceIds.has(inv.id) && (
+                    {emailTracking && openedInvoiceIds.has(inv.id) && (
                       <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
                         <Mail className="mr-0.5 h-3 w-3" />opened
                       </Badge>
                     )}
-                    {clickedInvoiceIds.has(inv.id) && (
+                    {emailTracking && clickedInvoiceIds.has(inv.id) && (
                       <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
                         <MousePointerClick className="mr-0.5 h-3 w-3" />clicked
                       </Badge>

@@ -6,6 +6,8 @@ import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell, Eye, MousePoi
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +55,7 @@ export default function InvoiceDetail() {
   const queryClient = useQueryClient();
   const [sendingReminder, setSendingReminder] = useState(false);
   const [reminderTone, setReminderTone] = useState<"friendly" | "professional" | "firm">("friendly");
+  const { toneSelection, customCadence, emailTracking, activityTimeline } = usePlanFeatures();
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
@@ -332,7 +335,7 @@ export default function InvoiceDetail() {
         <CardHeader><CardTitle className="text-lg">Reminder Settings</CardTitle></CardHeader>
         <CardContent className="space-y-5">
           {/* Manual reminder tone selector */}
-          {canSendReminder && (
+          {canSendReminder && toneSelection && (
             <div className="space-y-1.5">
               <Label>Manual Reminder Tone</Label>
               <Select value={reminderTone} onValueChange={(v) => setReminderTone(v as any)}>
@@ -350,144 +353,162 @@ export default function InvoiceDetail() {
               </p>
             </div>
           )}
+          {canSendReminder && !toneSelection && (
+            <UpgradePrompt feature="Reminder tone selection" requiredPlan="Starter" />
+          )}
 
-          <div className="border-t pt-4 space-y-4">
-            <Label className="text-sm font-medium">Schedule</Label>
-            <p className="text-xs text-muted-foreground -mt-2">
-              Tones are set automatically: before due → 😊 friendly, on due → 💼 professional, after due → ⚠️ firm.
-            </p>
-            {DEFAULT_REMINDERS.map((def) => {
-              const existing = reminders.find(
-                (r) => r.reminder_type === def.reminder_type && r.days_offset === def.days_offset
-              );
-              const isEnabled = existing?.enabled ?? false;
+          {customCadence ? (
+            <div className="border-t pt-4 space-y-4">
+              <Label className="text-sm font-medium">Schedule</Label>
+              <p className="text-xs text-muted-foreground -mt-2">
+                Tones are set automatically: before due → 😊 friendly, on due → 💼 professional, after due → ⚠️ firm.
+              </p>
+              {DEFAULT_REMINDERS.map((def) => {
+                const existing = reminders.find(
+                  (r) => r.reminder_type === def.reminder_type && r.days_offset === def.days_offset
+                );
+                const isEnabled = existing?.enabled ?? false;
 
-              // Calculate if this reminder would fire in the past
-              const dueDate = invoice ? new Date(invoice.due_date) : null;
-              let isPast = false;
-              if (dueDate) {
-                const trigger = new Date(dueDate);
-                if (def.reminder_type === "before_due") trigger.setDate(trigger.getDate() - def.days_offset);
-                else if (def.reminder_type === "after_due") trigger.setDate(trigger.getDate() + def.days_offset);
-                isPast = trigger < new Date(new Date().toISOString().split("T")[0]);
-              }
+                const dueDate = invoice ? new Date(invoice.due_date) : null;
+                let isPast = false;
+                if (dueDate) {
+                  const trigger = new Date(dueDate);
+                  if (def.reminder_type === "before_due") trigger.setDate(trigger.getDate() - def.days_offset);
+                  else if (def.reminder_type === "after_due") trigger.setDate(trigger.getDate() + def.days_offset);
+                  isPast = trigger < new Date(new Date().toISOString().split("T")[0]);
+                }
 
-              const autoTone = def.reminder_type === "before_due" ? "😊 Friendly" : def.reminder_type === "on_due" ? "💼 Professional" : "⚠️ Firm";
+                const autoTone = def.reminder_type === "before_due" ? "😊 Friendly" : def.reminder_type === "on_due" ? "💼 Professional" : "⚠️ Firm";
 
-              return (
-                <div key={def.reminder_type + def.days_offset} className="flex items-center justify-between">
-                  <div>
-                    <Label className={`font-normal ${isPast ? "text-muted-foreground line-through" : ""}`}>
-                      {def.label}
-                    </Label>
-                    <span className="ml-2 text-xs text-muted-foreground">{autoTone}</span>
-                    {isPast && <span className="ml-2 text-xs text-destructive">Past</span>}
+                return (
+                  <div key={def.reminder_type + def.days_offset} className="flex items-center justify-between">
+                    <div>
+                      <Label className={`font-normal ${isPast ? "text-muted-foreground line-through" : ""}`}>
+                        {def.label}
+                      </Label>
+                      <span className="ml-2 text-xs text-muted-foreground">{autoTone}</span>
+                      {isPast && <span className="ml-2 text-xs text-destructive">Past</span>}
+                    </div>
+                    <Switch
+                      checked={isEnabled}
+                      disabled={isPast}
+                      onCheckedChange={(checked) =>
+                        toggleReminder.mutate({ type: def.reminder_type, days: def.days_offset, enabled: checked })
+                      }
+                    />
                   </div>
-                  <Switch
-                    checked={isEnabled}
-                    disabled={isPast}
-                    onCheckedChange={(checked) =>
-                      toggleReminder.mutate({ type: def.reminder_type, days: def.days_offset, enabled: checked })
-                    }
-                  />
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="border-t pt-4">
+              <UpgradePrompt feature="Custom reminder schedule" requiredPlan="Starter" />
+              <p className="mt-3 text-xs text-muted-foreground">
+                Free plan uses the default cadence: 3 days before, on due date, and 7 days after.
+              </p>
+            </div>
+          )}
           <p className="text-xs text-muted-foreground">Reminders will be sent to the client email on file.</p>
         </CardContent>
       </Card>
 
       {/* Email Tracking Summary */}
-      {totalSent > 0 && (
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Email Tracking</CardTitle></CardHeader>
-          <CardContent>
-            <div className="grid gap-3 sm:grid-cols-3 mb-4">
-              <div className="flex items-center gap-2 rounded-lg border p-3">
-                <Send className="h-4 w-4 text-primary" />
-                <div>
-                  <p className="text-2xl font-bold">{totalSent}</p>
-                  <p className="text-xs text-muted-foreground">Emails Sent</p>
+      {emailTracking ? (
+        totalSent > 0 && (
+          <Card>
+            <CardHeader><CardTitle className="text-lg">Email Tracking</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-3 mb-4">
+                <div className="flex items-center gap-2 rounded-lg border p-3">
+                  <Send className="h-4 w-4 text-primary" />
+                  <div>
+                    <p className="text-2xl font-bold">{totalSent}</p>
+                    <p className="text-xs text-muted-foreground">Emails Sent</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg border p-3">
+                  <Eye className="h-4 w-4 text-violet-600" />
+                  <div>
+                    <p className="text-2xl font-bold">{totalOpens}</p>
+                    <p className="text-xs text-muted-foreground">Opens</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg border p-3">
+                  <MousePointerClick className="h-4 w-4 text-blue-600" />
+                  <div>
+                    <p className="text-2xl font-bold">{totalClicks}</p>
+                    <p className="text-xs text-muted-foreground">Link Clicks</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 rounded-lg border p-3">
-                <Eye className="h-4 w-4 text-violet-600" />
-                <div>
-                  <p className="text-2xl font-bold">{totalOpens}</p>
-                  <p className="text-xs text-muted-foreground">Opens</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border p-3">
-                <MousePointerClick className="h-4 w-4 text-blue-600" />
-                <div>
-                  <p className="text-2xl font-bold">{totalClicks}</p>
-                  <p className="text-xs text-muted-foreground">Link Clicks</p>
-                </div>
-              </div>
-            </div>
 
-            {/* Per-email breakdown */}
-            {Array.from(emailTrackingByMessage.entries()).map(([messageId, stats], idx) => (
-              <div key={messageId} className="flex items-center justify-between rounded-lg border p-3 mb-2">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Reminder #{idx + 1}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-xs">
-                    <CheckCircle className="mr-0.5 h-3 w-3" />Sent
-                  </Badge>
-                  {stats.opens > 0 && (
-                    <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
-                      <Eye className="mr-0.5 h-3 w-3" />Opened{stats.opens > 1 ? ` ×${stats.opens}` : ""}
+              {Array.from(emailTrackingByMessage.entries()).map(([messageId, stats], idx) => (
+                <div key={messageId} className="flex items-center justify-between rounded-lg border p-3 mb-2">
+                  <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Reminder #{idx + 1}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-xs">
+                      <CheckCircle className="mr-0.5 h-3 w-3" />Sent
                     </Badge>
-                  )}
-                  {stats.clicks > 0 && (
-                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
-                      <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked{stats.clicks > 1 ? ` ×${stats.clicks}` : ""}
-                    </Badge>
-                  )}
+                    {stats.opens > 0 && (
+                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+                        <Eye className="mr-0.5 h-3 w-3" />Opened{stats.opens > 1 ? ` ×${stats.opens}` : ""}
+                      </Badge>
+                    )}
+                    {stats.clicks > 0 && (
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                        <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked{stats.clicks > 1 ? ` ×${stats.clicks}` : ""}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        )
+      ) : (
+        <UpgradePrompt feature="Open & click tracking" requiredPlan="Pro" />
       )}
 
       {/* Activity Timeline */}
-      <Card>
-        <CardHeader><CardTitle className="text-lg">Activity</CardTitle></CardHeader>
-        <CardContent>
-          {combinedActivities.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No activity yet.</p>
-          ) : (
-            <div className="space-y-4">
-              {combinedActivities.map((act) => {
-                const Icon = act.type === "email_open" ? Eye
-                  : act.type === "email_click" ? MousePointerClick
-                  : activityIcons[act.type] || Clock;
-                const iconColor = act.type === "email_open" ? "text-violet-600"
-                  : act.type === "email_click" ? "text-blue-600"
-                  : "text-muted-foreground";
-                return (
-                  <div key={act.id} className="flex gap-3">
-                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                      <Icon className={`h-4 w-4 ${iconColor}`} />
+      {activityTimeline ? (
+        <Card>
+          <CardHeader><CardTitle className="text-lg">Activity</CardTitle></CardHeader>
+          <CardContent>
+            {combinedActivities.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No activity yet.</p>
+            ) : (
+              <div className="space-y-4">
+                {combinedActivities.map((act) => {
+                  const Icon = act.type === "email_open" ? Eye
+                    : act.type === "email_click" ? MousePointerClick
+                    : activityIcons[act.type] || Clock;
+                  const iconColor = act.type === "email_open" ? "text-violet-600"
+                    : act.type === "email_click" ? "text-blue-600"
+                    : "text-muted-foreground";
+                  return (
+                    <div key={act.id} className="flex gap-3">
+                      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
+                        <Icon className={`h-4 w-4 ${iconColor}`} />
+                      </div>
+                      <div>
+                        <p className="text-sm">{act.description}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(act.created_at), "MMM d, yyyy 'at' h:mm a")}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm">{act.description}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(act.created_at), "MMM d, yyyy 'at' h:mm a")}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <UpgradePrompt feature="Activity timeline" requiredPlan="Starter" />
+      )}
     </div>
   );
 }
