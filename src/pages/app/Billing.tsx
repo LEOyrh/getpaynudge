@@ -12,6 +12,17 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
+/** Format a UTC ISO date string as a date using UTC so timezone doesn't shift the day */
+function formatSubDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export default function Billing() {
   usePageMeta({ title: "Billing", description: "Manage your PayNudge subscription" });
 
