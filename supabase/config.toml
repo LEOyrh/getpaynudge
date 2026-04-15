@@ -14,6 +14,6 @@ project_id = "zplvyglorabxdufjdelh"
   [functions.process-reminders]
     verify_jwt = true
   [functions.send-transactional-email]
-    verify_jwt = true
+    verify_jwt = false
   [functions.track-email-event]
     verify_jwt = false
