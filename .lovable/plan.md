@@ -1,35 +1,81 @@
 
 
-# PayNudge — Revised Plan: Domain Architecture Clarification
+# Plan: Admin Panel, Billing UI Fixes, and Pay Link Field
 
-## Domain Intent
+## What you asked for (grouped)
 
-You want:
-- **paynudge.com** — marketing, SEO, pricing, templates, legal pages
-- **app.paynudge.com** — dashboard, invoices, settings, billing (post-login)
+1. **Admin panel** — pages to manage all users/customers, view all invoices, debug customer issues, and a finance dashboard (subscription counts by tier, projected MRR)
+2. **Billing page fixes** — align Subscribe buttons, make feature lists progressive ("Everything in Starter, plus…"), remove unbuilt features (Open & click tracking, Team access, Priority/Dedicated support)
+3. **Pay link field** — add a `payment_link` column to invoices and a field on the New Invoice form; pass it through to reminder emails
 
-## Reality in Lovable
+---
 
-Lovable deploys a **single React SPA** to one domain. We cannot natively deploy two separate subdomains from one project. Here's how we handle it:
+## 1. Admin Panel
 
-### What we build now (single SPA, single deploy)
+### Admin access control
+- Create a `user_roles` table with RLS and a `has_role()` security-definer function (per project guidelines)
+- Insert a row granting `admin` role to `admin@getpaynudge.com`
+- Create an `AdminRoute` wrapper component that checks `has_role` via an edge function or a simple RPC call
+- Skip subscription checks for admin users in AuthContext
 
-- All marketing routes at `/`, `/pricing`, `/how-it-works`, `/templates/*`, `/faq`, `/privacy`, `/terms`, `/contact`, `/login`, `/signup`
-- All app routes at `/app/dashboard`, `/app/invoices`, `/app/invoices/new`, `/app/invoices/:id`, `/app/settings`, `/app/billing`
-- Auth guards protect all `/app/*` routes
-- Marketing layout (header/footer with nav) vs App layout (sidebar/topbar) are completely separate layout shells — they already feel like two different sites
+### Admin pages (under `/app/admin/*`)
+- **Users** (`/app/admin/users`) — list all profiles with email, signup date, subscription tier (fetched via an edge function that calls Stripe). Search/filter.
+- **User Detail** (`/app/admin/users/:id`) — profile info, subscription status, all invoices for that user
+- **All Invoices** (`/app/admin/invoices`) — paginated table of every invoice across all users with filters (status, date range, user)
+- **Finance Dashboard** (`/app/admin/finance`) — cards showing: total users, subscribers by tier (Starter/Pro/Business), MRR, projected annual revenue. Uses an edge function that queries Stripe subscriptions.
 
-### Subdomain split (when you're ready to go live)
+### Edge function: `admin-stats`
+- Authenticated + admin-role check
+- Queries Stripe for active subscriptions, groups by product ID, returns tier counts + MRR
+- Queries the `profiles` table for total user count
 
-When you connect a custom domain, you have two options:
+### Sidebar
+- Add an "Admin" section in the sidebar (only visible to admin users) with links to Users, Invoices, Finance
 
-1. **Keep it simple**: Deploy as-is to `paynudge.com`. Marketing lives at root paths, app lives at `/app/*`. Works perfectly, no extra config. Many SaaS products do this (e.g., Linear, Cal.com).
+---
 
-2. **True subdomain split**: Requires duplicating the project or using a reverse proxy/CDN (Cloudflare) to route `app.paynudge.com` to the same origin but rewrite paths. This is a deployment-time concern, not a code concern. The `/app/*` route prefix makes this trivial to split later.
+## 2. Billing Page & Pricing Fixes
 
-### What this means for the plan
+### Update `src/config/brand.ts` plan features
+Remove unbuilt features and make lists progressive:
 
-**No changes needed to the implementation plan.** The code structure already separates marketing vs app with distinct route prefixes and layout shells. The brand config will include both `domain` and `appDomain` constants so links/CTAs point to the right place. When deployed, a simple Cloudflare rule or future project split handles the subdomain routing.
+- **Starter**: "Up to 10 active invoices", "Custom reminder schedule", "3 reminder tones", "Activity timeline", "Email support"
+- **Pro**: "Up to 50 active invoices", "Everything in Starter", "Pay link in reminders" (this is built), "Priority email support"
+- **Business**: "Unlimited active invoices", "Everything in Pro", "Dedicated email support"
 
-Everything else in the 6-phase plan remains exactly as presented. Ready to start building Phase 1?
+Remove: "Open & click tracking", "Team access", "Dedicated support" (as standalone), "Priority support" (replaced with clearer wording)
+
+### Fix button alignment in `Billing.tsx`
+- Use `flex flex-col justify-between h-full` on each card so the Subscribe button is always pinned to the bottom regardless of feature list length
+
+---
+
+## 3. Pay Link Field
+
+### Database migration
+```sql
+ALTER TABLE public.invoices ADD COLUMN payment_link text;
+```
+
+### New Invoice form (`NewInvoice.tsx`)
+- Add optional `payment_link` field (URL input) to the form schema and UI
+- Save it on insert
+
+### Invoice Detail (`InvoiceDetail.tsx`)
+- Display the payment link if present
+- Pass `payLink` to `send-transactional-email` when sending reminders (the email template already supports it)
+
+### Process-reminders function
+- Check if the existing `process-reminders` edge function passes `payLink` — if not, update it to include `invoice.payment_link`
+
+---
+
+## Implementation order
+1. Database migration (add `payment_link` column + `user_roles` table + `has_role` function + seed admin role)
+2. Update brand config (fix plan features)
+3. Fix Billing page card alignment
+4. Add pay link to New Invoice form and Invoice Detail
+5. Create `admin-stats` edge function
+6. Create admin pages (Users, Invoices, Finance)
+7. Add admin sidebar links + AdminRoute guard
 
