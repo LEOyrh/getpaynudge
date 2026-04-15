@@ -61,7 +61,7 @@ export const plans: PricingPlan[] = [
       "Activity timeline",
       "Email support",
     ],
-    cta: "Start Free Trial",
+    cta: "Start 7-Day Free Trial",
     highlighted: false,
   },
   {
@@ -78,7 +78,7 @@ export const plans: PricingPlan[] = [
       "Pay link in reminders",
       "Priority email support",
     ],
-    cta: "Start Free Trial",
+    cta: "Start 7-Day Free Trial",
     highlighted: true,
   },
   {
