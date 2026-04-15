@@ -271,9 +271,21 @@ export default function InvoiceDetail() {
           <h1 className="font-heading text-2xl font-bold text-foreground">{invoice.invoice_number}</h1>
           <p className="text-sm text-muted-foreground">{invoice.client_name}</p>
         </div>
-        <Badge variant="secondary" className={statusColors[invoice.status]}>
-          {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
-        </Badge>
+        <div className="flex items-center gap-1.5">
+          <Badge variant="secondary" className={statusColors[invoice.status]}>
+            {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+          </Badge>
+          {totalOpens > 0 && (
+            <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+              <Eye className="mr-0.5 h-3 w-3" />Opened
+            </Badge>
+          )}
+          {totalClicks > 0 && (
+            <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+              <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked
+            </Badge>
+          )}
+        </div>
       </div>
 
       {/* Details */}
