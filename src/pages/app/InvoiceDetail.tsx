@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell } from "lucide-react";
+import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell, Eye, MousePointerClick } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -89,6 +89,54 @@ export default function InvoiceDetail() {
     },
     enabled: !!id && !!user,
   });
+
+  const { data: emailEvents = [] } = useQuery({
+    queryKey: ["invoice-email-events", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_events")
+        .select("*")
+        .eq("invoice_id", id!)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!user,
+  });
+
+  // Group email events by message_id (extracted from tracking_id: {invoice_id}_{message_id})
+  const emailTrackingByMessage = useMemo(() => {
+    const map = new Map<string, { opens: number; clicks: number; firstSeen: string }>();
+    for (const ev of emailEvents) {
+      const messageId = ev.tracking_id.length > 37 ? ev.tracking_id.slice(37) : ev.tracking_id;
+      if (!map.has(messageId)) {
+        map.set(messageId, { opens: 0, clicks: 0, firstSeen: ev.created_at });
+      }
+      const entry = map.get(messageId)!;
+      if (ev.event_type === "open") entry.opens++;
+      if (ev.event_type === "click") entry.clicks++;
+    }
+    return map;
+  }, [emailEvents]);
+
+  // Build a combined activity list: invoice_activities + email open/click events
+  const combinedActivities = useMemo(() => {
+    const items: { id: string; type: string; description: string; created_at: string }[] = [];
+    for (const act of activities) {
+      items.push({ id: act.id, type: act.activity_type, description: act.description, created_at: act.created_at });
+    }
+    for (const ev of emailEvents) {
+      const label = ev.event_type === "open" ? "Email opened" : "Payment link clicked";
+      items.push({ id: ev.id, type: `email_${ev.event_type}`, description: label, created_at: ev.created_at });
+    }
+    items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return items;
+  }, [activities, emailEvents]);
+
+  // Total tracking stats for this invoice
+  const totalOpens = emailEvents.filter((e) => e.event_type === "open").length;
+  const totalClicks = emailEvents.filter((e) => e.event_type === "click").length;
+  const totalSent = activities.filter((a) => a.activity_type === "reminder_sent").length;
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -292,20 +340,82 @@ export default function InvoiceDetail() {
         </CardContent>
       </Card>
 
+      {/* Email Tracking Summary */}
+      {totalSent > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-lg">Email Tracking</CardTitle></CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-3 mb-4">
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <Send className="h-4 w-4 text-primary" />
+                <div>
+                  <p className="text-2xl font-bold">{totalSent}</p>
+                  <p className="text-xs text-muted-foreground">Emails Sent</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <Eye className="h-4 w-4 text-violet-600" />
+                <div>
+                  <p className="text-2xl font-bold">{totalOpens}</p>
+                  <p className="text-xs text-muted-foreground">Opens</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <MousePointerClick className="h-4 w-4 text-blue-600" />
+                <div>
+                  <p className="text-2xl font-bold">{totalClicks}</p>
+                  <p className="text-xs text-muted-foreground">Link Clicks</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Per-email breakdown */}
+            {Array.from(emailTrackingByMessage.entries()).map(([messageId, stats], idx) => (
+              <div key={messageId} className="flex items-center justify-between rounded-lg border p-3 mb-2">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Reminder #{idx + 1}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-xs">
+                    <CheckCircle className="mr-0.5 h-3 w-3" />Sent
+                  </Badge>
+                  {stats.opens > 0 && (
+                    <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+                      <Eye className="mr-0.5 h-3 w-3" />Opened{stats.opens > 1 ? ` ×${stats.opens}` : ""}
+                    </Badge>
+                  )}
+                  {stats.clicks > 0 && (
+                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                      <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked{stats.clicks > 1 ? ` ×${stats.clicks}` : ""}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Activity Timeline */}
       <Card>
         <CardHeader><CardTitle className="text-lg">Activity</CardTitle></CardHeader>
         <CardContent>
-          {activities.length === 0 ? (
+          {combinedActivities.length === 0 ? (
             <p className="text-sm text-muted-foreground">No activity yet.</p>
           ) : (
             <div className="space-y-4">
-              {activities.map((act) => {
-                const Icon = activityIcons[act.activity_type] || Clock;
+              {combinedActivities.map((act) => {
+                const Icon = act.type === "email_open" ? Eye
+                  : act.type === "email_click" ? MousePointerClick
+                  : activityIcons[act.type] || Clock;
+                const iconColor = act.type === "email_open" ? "text-violet-600"
+                  : act.type === "email_click" ? "text-blue-600"
+                  : "text-muted-foreground";
                 return (
                   <div key={act.id} className="flex gap-3">
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                      <Icon className="h-4 w-4 text-muted-foreground" />
+                      <Icon className={`h-4 w-4 ${iconColor}`} />
                     </div>
                     <div>
                       <p className="text-sm">{act.description}</p>
