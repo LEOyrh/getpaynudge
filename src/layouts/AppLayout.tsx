@@ -126,6 +126,28 @@ export default function AppLayout() {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <>
+                  <Separator className="my-2" />
+                  <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Admin</p>
+                  {adminLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                        location.pathname.startsWith(link.href)
+                          ? "bg-accent text-accent-foreground"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <link.icon className="h-4 w-4" />
+                      {link.label}
+                    </Link>
+                  ))}
+                </>
+              )}
               <button
                 onClick={handleSignOut}
                 className="mt-2 flex items-center gap-3 rounded-md border-t border-border px-3 py-2 pt-3 text-sm font-medium text-muted-foreground hover:text-foreground"
