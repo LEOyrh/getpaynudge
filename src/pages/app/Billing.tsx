@@ -113,7 +113,26 @@ export default function Billing() {
         </Card>
       )}
 
-      {/* Current plan banner */}
+      {/* Trial notice */}
+      {subscription.isTrialing && subscription.trialEnd && (
+        <Card className="border-primary/40 bg-primary/5">
+          <CardContent className="flex items-center gap-3 py-4">
+            <Clock className="h-5 w-5 text-primary shrink-0" />
+            <p className="text-sm text-foreground">
+              You're on a <span className="font-semibold">free trial</span> until{" "}
+              <span className="font-semibold">
+                {formatSubDate(subscription.trialEnd)}
+              </span>
+              .{" "}
+              {(() => {
+                const days = Math.max(0, Math.ceil((new Date(subscription.trialEnd).getTime() - Date.now()) / 86400000));
+                return <span className="text-primary font-semibold">{days} day{days !== 1 ? "s" : ""} remaining</span>;
+              })()}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="border-primary/30 bg-primary/5">
         <CardContent className="flex items-center justify-between py-5">
           <div className="flex items-center gap-3">
