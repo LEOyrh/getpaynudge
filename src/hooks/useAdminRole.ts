@@ -8,10 +8,13 @@ export function useAdminRole() {
   const { data: isAdmin = false, isLoading } = useQuery({
     queryKey: ["admin-role", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("has_role", {
-        _user_id: user!.id,
-        _role: "admin",
-      });
+      // user_roles RLS allows admins to read; for the initial check we query our own row
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user!.id)
+        .eq("role", "admin" as any)
+        .maybeSingle();
       if (error) return false;
       return !!data;
     },
