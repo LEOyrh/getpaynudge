@@ -148,48 +148,52 @@ export default function Billing() {
                   Your Plan
                 </div>
               )}
-              <CardContent className="pt-8 pb-6">
-                <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-                <div className="mt-4">
-                  <span className="font-heading text-4xl font-bold text-foreground">
-                    ${plan.price}
-                  </span>
-                  <span className="text-sm text-muted-foreground">/month</span>
+              <CardContent className="flex h-full flex-col pt-8 pb-6">
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-foreground">{plan.name}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+                  <div className="mt-4">
+                    <span className="font-heading text-4xl font-bold text-foreground">
+                      ${plan.price}
+                    </span>
+                    <span className="text-sm text-muted-foreground">/month</span>
+                  </div>
+                  <ul className="mt-5 space-y-2">
+                    {plan.features.map((f) => (
+                      <li
+                        key={f}
+                        className="flex items-start gap-2 text-sm text-muted-foreground"
+                      >
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="mt-5 space-y-2">
-                  {plan.features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-start gap-2 text-sm text-muted-foreground"
-                    >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
 
-                {isCurrentPlan ? (
-                  <Button className="mt-6 w-full" variant="outline" disabled>
-                    Current Plan
-                  </Button>
-                ) : isPlanInStripe ? (
-                  <Button
-                    className="mt-6 w-full"
-                    variant={plan.highlighted ? "default" : "outline"}
-                    onClick={() => handleCheckout(plan.id)}
-                    disabled={!!checkoutLoading}
-                  >
-                    {checkoutLoading === plan.id ? (
-                      <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                    ) : null}
-                    {subscription.subscribed ? "Switch Plan" : "Subscribe"}
-                  </Button>
-                ) : (
-                  <Button className="mt-6 w-full" variant="outline" asChild>
-                    <a href="mailto:support@paynudge.com">Contact Sales</a>
-                  </Button>
-                )}
+                <div className="mt-auto pt-6">
+                  {isCurrentPlan ? (
+                    <Button className="w-full" variant="outline" disabled>
+                      Current Plan
+                    </Button>
+                  ) : isPlanInStripe ? (
+                    <Button
+                      className="w-full"
+                      variant={plan.highlighted ? "default" : "outline"}
+                      onClick={() => handleCheckout(plan.id)}
+                      disabled={!!checkoutLoading}
+                    >
+                      {checkoutLoading === plan.id ? (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                      ) : null}
+                      {subscription.subscribed ? "Switch Plan" : "Subscribe"}
+                    </Button>
+                  ) : (
+                    <Button className="w-full" variant="outline" asChild>
+                      <a href="mailto:support@paynudge.com">Contact Sales</a>
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
