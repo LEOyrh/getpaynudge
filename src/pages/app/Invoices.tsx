@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FileText, Search, Filter } from "lucide-react";
+import { useState, useMemo } from "react";
+import { FileText, Search, Filter, Eye, MousePointerClick } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -47,6 +47,30 @@ export default function Invoices() {
     },
     enabled: !!user,
   });
+
+  const { data: emailEvents = [] } = useQuery({
+    queryKey: ["invoices-email-events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_events")
+        .select("event_type, invoice_id");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Build per-invoice open/click counts
+  const trackingByInvoice = useMemo(() => {
+    const map = new Map<string, { opens: number; clicks: number }>();
+    for (const ev of emailEvents) {
+      if (!map.has(ev.invoice_id)) map.set(ev.invoice_id, { opens: 0, clicks: 0 });
+      const entry = map.get(ev.invoice_id)!;
+      if (ev.event_type === "open") entry.opens++;
+      if (ev.event_type === "click") entry.clicks++;
+    }
+    return map;
+  }, [emailEvents]);
 
   const filtered = invoices.filter((inv) => {
     const matchesSearch =
@@ -124,19 +148,34 @@ export default function Invoices() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((inv) => (
-                <TableRow key={inv.id} className="cursor-pointer" onClick={() => navigate(`/app/invoices/${inv.id}`)}>
-                  <TableCell className="font-medium">{inv.invoice_number}</TableCell>
-                  <TableCell>{inv.client_name}</TableCell>
-                  <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
-                  <TableCell>{format(new Date(inv.due_date), "MMM d, yyyy")}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className={statusColors[inv.status]}>
-                      {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filtered.map((inv) => {
+                const tracking = trackingByInvoice.get(inv.id);
+                return (
+                  <TableRow key={inv.id} className="cursor-pointer" onClick={() => navigate(`/app/invoices/${inv.id}`)}>
+                    <TableCell className="font-medium">{inv.invoice_number}</TableCell>
+                    <TableCell>{inv.client_name}</TableCell>
+                    <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
+                    <TableCell>{format(new Date(inv.due_date), "MMM d, yyyy")}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <Badge variant="secondary" className={statusColors[inv.status]}>
+                          {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
+                        </Badge>
+                        {tracking && tracking.opens > 0 && (
+                          <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+                            <Eye className="mr-0.5 h-3 w-3" />{tracking.opens}
+                          </Badge>
+                        )}
+                        {tracking && tracking.clicks > 0 && (
+                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                            <MousePointerClick className="mr-0.5 h-3 w-3" />{tracking.clicks}
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </Card>

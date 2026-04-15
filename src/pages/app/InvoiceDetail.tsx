@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Tables } from "@/integrations/supabase/types";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -52,6 +52,7 @@ export default function InvoiceDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [sendingReminder, setSendingReminder] = useState(false);
+  const [reminderTone, setReminderTone] = useState<"friendly" | "professional" | "firm">("friendly");
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
@@ -198,8 +199,7 @@ export default function InvoiceDetail() {
       const amount = formatCurrency(invoice.amount, invoice.currency);
       const formattedDue = format(new Date(invoice.due_date), "MMMM d, yyyy");
 
-      const isOverdue = new Date(invoice.due_date) < new Date();
-      const tone = isOverdue ? "professional" : "friendly";
+      const tone = reminderTone;
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
@@ -225,7 +225,7 @@ export default function InvoiceDetail() {
       await supabase.from("invoice_activities").insert({
         invoice_id: invoice.id,
         activity_type: "reminder_sent",
-        description: `Manual payment reminder sent to ${invoice.client_email}`,
+        description: `Manual payment reminder (${tone}) sent to ${invoice.client_email}`,
       });
 
       queryClient.invalidateQueries({ queryKey: ["invoice-activities", id] });
@@ -315,27 +315,50 @@ export default function InvoiceDetail() {
         )}
       </div>
 
-      {/* Reminder Cadence */}
+      {/* Reminder Settings */}
       <Card>
-        <CardHeader><CardTitle className="text-lg">Reminder Schedule</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          {DEFAULT_REMINDERS.map((def) => {
-            const existing = reminders.find(
-              (r) => r.reminder_type === def.reminder_type && r.days_offset === def.days_offset
-            );
-            const isEnabled = existing?.enabled ?? false;
-            return (
-              <div key={def.reminder_type + def.days_offset} className="flex items-center justify-between">
-                <Label>{def.label}</Label>
-                <Switch
-                  checked={isEnabled}
-                  onCheckedChange={(checked) =>
-                    toggleReminder.mutate({ type: def.reminder_type, days: def.days_offset, enabled: checked })
-                  }
-                />
-              </div>
-            );
-          })}
+        <CardHeader><CardTitle className="text-lg">Reminder Settings</CardTitle></CardHeader>
+        <CardContent className="space-y-5">
+          {/* Tone selector */}
+          <div className="space-y-1.5">
+            <Label>Reminder Tone</Label>
+            <Select value={reminderTone} onValueChange={(v) => setReminderTone(v as any)}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="friendly">😊 Friendly</SelectItem>
+                <SelectItem value="professional">💼 Professional</SelectItem>
+                <SelectItem value="firm">⚠️ Firm</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {reminderTone === "friendly" && "A warm, gentle nudge — great for first reminders."}
+              {reminderTone === "professional" && "Polite and formal — suitable for overdue invoices."}
+              {reminderTone === "firm" && "Direct and urgent — for significantly overdue payments."}
+            </p>
+          </div>
+
+          <div className="border-t pt-4 space-y-4">
+            <Label className="text-sm font-medium">Schedule</Label>
+            {DEFAULT_REMINDERS.map((def) => {
+              const existing = reminders.find(
+                (r) => r.reminder_type === def.reminder_type && r.days_offset === def.days_offset
+              );
+              const isEnabled = existing?.enabled ?? false;
+              return (
+                <div key={def.reminder_type + def.days_offset} className="flex items-center justify-between">
+                  <Label className="font-normal">{def.label}</Label>
+                  <Switch
+                    checked={isEnabled}
+                    onCheckedChange={(checked) =>
+                      toggleReminder.mutate({ type: def.reminder_type, days: def.days_offset, enabled: checked })
+                    }
+                  />
+                </div>
+              );
+            })}
+          </div>
           <p className="text-xs text-muted-foreground">Reminders will be sent to the client email on file.</p>
         </CardContent>
       </Card>
