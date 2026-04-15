@@ -159,6 +159,7 @@ export default function InvoiceDetail() {
           recipientEmail: invoice.client_email,
           idempotencyKey: `manual-reminder-${invoice.id}-${Date.now()}`,
           templateData: {
+            invoiceId: invoice.id,
             clientName: invoice.client_name,
             invoiceNumber: invoice.invoice_number,
             amount,
