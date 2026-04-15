@@ -235,7 +235,9 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               {(() => {
-                // Merge invoice_activities + email_events into one chronological feed
+                // Build invoice ID → number lookup
+                const invoiceNumberMap = new Map(invoices.map((i) => [i.id, i.invoice_number]));
+
                 const activityItems = recentActivities.map((act: any) => ({
                   id: act.id,
                   type: act.activity_type as string,
@@ -247,10 +249,11 @@ export default function Dashboard() {
                   id: ev.id,
                   type: ev.event_type === "open" ? "email_opened" : "link_clicked",
                   description: ev.event_type === "open" ? "Email opened by recipient" : "Payment link clicked by recipient",
-                  invoiceNumber: ev.invoices?.invoice_number,
+                  invoiceNumber: invoiceNumberMap.get(ev.invoice_id) || "Unknown",
                   created_at: ev.created_at as string,
                 }));
                 const combined = [...activityItems, ...emailEventItems]
+                  .filter((item) => item.created_at)
                   .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                   .slice(0, 10);
 
