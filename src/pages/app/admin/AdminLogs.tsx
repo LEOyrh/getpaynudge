@@ -88,6 +88,20 @@ export default function AdminLogs() {
   const emailEvents = data?.emailEvents || [];
   const activities = data?.activities || [];
 
+  // Build a map of message_id → set of event types (open, click)
+  const eventsByMessageId = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const ev of emailEvents) {
+      // tracking_id format: {invoice_id}_{message_id}
+      const parts = ev.tracking_id.split("_");
+      // message_id is a UUID (last 5 parts joined by _)
+      const messageId = parts.slice(-5).join("-");
+      if (!map.has(messageId)) map.set(messageId, new Set());
+      map.get(messageId)!.add(ev.event_type);
+    }
+    return map;
+  }, [emailEvents]);
+
   // Deduplicate send logs by message_id (latest status wins)
   const dedupedLogs = useMemo(() => {
     const map = new Map<string, SendLog>();
@@ -286,19 +300,39 @@ export default function AdminLogs() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredLogs.slice(0, 100).map((log) => (
+                {filteredLogs.slice(0, 100).map((log) => {
+                  const messageKey = log.message_id || log.id;
+                  const events = eventsByMessageId.get(messageKey);
+                  const hasOpen = events?.has("open");
+                  const hasClick = events?.has("click");
+                  return (
                   <TableRow key={log.id}>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
                       {format(new Date(log.created_at), "MMM d, HH:mm:ss")}
                     </TableCell>
                     <TableCell className="font-mono text-xs">{log.template_name}</TableCell>
                     <TableCell className="text-sm">{log.recipient_email}</TableCell>
-                    <TableCell>{statusBadge(log.status)}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {statusBadge(log.status)}
+                        {hasOpen && (
+                          <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100">
+                            <Eye className="mr-1 h-3 w-3" />Opened
+                          </Badge>
+                        )}
+                        {hasClick && (
+                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                            <MousePointerClick className="mr-1 h-3 w-3" />Clicked
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="max-w-xs truncate text-xs text-destructive">
                       {log.error_message || "—"}
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
                 {filteredLogs.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground">No email logs found.</TableCell>
