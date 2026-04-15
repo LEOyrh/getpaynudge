@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ export default function Invoices() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const { emailTracking } = usePlanFeatures();
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["invoices", user?.id],
@@ -161,12 +163,12 @@ export default function Invoices() {
                         <Badge variant="secondary" className={statusColors[inv.status]}>
                           {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
                         </Badge>
-                        {tracking && tracking.opens > 0 && (
+                        {emailTracking && tracking && tracking.opens > 0 && (
                           <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
                             <Eye className="mr-0.5 h-3 w-3" />{tracking.opens}
                           </Badge>
                         )}
-                        {tracking && tracking.clicks > 0 && (
+                        {emailTracking && tracking && tracking.clicks > 0 && (
                           <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
                             <MousePointerClick className="mr-0.5 h-3 w-3" />{tracking.clicks}
                           </Badge>
