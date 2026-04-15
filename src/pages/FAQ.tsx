@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { brand } from "@/config/brand";
 
@@ -23,6 +29,56 @@ const faqCategories = [
       {
         q: `Does ${brand.name} handle payments?`,
         a: "No. We never process, hold, or touch your clients' money. You provide your own payment link (Stripe, QuickBooks, Xero, bank transfer, etc.) and we include it in the reminders. Your clients pay you directly.",
+      },
+    ],
+  },
+  {
+    title: "Getting Started",
+    items: [
+      {
+        q: "How do I create my first invoice?",
+        a: `Sign up, go to Invoices → New Invoice, and enter the client name, email, amount, due date, and optionally a payment link. Click Create and the default reminder cadence is set automatically.`,
+      },
+      {
+        q: "How do I set up reminders?",
+        a: "Reminders are set automatically when you create an invoice. The default cadence sends reminders at 3 days before the due date, on the due date, and then 3, 7, and 14 days after. On paid plans, you can customize this schedule.",
+      },
+      {
+        q: "What happens after I sign up?",
+        a: "You start on the Free plan with 1 active invoice. You can immediately create an invoice and reminders will be sent on schedule. Upgrade anytime to add more invoices.",
+      },
+      {
+        q: "Do I need a credit card to start?",
+        a: "No. The Free plan requires no credit card. You only need payment details when you upgrade to a paid plan.",
+      },
+    ],
+  },
+  {
+    title: "Using the App",
+    items: [
+      {
+        q: "How do I pause reminders for an invoice?",
+        a: "Open the invoice detail page and click Pause. Reminders will stop until you resume them. Paused invoices still count toward your active invoice limit.",
+      },
+      {
+        q: "How do I mark an invoice as paid?",
+        a: "Open the invoice and click 'Mark Paid'. All future reminders for that invoice are cancelled immediately and the invoice no longer counts toward your limit.",
+      },
+      {
+        q: "How do I add a payment link?",
+        a: "When creating or editing an invoice, paste your payment URL into the Payment Link field. This can be a Stripe payment link, QuickBooks invoice URL, Xero link, or any URL where your client can pay.",
+      },
+      {
+        q: "Can I edit an invoice after creating it?",
+        a: "Yes. Open the invoice detail page to edit any field. Changes take effect immediately for future reminders.",
+      },
+      {
+        q: "What do invoice statuses mean?",
+        a: "Draft — not yet active, no reminders sent. Sent — active, reminders running. Overdue — past due date, reminders continue. Paid — you marked it paid, reminders stopped. Cancelled — no more reminders.",
+      },
+      {
+        q: "Can I duplicate an invoice for a repeat client?",
+        a: "Yes. Open an existing invoice and use the Duplicate option to create a copy with the same client details — just update the amount and due date.",
       },
     ],
   },
@@ -52,6 +108,31 @@ const faqCategories = [
     ],
   },
   {
+    title: "Troubleshooting",
+    items: [
+      {
+        q: "My client says they didn't receive the reminder email.",
+        a: "Check the Activity Timeline on the invoice detail page to confirm the reminder was sent. Ask your client to check their spam/junk folder. If the email was sent but not received, it may have been filtered by their email provider.",
+      },
+      {
+        q: "A reminder didn't send on time.",
+        a: "Reminders are processed in batches and may have a small delay (usually under a few minutes). Check the Activity Timeline to see the exact send time. If the reminder is missing entirely, make sure the invoice status is 'Sent' or 'Overdue' and reminders aren't paused.",
+      },
+      {
+        q: "I've reached my invoice limit. What do I do?",
+        a: "You can either upgrade your plan for more active invoices, or mark existing invoices as Paid or Cancelled to free up slots.",
+      },
+      {
+        q: "How do I change the reminder schedule for an existing invoice?",
+        a: "Open the invoice detail page where you can adjust the reminder schedule. Note that custom cadences require a Starter plan or above.",
+      },
+      {
+        q: "I accidentally marked an invoice as paid. Can I undo it?",
+        a: "Yes. Open the invoice and change the status back to Sent or Draft. Reminders will resume based on the current schedule.",
+      },
+    ],
+  },
+  {
     title: "Billing & Plans",
     items: [
       {
@@ -73,15 +154,23 @@ const faqCategories = [
     ],
   },
   {
-    title: "Privacy & Security",
+    title: "Account & Privacy",
     items: [
       {
-        q: "What data do you collect?",
-        a: "We collect the minimum needed to operate: your account details, invoice information, and email delivery events. We don't sell your data or share it with third parties for marketing.",
+        q: "How do I change my email address?",
+        a: "Go to Settings in the app and update your email. You'll need to verify the new address.",
+      },
+      {
+        q: "How do I update my business name?",
+        a: "Go to Settings and edit your business name. This name is used in the reminder emails your clients receive.",
       },
       {
         q: "Can I delete my account and data?",
         a: "Yes. You can delete your account from the settings page. This removes all your data permanently.",
+      },
+      {
+        q: "What data do you collect?",
+        a: "We collect the minimum needed to operate: your account details, invoice information, and email delivery events. We don't sell your data or share it with third parties for marketing.",
       },
       {
         q: "Where is my data stored?",
@@ -117,19 +206,21 @@ export default function FAQ() {
           <div className="mx-auto max-w-2xl">
             {faqCategories.map((category) => (
               <div key={category.title} className="mt-12">
-                <h2 className="mb-6 font-heading text-xl font-bold text-foreground">
+                <h2 className="mb-4 font-heading text-xl font-bold text-foreground">
                   {category.title}
                 </h2>
-                <div className="space-y-6">
-                  {category.items.map((faq) => (
-                    <div key={faq.q} className="border-b border-border pb-6">
-                      <h3 className="font-heading text-base font-semibold text-foreground">
+                <Accordion type="multiple" className="w-full">
+                  {category.items.map((faq, idx) => (
+                    <AccordionItem key={idx} value={`${category.title}-${idx}`}>
+                      <AccordionTrigger className="text-left font-heading text-base font-semibold text-foreground">
                         {faq.q}
-                      </h3>
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-                    </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
+                        {faq.a}
+                      </AccordionContent>
+                    </AccordionItem>
                   ))}
-                </div>
+                </Accordion>
               </div>
             ))}
           </div>

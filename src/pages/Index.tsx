@@ -8,7 +8,6 @@ import {
   FileText,
   Link2,
   Mail,
-  MousePointerClick,
   PauseCircle,
   Shield,
   TrendingUp,
@@ -242,9 +241,9 @@ function FeaturesSection() {
       description: "Reminders halt automatically when an invoice is marked paid or disputed.",
     },
     {
-      icon: MousePointerClick,
-      title: "Open & Click Tracking",
-      description: "See when clients open your reminders and click your payment link.",
+      icon: FileText,
+      title: "Activity Timeline",
+      description: "See every reminder sent and status change. Know exactly where each invoice stands.",
     },
     {
       icon: Shield,

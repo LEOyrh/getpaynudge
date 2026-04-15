@@ -20,16 +20,14 @@ const stagger = {
 const comparisonFeatures = [
   { name: "Active invoices", values: ["1", "10", "50", "Unlimited"] },
   { name: "Email reminders", values: [true, true, true, true] },
-  { name: "Pay link support", values: [true, true, true, true] },
+  { name: "Pay link in reminders", values: [true, true, true, true] },
   { name: "Default cadence", values: [true, true, true, true] },
   { name: "Custom cadence", values: [false, true, true, true] },
   { name: "Tone selection", values: [false, true, true, true] },
   { name: "Activity timeline", values: [false, true, true, true] },
-  { name: "Open tracking", values: [false, false, true, true] },
-  { name: "Click tracking", values: [false, false, true, true] },
-  { name: "Team access", values: [false, false, false, true] },
-  { name: "Priority support", values: [false, false, true, true] },
-  { name: "Dedicated support", values: [false, false, false, true] },
+  { name: "Email support", values: [false, true, true, true] },
+  { name: "Priority email support", values: [false, false, true, true] },
+  { name: "Dedicated email support", values: [false, false, false, true] },
 ];
 
 export default function Pricing() {
