@@ -30,6 +30,7 @@ const invoiceSchema = z.object({
   amount: z.coerce.number().positive("Amount must be positive"),
   currency: z.string().default("USD"),
   due_date: z.date({ required_error: "Due date is required" }),
+  payment_link: z.string().url("Must be a valid URL").max(2000).or(z.literal("")).optional(),
   notes: z.string().max(2000).optional(),
 });
 
@@ -50,6 +51,7 @@ export default function NewInvoice() {
       invoice_number: "",
       amount: undefined,
       currency: "USD",
+      payment_link: "",
       notes: "",
     },
   });
@@ -65,8 +67,9 @@ export default function NewInvoice() {
       amount: data.amount,
       currency: data.currency,
       due_date: format(data.due_date, "yyyy-MM-dd"),
+      payment_link: data.payment_link || null,
       status: "sent",
-    });
+    } as any);
 
     if (error) {
       toast.error("Failed to create invoice");
@@ -178,6 +181,15 @@ export default function NewInvoice() {
                       <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus className="p-3 pointer-events-auto" />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="payment_link" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Link (optional)</FormLabel>
+                  <FormControl><Input type="url" placeholder="https://pay.example.com/inv-001" {...field} /></FormControl>
+                  <p className="text-xs text-muted-foreground">A URL where your client can pay. Included in reminder emails.</p>
                   <FormMessage />
                 </FormItem>
               )} />

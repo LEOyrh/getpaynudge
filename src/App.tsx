@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
 
 import MarketingLayout from "@/layouts/MarketingLayout";
 import AppLayout from "@/layouts/AppLayout";
@@ -25,6 +26,10 @@ import NewInvoice from "@/pages/app/NewInvoice";
 import InvoiceDetail from "@/pages/app/InvoiceDetail";
 import AppSettings from "@/pages/app/AppSettings";
 import Billing from "@/pages/app/Billing";
+import AdminFinance from "@/pages/app/admin/AdminFinance";
+import AdminUsers from "@/pages/app/admin/AdminUsers";
+import AdminUserDetail from "@/pages/app/admin/AdminUserDetail";
+import AdminInvoices from "@/pages/app/admin/AdminInvoices";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
 import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
 import PolitePaymentReminder from "@/pages/templates/PolitePaymentReminder";
@@ -88,6 +93,10 @@ const App = () => (
               <Route path="/app/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/app/settings" element={<AppSettings />} />
               <Route path="/app/billing" element={<Billing />} />
+              <Route path="/app/admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
+              <Route path="/app/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/app/admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
+              <Route path="/app/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
             </Route>
 
             {/* Catch-all */}
