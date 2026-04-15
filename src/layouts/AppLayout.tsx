@@ -80,6 +80,7 @@ export default function AppLayout() {
               ))}
             </>
           )}
+        </nav>
         <div className="border-t border-sidebar-border p-3">
           <p className="mb-2 truncate px-3 text-xs text-sidebar-foreground/50">{user?.email}</p>
           <button
