@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
   // Get all enabled reminders with their invoice data
   const { data: reminders, error: rErr } = await supabase
     .from('invoice_reminders')
-    .select('*, invoices!inner(id, invoice_number, amount, currency, due_date, client_name, client_email, status, user_id)')
+    .select('*, invoices!inner(id, invoice_number, amount, currency, due_date, client_name, client_email, status, user_id, payment_link)')
     .eq('enabled', true)
     .in('invoices.status', ['sent', 'overdue'])
 
@@ -94,6 +94,7 @@ Deno.serve(async (req) => {
           dueDate: formattedDue,
           businessName,
           tone,
+          payLink: invoice.payment_link || undefined,
         },
       },
     })

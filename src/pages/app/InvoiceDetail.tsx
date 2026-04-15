@@ -165,6 +165,7 @@ export default function InvoiceDetail() {
             dueDate: formattedDue,
             businessName,
             tone,
+            payLink: (invoice as any).payment_link || undefined,
           },
         },
       });
@@ -233,6 +234,7 @@ export default function InvoiceDetail() {
           <div><p className="text-sm text-muted-foreground">Due Date</p><p className="text-lg font-semibold">{format(new Date(invoice.due_date), "MMM d, yyyy")}</p></div>
           {invoice.client_email && <div><p className="text-sm text-muted-foreground">Client Email</p><p>{invoice.client_email}</p></div>}
           <div><p className="text-sm text-muted-foreground">Issue Date</p><p>{format(new Date(invoice.issue_date), "MMM d, yyyy")}</p></div>
+          {(invoice as any).payment_link && <div className="sm:col-span-2"><p className="text-sm text-muted-foreground">Payment Link</p><a href={(invoice as any).payment_link} target="_blank" rel="noopener noreferrer" className="text-primary underline break-all">{(invoice as any).payment_link}</a></div>}
           {invoice.notes && <div className="sm:col-span-2"><p className="text-sm text-muted-foreground">Notes</p><p>{invoice.notes}</p></div>}
         </CardContent>
       </Card>
