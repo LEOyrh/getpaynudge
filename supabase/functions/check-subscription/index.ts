@@ -67,7 +67,12 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const sub = subscriptions.data[0];
-      subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
+      const endVal = sub.current_period_end;
+      subscriptionEnd = typeof endVal === 'number'
+        ? new Date(endVal * 1000).toISOString()
+        : typeof endVal === 'string'
+          ? new Date(endVal).toISOString()
+          : null;
       priceId = sub.items.data[0].price.id;
       productId = sub.items.data[0].price.product as string;
       logStep("Active subscription", { productId, priceId, subscriptionEnd });
