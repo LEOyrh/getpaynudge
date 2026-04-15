@@ -64,6 +64,7 @@ serve(async (req) => {
     let productId: string | null = null;
     let priceId: string | null = null;
     let subscriptionEnd: string | null = null;
+    let cancelAtPeriodEnd = false;
 
     if (hasActiveSub) {
       const sub = subscriptions.data[0];
@@ -75,13 +76,14 @@ serve(async (req) => {
       }
       priceId = item.price.id;
       productId = item.price.product as string;
-      logStep("Active subscription", { productId, priceId, subscriptionEnd });
+      cancelAtPeriodEnd = !!(sub as any).cancel_at_period_end;
+      logStep("Active subscription", { productId, priceId, subscriptionEnd, cancelAtPeriodEnd });
     } else {
       logStep("No active subscription");
     }
 
     return new Response(
-      JSON.stringify({ subscribed: hasActiveSub, product_id: productId, price_id: priceId, subscription_end: subscriptionEnd }),
+      JSON.stringify({ subscribed: hasActiveSub, product_id: productId, price_id: priceId, subscription_end: subscriptionEnd, cancel_at_period_end: cancelAtPeriodEnd }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
   } catch (error) {
