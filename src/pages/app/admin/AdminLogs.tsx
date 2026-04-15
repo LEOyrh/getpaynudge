@@ -20,6 +20,7 @@ interface SendLog {
   error_message: string | null;
   metadata: any;
   created_at: string;
+  is_admin?: boolean;
 }
 
 interface EmailEvent {
@@ -37,6 +38,7 @@ interface InvoiceActivity {
   activity_type: string;
   description: string;
   created_at: string;
+  is_admin?: boolean;
 }
 
 const statusBadge = (status: string) => {
@@ -65,6 +67,7 @@ export default function AdminLogs() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [templateFilter, setTemplateFilter] = useState("all");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
+  const [actorFilter, setActorFilter] = useState("all"); // "all" | "admin" | "user"
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-logs"],
@@ -118,6 +121,8 @@ export default function AdminLogs() {
     return dedupedLogs.filter((l) => {
       if (statusFilter !== "all" && l.status !== statusFilter) return false;
       if (templateFilter !== "all" && l.template_name !== templateFilter) return false;
+      if (actorFilter === "admin" && !l.is_admin) return false;
+      if (actorFilter === "user" && l.is_admin) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -129,7 +134,7 @@ export default function AdminLogs() {
       }
       return true;
     });
-  }, [dedupedLogs, statusFilter, templateFilter, search]);
+  }, [dedupedLogs, statusFilter, templateFilter, actorFilter, search]);
 
   // Filtered email events
   const filteredEvents = useMemo(() => {
@@ -149,15 +154,18 @@ export default function AdminLogs() {
 
   // Filtered activities
   const filteredActivities = useMemo(() => {
-    if (!search) return activities;
-    const q = search.toLowerCase();
-    return activities.filter(
-      (a) =>
+    return activities.filter((a) => {
+      if (actorFilter === "admin" && !a.is_admin) return false;
+      if (actorFilter === "user" && a.is_admin) return false;
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
         a.description.toLowerCase().includes(q) ||
         a.activity_type.toLowerCase().includes(q) ||
         a.invoice_id.toLowerCase().includes(q)
-    );
-  }, [activities, search]);
+      );
+    });
+  }, [activities, actorFilter, search]);
 
   if (isLoading) {
     return <div className="py-16 text-center text-muted-foreground">Loading logs…</div>;
@@ -206,15 +214,27 @@ export default function AdminLogs() {
         </Card>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search logs…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      {/* Search + Actor filter */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search logs…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Select value={actorFilter} onValueChange={setActorFilter}>
+          <SelectTrigger className="w-36">
+            <SelectValue placeholder="Actor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All actors</SelectItem>
+            <SelectItem value="admin">Admin only</SelectItem>
+            <SelectItem value="user">Users only</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Tabs defaultValue="emails" className="space-y-4">
