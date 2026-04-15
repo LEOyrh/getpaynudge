@@ -93,9 +93,9 @@ export default function AdminLogs() {
     const map = new Map<string, Set<string>>();
     for (const ev of emailEvents) {
       // tracking_id format: {invoice_id}_{message_id}
-      const parts = ev.tracking_id.split("_");
-      // message_id is a UUID (last 5 parts joined by _)
-      const messageId = parts.slice(-5).join("-");
+      const sepIdx = ev.tracking_id.indexOf("_");
+      if (sepIdx === -1) continue;
+      const messageId = ev.tracking_id.slice(sepIdx + 1);
       if (!map.has(messageId)) map.set(messageId, new Set());
       map.get(messageId)!.add(ev.event_type);
     }
