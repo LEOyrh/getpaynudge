@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { brand } from "@/config/brand";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Contact() {
   usePageMeta({
@@ -17,17 +18,46 @@ export default function Contact() {
   const { toast } = useToast();
   const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
+
+    const formData = new FormData(e.currentTarget);
+    const name = (formData.get("name") as string).trim();
+    const email = (formData.get("email") as string).trim();
+    const message = (formData.get("message") as string).trim();
+
+    if (!name || !email || !message) {
+      toast({ title: "Please fill in all fields", variant: "destructive" });
       setSending(false);
+      return;
+    }
+
+    try {
+      const id = crypto.randomUUID();
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-form-notification",
+          recipientEmail: email, // fallback; template.to overrides this
+          idempotencyKey: `contact-${id}`,
+          templateData: { name, email, message },
+        },
+      });
+
       toast({
         title: "Message sent",
         description: "We'll get back to you as soon as possible.",
       });
       (e.target as HTMLFormElement).reset();
-    }, 1000);
+    } catch {
+      toast({
+        title: "Something went wrong",
+        description: "Please try again or email us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -87,13 +117,13 @@ export default function Contact() {
                     <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
                       Name
                     </label>
-                    <Input id="name" name="name" required placeholder="Your name" />
+                    <Input id="name" name="name" required placeholder="Your name" maxLength={100} />
                   </div>
                   <div>
                     <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
                       Email
                     </label>
-                    <Input id="email" name="email" type="email" required placeholder="you@example.com" />
+                    <Input id="email" name="email" type="email" required placeholder="you@example.com" maxLength={255} />
                   </div>
                   <div>
                     <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-foreground">
@@ -105,6 +135,7 @@ export default function Contact() {
                       required
                       rows={5}
                       placeholder="How can we help?"
+                      maxLength={2000}
                     />
                   </div>
                   <Button type="submit" className="w-full" disabled={sending}>

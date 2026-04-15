@@ -7,7 +7,7 @@ export const brand = {
   appDomain: "app.paynudge.com",
   url: "https://paynudge.com",
   appUrl: "https://app.paynudge.com",
-  supportEmail: "support@paynudge.com",
+  supportEmail: "support@getpaynudge.com",
   remindersEmail: "reminders@paynudge.com",
   social: {
     twitter: "@paynudge",

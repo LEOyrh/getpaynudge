@@ -95,6 +95,7 @@ const footerLinks = {
     { label: "Pricing", href: "/pricing" },
     { label: "Templates", href: "/templates" },
     { label: "FAQ", href: "/faq" },
+    { label: "Help", href: "/help" },
   ],
   Resources: [
     { label: "Payment Reminder Templates", href: "/templates/polite-payment-reminder-email" },
