@@ -48,8 +48,15 @@ Deno.serve(async (req) => {
     })
   }
 
-  const url = new URL(req.url)
-  const action = url.searchParams.get('action') || 'stats'
+  let action = 'stats'
+  let userId: string | null = null
+  try {
+    const body = await req.json()
+    action = body.action || 'stats'
+    userId = body.userId || null
+  } catch {
+    // no body = default stats
+  }
 
   try {
     if (action === 'stats') {
@@ -112,7 +119,6 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'user-detail') {
-      const userId = url.searchParams.get('userId')
       if (!userId) {
         return new Response(JSON.stringify({ error: 'userId required' }), {
           status: 400,
