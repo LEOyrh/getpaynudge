@@ -121,6 +121,8 @@ export default function AdminLogs() {
     return dedupedLogs.filter((l) => {
       if (statusFilter !== "all" && l.status !== statusFilter) return false;
       if (templateFilter !== "all" && l.template_name !== templateFilter) return false;
+      if (actorFilter === "admin" && !l.is_admin) return false;
+      if (actorFilter === "user" && l.is_admin) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -132,7 +134,7 @@ export default function AdminLogs() {
       }
       return true;
     });
-  }, [dedupedLogs, statusFilter, templateFilter, search]);
+  }, [dedupedLogs, statusFilter, templateFilter, actorFilter, search]);
 
   // Filtered email events
   const filteredEvents = useMemo(() => {
@@ -152,15 +154,18 @@ export default function AdminLogs() {
 
   // Filtered activities
   const filteredActivities = useMemo(() => {
-    if (!search) return activities;
-    const q = search.toLowerCase();
-    return activities.filter(
-      (a) =>
+    return activities.filter((a) => {
+      if (actorFilter === "admin" && !a.is_admin) return false;
+      if (actorFilter === "user" && a.is_admin) return false;
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
         a.description.toLowerCase().includes(q) ||
         a.activity_type.toLowerCase().includes(q) ||
         a.invoice_id.toLowerCase().includes(q)
-    );
-  }, [activities, search]);
+      );
+    });
+  }, [activities, actorFilter, search]);
 
   if (isLoading) {
     return <div className="py-16 text-center text-muted-foreground">Loading logs…</div>;
