@@ -55,9 +55,16 @@ export default function Dashboard() {
   const { data: emailEvents = [] } = useQuery({
     queryKey: ["dashboard-email-events"],
     queryFn: async () => {
+      const { data: userInvoices } = await supabase
+        .from("invoices")
+        .select("id");
+      if (!userInvoices?.length) return [];
+      const invoiceIds = userInvoices.map((i) => i.id);
       const { data, error } = await supabase
         .from("email_events")
-        .select("event_type, invoice_id");
+        .select("*, invoices!inner(invoice_number)")
+        .in("invoice_id", invoiceIds)
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
