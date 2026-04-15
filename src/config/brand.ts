@@ -37,9 +37,9 @@ export const plans: PricingPlan[] = [
     price: 0,
     interval: "month",
     description: "Try it out with one invoice",
-    activeInvoices: 1,
+    activeInvoices: 3,
     features: [
-      "1 active invoice",
+      "3 active invoices",
       "Default reminder cadence",
       "Email reminders",
       "Pay link support",
