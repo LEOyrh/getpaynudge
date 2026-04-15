@@ -67,7 +67,14 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const sub = subscriptions.data[0];
-      subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
+      const endVal = sub.current_period_end;
+      logStep("current_period_end raw", { value: endVal, type: typeof endVal });
+      if (typeof endVal === 'number') {
+        subscriptionEnd = new Date(endVal * 1000).toISOString();
+      } else if (endVal) {
+        subscriptionEnd = String(endVal);
+      }
+      logStep("Active subscription", { productId, priceId, subscriptionEnd });
       priceId = sub.items.data[0].price.id;
       productId = sub.items.data[0].price.product as string;
       logStep("Active subscription", { productId, priceId, subscriptionEnd });
