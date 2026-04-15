@@ -149,11 +149,14 @@ Deno.serve(async (req) => {
           const subs = await stripe.subscriptions.list({ customer: customers.data[0].id, status: 'active', limit: 1 })
           if (subs.data.length > 0) {
             const sub = subs.data[0]
+            const item = sub.items.data[0]
+            const endVal = (sub as any).current_period_end ?? (item as any).current_period_end
             subscription = {
-              productId: sub.items.data[0]?.price?.product,
-              priceId: sub.items.data[0]?.price?.id,
+              productId: item?.price?.product,
+              priceId: item?.price?.id,
               status: sub.status,
-              currentPeriodEnd: new Date(sub.current_period_end * 1000).toISOString(),
+              cancelAtPeriodEnd: !!(sub as any).cancel_at_period_end,
+              currentPeriodEnd: typeof endVal === 'number' ? new Date(endVal * 1000).toISOString() : null,
             }
           }
         }
