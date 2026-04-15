@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { stripePlans } from "@/config/stripe";
 import { DollarSign, Users, FileText, TrendingUp } from "lucide-react";
 
-const productToName: Record<string, string> = {};
+const productToName: Record<string, string> = {
+  // Legacy products
+  "prod_UIMg3mg0NPPxGO": "Starter (Legacy)",
+};
 for (const [key, val] of Object.entries(stripePlans)) {
   productToName[val.productId] = key.charAt(0).toUpperCase() + key.slice(1);
 }
