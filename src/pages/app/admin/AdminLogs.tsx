@@ -65,6 +65,7 @@ export default function AdminLogs() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [templateFilter, setTemplateFilter] = useState("all");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
+  const [actorFilter, setActorFilter] = useState("all"); // "all" | "admin" | "user"
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-logs"],
