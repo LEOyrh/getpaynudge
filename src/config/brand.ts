@@ -74,6 +74,7 @@ export const plans: PricingPlan[] = [
     features: [
       "Up to 50 active invoices",
       "Everything in Starter",
+      "Open & click tracking",
       "Pay link in reminders",
       "Priority email support",
     ],
