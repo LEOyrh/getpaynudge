@@ -54,22 +54,24 @@ serve(async (req) => {
     const customerId = customers.data[0].id;
     logStep("Found customer", { customerId });
 
+    // Check active AND trialing subscriptions
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
-      status: "active",
       limit: 1,
     });
 
-    const hasActiveSub = subscriptions.data.length > 0;
+    // Find active or trialing sub
+    const sub = subscriptions.data.find(s => s.status === "active" || s.status === "trialing");
+    const hasActiveSub = !!sub;
     let productId: string | null = null;
     let priceId: string | null = null;
     let subscriptionEnd: string | null = null;
     let cancelAtPeriodEnd = false;
+    let isTrialing = false;
+    let trialEnd: string | null = null;
 
-    if (hasActiveSub) {
-      const sub = subscriptions.data[0];
+    if (sub) {
       const item = sub.items.data[0];
-      // In basil API, current_period_end moved to item level
       const endVal = (sub as any).current_period_end ?? (item as any).current_period_end;
       if (typeof endVal === 'number') {
         subscriptionEnd = new Date(endVal * 1000).toISOString();
@@ -77,13 +79,17 @@ serve(async (req) => {
       priceId = item.price.id;
       productId = item.price.product as string;
       cancelAtPeriodEnd = !!(sub as any).cancel_at_period_end;
-      logStep("Active subscription", { productId, priceId, subscriptionEnd, cancelAtPeriodEnd });
+      isTrialing = sub.status === "trialing";
+      if (isTrialing && (sub as any).trial_end) {
+        trialEnd = new Date((sub as any).trial_end * 1000).toISOString();
+      }
+      logStep("Subscription found", { status: sub.status, productId, priceId, subscriptionEnd, isTrialing, trialEnd, cancelAtPeriodEnd });
     } else {
-      logStep("No active subscription");
+      logStep("No active/trialing subscription");
     }
 
     return new Response(
-      JSON.stringify({ subscribed: hasActiveSub, product_id: productId, price_id: priceId, subscription_end: subscriptionEnd, cancel_at_period_end: cancelAtPeriodEnd }),
+      JSON.stringify({ subscribed: hasActiveSub, product_id: productId, price_id: priceId, subscription_end: subscriptionEnd, cancel_at_period_end: cancelAtPeriodEnd, is_trialing: isTrialing, trial_end: trialEnd }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
   } catch (error) {

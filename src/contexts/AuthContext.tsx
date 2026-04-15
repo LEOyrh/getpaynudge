@@ -8,6 +8,8 @@ export interface SubscriptionState {
   priceId: string | null;
   subscriptionEnd: string | null;
   cancelAtPeriodEnd: boolean;
+  isTrialing: boolean;
+  trialEnd: string | null;
   loading: boolean;
 }
 
@@ -31,6 +33,8 @@ const defaultSub: SubscriptionState = {
   priceId: null,
   subscriptionEnd: null,
   cancelAtPeriodEnd: false,
+  isTrialing: false,
+  trialEnd: null,
   loading: true,
 };
 
@@ -49,6 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         priceId: data.price_id ?? null,
         subscriptionEnd: data.subscription_end ?? null,
         cancelAtPeriodEnd: data.cancel_at_period_end ?? false,
+        isTrialing: data.is_trialing ?? false,
+        trialEnd: data.trial_end ?? null,
         loading: false,
       });
     } catch {
