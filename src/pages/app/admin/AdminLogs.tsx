@@ -38,6 +38,7 @@ interface InvoiceActivity {
   activity_type: string;
   description: string;
   created_at: string;
+  is_admin?: boolean;
 }
 
 const statusBadge = (status: string) => {
