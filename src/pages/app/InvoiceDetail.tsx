@@ -340,20 +340,82 @@ export default function InvoiceDetail() {
         </CardContent>
       </Card>
 
+      {/* Email Tracking Summary */}
+      {totalSent > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-lg">Email Tracking</CardTitle></CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-3 mb-4">
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <Send className="h-4 w-4 text-primary" />
+                <div>
+                  <p className="text-2xl font-bold">{totalSent}</p>
+                  <p className="text-xs text-muted-foreground">Emails Sent</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <Eye className="h-4 w-4 text-violet-600" />
+                <div>
+                  <p className="text-2xl font-bold">{totalOpens}</p>
+                  <p className="text-xs text-muted-foreground">Opens</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <MousePointerClick className="h-4 w-4 text-blue-600" />
+                <div>
+                  <p className="text-2xl font-bold">{totalClicks}</p>
+                  <p className="text-xs text-muted-foreground">Link Clicks</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Per-email breakdown */}
+            {Array.from(emailTrackingByMessage.entries()).map(([messageId, stats], idx) => (
+              <div key={messageId} className="flex items-center justify-between rounded-lg border p-3 mb-2">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Reminder #{idx + 1}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-xs">
+                    <CheckCircle className="mr-0.5 h-3 w-3" />Sent
+                  </Badge>
+                  {stats.opens > 0 && (
+                    <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+                      <Eye className="mr-0.5 h-3 w-3" />Opened{stats.opens > 1 ? ` ×${stats.opens}` : ""}
+                    </Badge>
+                  )}
+                  {stats.clicks > 0 && (
+                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                      <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked{stats.clicks > 1 ? ` ×${stats.clicks}` : ""}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Activity Timeline */}
       <Card>
         <CardHeader><CardTitle className="text-lg">Activity</CardTitle></CardHeader>
         <CardContent>
-          {activities.length === 0 ? (
+          {combinedActivities.length === 0 ? (
             <p className="text-sm text-muted-foreground">No activity yet.</p>
           ) : (
             <div className="space-y-4">
-              {activities.map((act) => {
-                const Icon = activityIcons[act.activity_type] || Clock;
+              {combinedActivities.map((act) => {
+                const Icon = act.type === "email_open" ? Eye
+                  : act.type === "email_click" ? MousePointerClick
+                  : activityIcons[act.type] || Clock;
+                const iconColor = act.type === "email_open" ? "text-violet-600"
+                  : act.type === "email_click" ? "text-blue-600"
+                  : "text-muted-foreground";
                 return (
                   <div key={act.id} className="flex gap-3">
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                      <Icon className="h-4 w-4 text-muted-foreground" />
+                      <Icon className={`h-4 w-4 ${iconColor}`} />
                     </div>
                     <div>
                       <p className="text-sm">{act.description}</p>
