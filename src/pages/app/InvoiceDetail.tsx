@@ -90,6 +90,54 @@ export default function InvoiceDetail() {
     enabled: !!id && !!user,
   });
 
+  const { data: emailEvents = [] } = useQuery({
+    queryKey: ["invoice-email-events", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_events")
+        .select("*")
+        .eq("invoice_id", id!)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!user,
+  });
+
+  // Group email events by message_id (extracted from tracking_id: {invoice_id}_{message_id})
+  const emailTrackingByMessage = useMemo(() => {
+    const map = new Map<string, { opens: number; clicks: number; firstSeen: string }>();
+    for (const ev of emailEvents) {
+      const messageId = ev.tracking_id.length > 37 ? ev.tracking_id.slice(37) : ev.tracking_id;
+      if (!map.has(messageId)) {
+        map.set(messageId, { opens: 0, clicks: 0, firstSeen: ev.created_at });
+      }
+      const entry = map.get(messageId)!;
+      if (ev.event_type === "open") entry.opens++;
+      if (ev.event_type === "click") entry.clicks++;
+    }
+    return map;
+  }, [emailEvents]);
+
+  // Build a combined activity list: invoice_activities + email open/click events
+  const combinedActivities = useMemo(() => {
+    const items: { id: string; type: string; description: string; created_at: string }[] = [];
+    for (const act of activities) {
+      items.push({ id: act.id, type: act.activity_type, description: act.description, created_at: act.created_at });
+    }
+    for (const ev of emailEvents) {
+      const label = ev.event_type === "open" ? "Email opened" : "Payment link clicked";
+      items.push({ id: ev.id, type: `email_${ev.event_type}`, description: label, created_at: ev.created_at });
+    }
+    items.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return items;
+  }, [activities, emailEvents]);
+
+  // Total tracking stats for this invoice
+  const totalOpens = emailEvents.filter((e) => e.event_type === "open").length;
+  const totalClicks = emailEvents.filter((e) => e.event_type === "click").length;
+  const totalSent = activities.filter((a) => a.activity_type === "reminder_sent").length;
+
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
