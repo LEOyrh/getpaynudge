@@ -214,15 +214,27 @@ export default function AdminLogs() {
         </Card>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search logs…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      {/* Search + Actor filter */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search logs…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Select value={actorFilter} onValueChange={setActorFilter}>
+          <SelectTrigger className="w-36">
+            <SelectValue placeholder="Actor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All actors</SelectItem>
+            <SelectItem value="admin">Admin only</SelectItem>
+            <SelectItem value="user">Users only</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <Tabs defaultValue="emails" className="space-y-4">
