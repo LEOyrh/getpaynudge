@@ -1,10 +1,12 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X, Shield, Users, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/config/brand";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 const sidebarLinks = [
   { label: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
@@ -13,8 +15,15 @@ const sidebarLinks = [
   { label: "Settings", href: "/app/settings", icon: Settings },
 ];
 
+const adminLinks = [
+  { label: "Finance", href: "/app/admin/finance", icon: BarChart3 },
+  { label: "Users", href: "/app/admin/users", icon: Users },
+  { label: "Invoices", href: "/app/admin/invoices", icon: Shield },
+];
+
 export default function AppLayout() {
   const { signOut, user } = useAuth();
+  const { isAdmin } = useAdminRole();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -50,7 +59,27 @@ export default function AppLayout() {
               {link.label}
             </Link>
           ))}
-        </nav>
+          {isAdmin && (
+            <>
+              <Separator className="my-2" />
+              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40">Admin</p>
+              {adminLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    location.pathname.startsWith(link.href)
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  )}
+                >
+                  <link.icon className="h-4 w-4" />
+                  {link.label}
+                </Link>
+              ))}
+            </>
+          )}
         <div className="border-t border-sidebar-border p-3">
           <p className="mb-2 truncate px-3 text-xs text-sidebar-foreground/50">{user?.email}</p>
           <button
