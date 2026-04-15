@@ -15,3 +15,5 @@ project_id = "zplvyglorabxdufjdelh"
     verify_jwt = true
   [functions.send-transactional-email]
     verify_jwt = true
+  [functions.track-email-event]
+    verify_jwt = false
