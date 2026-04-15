@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { CheckCircle2, CreditCard, ExternalLink, Loader2, RefreshCw } from "lucide-react";
+import { AlertTriangle, CheckCircle2, CreditCard, ExternalLink, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
@@ -86,6 +86,26 @@ export default function Billing() {
         </Button>
       </div>
 
+      {/* Cancellation notice */}
+      {subscription.cancelAtPeriodEnd && subscription.subscriptionEnd && (
+        <Card className="border-yellow-500/40 bg-yellow-500/10">
+          <CardContent className="flex items-center gap-3 py-4">
+            <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0" />
+            <p className="text-sm text-foreground">
+              Your subscription has been canceled and will remain active until{" "}
+              <span className="font-semibold">
+                {new Date(subscription.subscriptionEnd).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+              . After that date you'll be moved to the Free plan.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Current plan banner */}
       <Card className="border-primary/30 bg-primary/5">
         <CardContent className="flex items-center justify-between py-5">
@@ -99,7 +119,7 @@ export default function Billing() {
               </p>
               {subscription.subscriptionEnd && (
                 <p className="text-xs text-muted-foreground">
-                  Renews{" "}
+                  {subscription.cancelAtPeriodEnd ? "Active until" : "Renews"}{" "}
                   {new Date(subscription.subscriptionEnd).toLocaleDateString("en-US", {
                     month: "long",
                     day: "numeric",
