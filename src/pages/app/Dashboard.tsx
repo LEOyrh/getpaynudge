@@ -1,4 +1,4 @@
-import { FileText, Clock, DollarSign, Bell, ArrowUpRight, Mail, MousePointerClick } from "lucide-react";
+import { FileText, Clock, DollarSign, Bell, ArrowUpRight, Mail, MousePointerClick, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -55,9 +55,16 @@ export default function Dashboard() {
   const { data: emailEvents = [] } = useQuery({
     queryKey: ["dashboard-email-events"],
     queryFn: async () => {
+      const { data: userInvoices } = await supabase
+        .from("invoices")
+        .select("id");
+      if (!userInvoices?.length) return [];
+      const invoiceIds = userInvoices.map((i) => i.id);
       const { data, error } = await supabase
         .from("email_events")
-        .select("event_type, invoice_id");
+        .select("*, invoices!inner(invoice_number)")
+        .in("invoice_id", invoiceIds)
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -227,29 +234,56 @@ export default function Dashboard() {
               <CardTitle className="text-lg">Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
-              {recentActivities.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No activity yet.</p>
-              ) : (
-                <div className="space-y-3">
-                  {recentActivities.map((act: any) => (
-                    <div key={act.id} className="flex gap-3">
-                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted">
-                        {act.activity_type === "reminder_sent" ? (
-                          <Bell className="h-3.5 w-3.5 text-muted-foreground" />
-                        ) : (
-                          <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                        )}
+              {(() => {
+                // Merge invoice_activities + email_events into one chronological feed
+                const activityItems = recentActivities.map((act: any) => ({
+                  id: act.id,
+                  type: act.activity_type as string,
+                  description: act.description as string,
+                  invoiceNumber: act.invoices?.invoice_number,
+                  created_at: act.created_at as string,
+                }));
+                const emailEventItems = emailEvents.map((ev: any) => ({
+                  id: ev.id,
+                  type: ev.event_type === "open" ? "email_opened" : "link_clicked",
+                  description: ev.event_type === "open" ? "Email opened by recipient" : "Payment link clicked by recipient",
+                  invoiceNumber: ev.invoices?.invoice_number,
+                  created_at: ev.created_at as string,
+                }));
+                const combined = [...activityItems, ...emailEventItems]
+                  .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                  .slice(0, 10);
+
+                if (combined.length === 0) {
+                  return <p className="text-sm text-muted-foreground">No activity yet.</p>;
+                }
+
+                return (
+                  <div className="space-y-3">
+                    {combined.map((item) => (
+                      <div key={item.id} className="flex gap-3">
+                        <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted">
+                          {item.type === "reminder_sent" ? (
+                            <Bell className="h-3.5 w-3.5 text-muted-foreground" />
+                          ) : item.type === "email_opened" ? (
+                            <Eye className="h-3.5 w-3.5 text-violet-600" />
+                          ) : item.type === "link_clicked" ? (
+                            <MousePointerClick className="h-3.5 w-3.5 text-blue-600" />
+                          ) : (
+                            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm">{item.description}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.invoiceNumber} · {format(new Date(item.created_at), "MMM d, h:mm a")}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm">{act.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {act.invoices?.invoice_number} · {format(new Date(act.created_at), "MMM d, h:mm a")}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>
