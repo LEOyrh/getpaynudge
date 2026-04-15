@@ -62,7 +62,7 @@ export default function Dashboard() {
       const invoiceIds = userInvoices.map((i) => i.id);
       const { data, error } = await supabase
         .from("email_events")
-        .select("*, invoices!inner(invoice_number)")
+        .select("id, event_type, invoice_id, created_at")
         .in("invoice_id", invoiceIds)
         .order("created_at", { ascending: false });
       if (error) throw error;
