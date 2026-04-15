@@ -181,6 +181,34 @@ Deno.serve(async (req) => {
       })
     }
 
+    if (action === 'logs') {
+      const { data: sendLogs } = await supabase
+        .from('email_send_log')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500)
+
+      const { data: emailEvents } = await supabase
+        .from('email_events')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500)
+
+      const { data: activities } = await supabase
+        .from('invoice_activities')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(500)
+
+      return new Response(JSON.stringify({
+        sendLogs: sendLogs || [],
+        emailEvents: emailEvents || [],
+        activities: activities || [],
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     return new Response(JSON.stringify({ error: 'Unknown action' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

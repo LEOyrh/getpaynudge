@@ -31,6 +31,7 @@ import AdminFinance from "@/pages/app/admin/AdminFinance";
 import AdminUsers from "@/pages/app/admin/AdminUsers";
 import AdminUserDetail from "@/pages/app/admin/AdminUserDetail";
 import AdminInvoices from "@/pages/app/admin/AdminInvoices";
+import AdminLogs from "@/pages/app/admin/AdminLogs";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
 import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
 import PolitePaymentReminder from "@/pages/templates/PolitePaymentReminder";
@@ -99,6 +100,7 @@ const App = () => (
               <Route path="/app/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
               <Route path="/app/admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
               <Route path="/app/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
+              <Route path="/app/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
             </Route>
 
             {/* Catch-all */}

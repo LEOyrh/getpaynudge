@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X, Shield, Users, BarChart3, HelpCircle } from "lucide-react";
+import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X, Shield, Users, BarChart3, HelpCircle, ScrollText } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/config/brand";
@@ -20,6 +20,7 @@ const adminLinks = [
   { label: "Finance", href: "/app/admin/finance", icon: BarChart3 },
   { label: "Users", href: "/app/admin/users", icon: Users },
   { label: "Invoices", href: "/app/admin/invoices", icon: Shield },
+  { label: "Logs", href: "/app/admin/logs", icon: ScrollText },
 ];
 
 export default function AppLayout() {
