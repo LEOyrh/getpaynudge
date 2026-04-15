@@ -94,11 +94,7 @@ export default function Billing() {
             <p className="text-sm text-foreground">
               Your subscription has been canceled and will remain active until{" "}
               <span className="font-semibold">
-                {new Date(subscription.subscriptionEnd).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {formatSubDate(subscription.subscriptionEnd)}
               </span>
               . After that date you'll be moved to the Free plan.
             </p>
@@ -120,11 +116,7 @@ export default function Billing() {
               {subscription.subscriptionEnd && (
                 <p className="text-xs text-muted-foreground">
                   {subscription.cancelAtPeriodEnd ? "Active until" : "Renews"}{" "}
-                  {new Date(subscription.subscriptionEnd).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {formatSubDate(subscription.subscriptionEnd)}
                 </p>
               )}
             </div>
