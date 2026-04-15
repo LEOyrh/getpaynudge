@@ -211,11 +211,6 @@ export default function Billing() {
                       ) : null}
                       {subscription.subscribed ? "Switch Plan" : "Start 7-Day Free Trial"}
                     </Button>
-                      {checkoutLoading === plan.id ? (
-                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                      ) : null}
-                      {subscription.subscribed ? "Switch Plan" : "Subscribe"}
-                    </Button>
                   ) : (
                     <Button className="w-full" variant="outline" asChild>
                       <a href="mailto:support@paynudge.com">Contact Sales</a>
