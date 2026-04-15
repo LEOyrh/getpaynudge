@@ -209,6 +209,11 @@ export default function Billing() {
                       {checkoutLoading === plan.id ? (
                         <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                       ) : null}
+                      {subscription.subscribed ? "Switch Plan" : "Start 7-Day Free Trial"}
+                    </Button>
+                      {checkoutLoading === plan.id ? (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                      ) : null}
                       {subscription.subscribed ? "Switch Plan" : "Subscribe"}
                     </Button>
                   ) : (
