@@ -67,16 +67,14 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const sub = subscriptions.data[0];
-      const endVal = sub.current_period_end;
-      logStep("current_period_end raw", { value: endVal, type: typeof endVal });
+      const item = sub.items.data[0];
+      // In basil API, current_period_end moved to item level
+      const endVal = (sub as any).current_period_end ?? (item as any).current_period_end;
       if (typeof endVal === 'number') {
         subscriptionEnd = new Date(endVal * 1000).toISOString();
-      } else if (endVal) {
-        subscriptionEnd = String(endVal);
       }
-      logStep("Active subscription", { productId, priceId, subscriptionEnd });
-      priceId = sub.items.data[0].price.id;
-      productId = sub.items.data[0].price.product as string;
+      priceId = item.price.id;
+      productId = item.price.product as string;
       logStep("Active subscription", { productId, priceId, subscriptionEnd });
     } else {
       logStep("No active subscription");
