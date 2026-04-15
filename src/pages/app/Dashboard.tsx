@@ -34,11 +34,18 @@ export default function Dashboard() {
   const { data: recentActivities = [] } = useQuery({
     queryKey: ["dashboard-activities"],
     queryFn: async () => {
+      // Fetch latest activities across ALL user invoices
+      const { data: userInvoices } = await supabase
+        .from("invoices")
+        .select("id");
+      if (!userInvoices?.length) return [];
+      const invoiceIds = userInvoices.map((i) => i.id);
       const { data, error } = await supabase
         .from("invoice_activities")
         .select("*, invoices!inner(invoice_number)")
+        .in("invoice_id", invoiceIds)
         .order("created_at", { ascending: false })
-        .limit(5);
+        .limit(10);
       if (error) throw error;
       return data;
     },

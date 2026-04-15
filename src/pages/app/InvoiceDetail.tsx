@@ -331,38 +331,61 @@ export default function InvoiceDetail() {
       <Card>
         <CardHeader><CardTitle className="text-lg">Reminder Settings</CardTitle></CardHeader>
         <CardContent className="space-y-5">
-          {/* Tone selector */}
-          <div className="space-y-1.5">
-            <Label>Reminder Tone</Label>
-            <Select value={reminderTone} onValueChange={(v) => setReminderTone(v as any)}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="friendly">😊 Friendly</SelectItem>
-                <SelectItem value="professional">💼 Professional</SelectItem>
-                <SelectItem value="firm">⚠️ Firm</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              {reminderTone === "friendly" && "A warm, gentle nudge — great for first reminders."}
-              {reminderTone === "professional" && "Polite and formal — suitable for overdue invoices."}
-              {reminderTone === "firm" && "Direct and urgent — for significantly overdue payments."}
-            </p>
-          </div>
+          {/* Manual reminder tone selector */}
+          {canSendReminder && (
+            <div className="space-y-1.5">
+              <Label>Manual Reminder Tone</Label>
+              <Select value={reminderTone} onValueChange={(v) => setReminderTone(v as any)}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="friendly">😊 Friendly</SelectItem>
+                  <SelectItem value="professional">💼 Professional</SelectItem>
+                  <SelectItem value="firm">⚠️ Firm</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Choose a tone for "Send Reminder Now". Scheduled reminders auto-set tone based on timing.
+              </p>
+            </div>
+          )}
 
           <div className="border-t pt-4 space-y-4">
             <Label className="text-sm font-medium">Schedule</Label>
+            <p className="text-xs text-muted-foreground -mt-2">
+              Tones are set automatically: before due → 😊 friendly, on due → 💼 professional, after due → ⚠️ firm.
+            </p>
             {DEFAULT_REMINDERS.map((def) => {
               const existing = reminders.find(
                 (r) => r.reminder_type === def.reminder_type && r.days_offset === def.days_offset
               );
               const isEnabled = existing?.enabled ?? false;
+
+              // Calculate if this reminder would fire in the past
+              const dueDate = invoice ? new Date(invoice.due_date) : null;
+              let isPast = false;
+              if (dueDate) {
+                const trigger = new Date(dueDate);
+                if (def.reminder_type === "before_due") trigger.setDate(trigger.getDate() - def.days_offset);
+                else if (def.reminder_type === "after_due") trigger.setDate(trigger.getDate() + def.days_offset);
+                isPast = trigger < new Date(new Date().toISOString().split("T")[0]);
+              }
+
+              const autoTone = def.reminder_type === "before_due" ? "😊 Friendly" : def.reminder_type === "on_due" ? "💼 Professional" : "⚠️ Firm";
+
               return (
                 <div key={def.reminder_type + def.days_offset} className="flex items-center justify-between">
-                  <Label className="font-normal">{def.label}</Label>
+                  <div>
+                    <Label className={`font-normal ${isPast ? "text-muted-foreground line-through" : ""}`}>
+                      {def.label}
+                    </Label>
+                    <span className="ml-2 text-xs text-muted-foreground">{autoTone}</span>
+                    {isPast && <span className="ml-2 text-xs text-destructive">Past</span>}
+                  </div>
                   <Switch
                     checked={isEnabled}
+                    disabled={isPast}
                     onCheckedChange={(checked) =>
                       toggleReminder.mutate({ type: def.reminder_type, days: def.days_offset, enabled: checked })
                     }
