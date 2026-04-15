@@ -13,7 +13,7 @@ const sidebarLinks = [
   { label: "Invoices", href: "/app/invoices", icon: FileText },
   { label: "Billing", href: "/app/billing", icon: CreditCard },
   { label: "Settings", href: "/app/settings", icon: Settings },
-  { label: "Help", href: "/help", icon: HelpCircle, external: true },
+  { label: "Help", href: "/app/help", icon: HelpCircle },
 ];
 
 const adminLinks = [
