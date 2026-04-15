@@ -50,12 +50,20 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("email_events")
-        .select("event_type");
+        .select("event_type, invoice_id");
       if (error) throw error;
       return data;
     },
     enabled: !!user,
   });
+
+  // Build a set of invoice IDs that have been opened
+  const openedInvoiceIds = new Set(
+    emailEvents.filter((e) => e.event_type === "open").map((e) => e.invoice_id)
+  );
+  const clickedInvoiceIds = new Set(
+    emailEvents.filter((e) => e.event_type === "click").map((e) => e.invoice_id)
+  );
 
   const activeInvoiceCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
   const overdueCount = invoices.filter((i) => i.status === "overdue").length;
@@ -190,6 +198,16 @@ export default function Dashboard() {
                     <Badge variant="secondary" className={`text-xs ${statusColors[inv.status]}`}>
                       {inv.status}
                     </Badge>
+                    {openedInvoiceIds.has(inv.id) && (
+                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+                        <Mail className="mr-0.5 h-3 w-3" />opened
+                      </Badge>
+                    )}
+                    {clickedInvoiceIds.has(inv.id) && (
+                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                        <MousePointerClick className="mr-0.5 h-3 w-3" />clicked
+                      </Badge>
+                    )}
                   </div>
                 </Link>
               ))}
