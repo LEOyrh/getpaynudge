@@ -25,6 +25,7 @@ const comparisonFeatures = [
   { name: "Custom cadence", values: [false, true, true, true] },
   { name: "Tone selection", values: [false, true, true, true] },
   { name: "Activity timeline", values: [false, true, true, true] },
+  { name: "Open & click tracking", values: [false, false, true, true] },
   { name: "Email support", values: [false, true, true, true] },
   { name: "Priority email support", values: [false, false, true, true] },
   { name: "Dedicated email support", values: [false, false, false, true] },

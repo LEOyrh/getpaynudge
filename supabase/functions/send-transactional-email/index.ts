@@ -283,7 +283,7 @@ Deno.serve(async (req) => {
   }
 
   // 4. Render React Email template to HTML and plain text
-  const html = await renderAsync(
+  let html = await renderAsync(
     React.createElement(template.component, templateData)
   )
   const plainText = await renderAsync(
@@ -296,6 +296,26 @@ Deno.serve(async (req) => {
     typeof template.subject === 'function'
       ? template.subject(templateData)
       : template.subject
+
+  // 4b. Inject email tracking (open pixel + click wrapping) if invoiceId is present
+  const invoiceId = templateData.invoiceId || templateData.invoice_id
+  if (invoiceId) {
+    const trackingId = `${invoiceId}_${messageId}`
+    const trackBaseUrl = `${supabaseUrl}/functions/v1/track-email-event`
+
+    // Inject tracking pixel before </body>
+    const pixelUrl = `${trackBaseUrl}?t=${encodeURIComponent(trackingId)}&e=open`
+    const pixelTag = `<img src="${pixelUrl}" width="1" height="1" style="display:none;border:0;" alt="" />`
+    html = html.replace('</body>', `${pixelTag}</body>`)
+
+    // Wrap payment link through click tracker (if payLink is in templateData)
+    const payLink = templateData.payLink || templateData.pay_link
+    if (payLink && typeof payLink === 'string') {
+      const clickUrl = `${trackBaseUrl}?t=${encodeURIComponent(trackingId)}&e=click&r=${encodeURIComponent(payLink)}`
+      // Replace all occurrences of the raw pay link with the tracked version
+      html = html.split(payLink).join(clickUrl)
+    }
+  }
 
   // 5. Enqueue the pre-rendered email for async processing by the dispatcher.
   // The dispatcher (process-email-queue) handles sending, retries, and rate-limit backoff.

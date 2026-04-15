@@ -8,6 +8,7 @@ import {
   FileText,
   Link2,
   Mail,
+  MousePointerClick,
   PauseCircle,
   Shield,
   TrendingUp,
@@ -239,6 +240,11 @@ function FeaturesSection() {
       icon: PauseCircle,
       title: "Smart Auto-Stop",
       description: "Reminders halt automatically when an invoice is marked paid or disputed.",
+    },
+    {
+      icon: MousePointerClick,
+      title: "Open & Click Tracking",
+      description: "See when clients open your reminders and click your payment link.",
     },
     {
       icon: FileText,

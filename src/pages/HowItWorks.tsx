@@ -93,8 +93,8 @@ export default function HowItWorks() {
                 "Reminders go out automatically on schedule. Track activity per invoice. When you're paid, mark it done — reminders stop instantly.",
               details: [
                 "Automatic sending on schedule",
+                "Open and click tracking",
                 "Activity timeline per invoice",
-                "Pay link included in every reminder",
                 "Auto-stop on payment or dispute",
               ],
               },
@@ -164,7 +164,7 @@ export default function HowItWorks() {
                 icon: Bell,
                 title: "Activity tracking",
                 description:
-                  "See every reminder sent and every status change. Know exactly where each invoice stands without asking.",
+                  "See every reminder sent, opened, and clicked. Know exactly where each invoice stands without asking.",
               },
             ].map((item) => (
               <Card key={item.title} className="border-border">
