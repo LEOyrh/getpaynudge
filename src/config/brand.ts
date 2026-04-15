@@ -37,9 +37,9 @@ export const plans: PricingPlan[] = [
     price: 0,
     interval: "month",
     description: "Try it out with one invoice",
-    activeInvoices: 1,
+    activeInvoices: 3,
     features: [
-      "1 active invoice",
+      "3 active invoices",
       "Default reminder cadence",
       "Email reminders",
       "Pay link support",
@@ -50,12 +50,12 @@ export const plans: PricingPlan[] = [
   {
     id: "starter",
     name: "Starter",
-    price: 9,
+    price: 8,
     interval: "month",
     description: "For solo freelancers",
-    activeInvoices: 10,
+    activeInvoices: 20,
     features: [
-      "Up to 10 active invoices",
+      "Up to 20 active invoices",
       "Custom reminder schedule",
       "3 reminder tones",
       "Activity timeline",
@@ -67,12 +67,12 @@ export const plans: PricingPlan[] = [
   {
     id: "pro",
     name: "Pro",
-    price: 19,
+    price: 22,
     interval: "month",
     description: "For growing businesses",
-    activeInvoices: 50,
+    activeInvoices: 60,
     features: [
-      "Up to 50 active invoices",
+      "Up to 60 active invoices",
       "Everything in Starter",
       "Open & click tracking",
       "Pay link in reminders",
@@ -84,7 +84,7 @@ export const plans: PricingPlan[] = [
   {
     id: "business",
     name: "Business",
-    price: 49,
+    price: 48,
     interval: "month",
     description: "For larger operations",
     activeInvoices: -1,
