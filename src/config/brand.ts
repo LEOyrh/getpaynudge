@@ -36,7 +36,7 @@ export const plans: PricingPlan[] = [
     name: "Free",
     price: 0,
     interval: "month",
-    description: "Try it out with one invoice",
+    description: "Try it out with 3 invoices",
     activeInvoices: 3,
     features: [
       "3 active invoices",

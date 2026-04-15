@@ -177,6 +177,10 @@ export default function Pricing() {
                 a: "An active invoice is any invoice that is not marked as paid, archived, or disputed. Paused invoices still count as active.",
               },
               {
+                q: "Do you offer a free trial?",
+                a: "Yes! All paid plans include a 7-day free trial. You won't be charged until the trial ends. Cancel anytime during the trial at no cost.",
+              },
+              {
                 q: "Is there a contract or commitment?",
                 a: "No. All plans are month-to-month. Cancel anytime with no penalties.",
               },

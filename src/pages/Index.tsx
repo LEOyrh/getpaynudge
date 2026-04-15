@@ -457,7 +457,7 @@ function PricingPreview() {
         </motion.div>
 
         <p className="mt-8 text-center text-sm text-muted-foreground">
-          All plans include email reminders, pay link support, and activity tracking.{" "}
+          All paid plans include a 7-day free trial. No credit card required for the free plan.{" "}
           <Link to="/pricing" className="text-primary hover:underline">
             Compare all features →
           </Link>
