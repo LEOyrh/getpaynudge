@@ -42,7 +42,9 @@ export default function AdminInvoices() {
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["admin-all-invoices"],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("admin-stats?action=all-invoices");
+      const { data, error } = await supabase.functions.invoke("admin-stats", {
+        body: { action: "all-invoices" },
+      });
       if (error) throw error;
       return (data as { invoices: AdminInvoice[] }).invoices;
     },

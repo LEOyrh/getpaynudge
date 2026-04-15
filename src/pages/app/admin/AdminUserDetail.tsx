@@ -34,8 +34,9 @@ export default function AdminUserDetail() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-user-detail", userId],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke(`admin-stats?action=user-detail&userId=${userId}`);
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke("admin-stats", {
+        body: { action: "user-detail", userId },
+      });
       return data as {
         email: string;
         profile: { full_name: string | null; business_name: string | null; created_at: string } | null;

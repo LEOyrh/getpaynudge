@@ -23,7 +23,9 @@ export default function AdminUsers() {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("admin-stats?action=users");
+      const { data, error } = await supabase.functions.invoke("admin-stats", {
+        body: { action: "users" },
+      });
       if (error) throw error;
       return (data as { users: AdminUser[] }).users;
     },

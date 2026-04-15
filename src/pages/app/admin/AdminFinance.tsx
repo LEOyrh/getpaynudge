@@ -17,8 +17,7 @@ export default function AdminFinance() {
     queryKey: ["admin-stats"],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke("admin-stats", {
-        body: null,
-        headers: {},
+        body: { action: "stats" },
       });
       if (error) throw error;
       return data as {
