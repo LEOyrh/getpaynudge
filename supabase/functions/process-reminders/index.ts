@@ -88,6 +88,7 @@ Deno.serve(async (req) => {
         recipientEmail: invoice.client_email,
         idempotencyKey: `reminder-${reminder.id}-${today}`,
         templateData: {
+          invoiceId: invoice.id,
           clientName: invoice.client_name,
           invoiceNumber: invoice.invoice_number,
           amount,

@@ -1,4 +1,4 @@
-import { FileText, Clock, DollarSign, Bell, ArrowUpRight } from "lucide-react";
+import { FileText, Clock, DollarSign, Bell, ArrowUpRight, Mail, MousePointerClick } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -45,6 +45,18 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
+  const { data: emailEvents = [] } = useQuery({
+    queryKey: ["dashboard-email-events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_events")
+        .select("event_type");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const activeInvoiceCount = invoices.filter((i) => i.status === "sent" || i.status === "overdue").length;
   const overdueCount = invoices.filter((i) => i.status === "overdue").length;
 
@@ -57,11 +69,16 @@ export default function Dashboard() {
 
   const remindersSent = recentActivities.filter((a) => a.activity_type === "reminder_sent").length;
 
+  const openCount = emailEvents.filter((e) => e.event_type === "open").length;
+  const clickCount = emailEvents.filter((e) => e.event_type === "click").length;
+
   const stats = [
     { label: "Active Invoices", value: String(activeInvoiceCount), icon: FileText, color: "text-primary" },
     { label: "Overdue", value: String(overdueCount), icon: Clock, color: "text-destructive" },
     { label: "Paid This Month", value: `$${paidThisMonth.toLocaleString()}`, icon: DollarSign, color: "text-primary" },
     { label: "Reminders Sent", value: String(remindersSent), icon: Bell, color: "text-primary" },
+    { label: "Email Opens", value: String(openCount), icon: Mail, color: "text-primary" },
+    { label: "Link Clicks", value: String(clickCount), icon: MousePointerClick, color: "text-primary" },
   ];
 
   const recentInvoices = invoices.slice(0, 5);
@@ -118,7 +135,7 @@ export default function Dashboard() {
         </Card>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
