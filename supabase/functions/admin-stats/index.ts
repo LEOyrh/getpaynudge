@@ -182,6 +182,13 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'logs') {
+      // Get admin user IDs for filtering
+      const { data: adminRoles } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .eq('role', 'admin')
+      const adminUserIds = new Set((adminRoles || []).map(r => r.user_id))
+
       const { data: sendLogs } = await supabase
         .from('email_send_log')
         .select('*')
@@ -196,14 +203,37 @@ Deno.serve(async (req) => {
 
       const { data: activities } = await supabase
         .from('invoice_activities')
-        .select('*')
+        .select('*, invoices!inner(user_id)')
         .order('created_at', { ascending: false })
         .limit(500)
 
+      // Tag activities with is_admin flag
+      const taggedActivities = (activities || []).map(a => ({
+        id: a.id,
+        invoice_id: a.invoice_id,
+        activity_type: a.activity_type,
+        description: a.description,
+        created_at: a.created_at,
+        is_admin: adminUserIds.has((a as any).invoices?.user_id),
+      }))
+
+      // Tag send logs — check if recipient matches an admin email
+      // Get admin emails
+      const adminEmails = new Set<string>()
+      for (const uid of adminUserIds) {
+        const { data: u } = await supabase.auth.admin.getUserById(uid)
+        if (u?.user?.email) adminEmails.add(u.user.email.toLowerCase())
+      }
+
+      const taggedSendLogs = (sendLogs || []).map(l => ({
+        ...l,
+        is_admin: adminEmails.has(l.recipient_email.toLowerCase()),
+      }))
+
       return new Response(JSON.stringify({
-        sendLogs: sendLogs || [],
+        sendLogs: taggedSendLogs,
         emailEvents: emailEvents || [],
-        activities: activities || [],
+        activities: taggedActivities,
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
