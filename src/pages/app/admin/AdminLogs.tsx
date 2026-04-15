@@ -20,6 +20,7 @@ interface SendLog {
   error_message: string | null;
   metadata: any;
   created_at: string;
+  is_admin?: boolean;
 }
 
 interface EmailEvent {
