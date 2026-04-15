@@ -11,7 +11,7 @@ const sections = [
     items: [
       {
         heading: "Create your account",
-        body: "Sign up with your email address. You'll start on the Free plan with 1 active invoice — no credit card required.",
+        body: "Sign up with your email address. You'll start on the Free plan with 3 active invoices — no credit card required.",
       },
       {
         heading: "Add your first invoice",
@@ -20,6 +20,10 @@ const sections = [
       {
         heading: "Understand the default reminder cadence",
         body: "By default, reminders go out 3 days before the due date, on the due date, then 3, 7, and 14 days after. You can customize this on paid plans.",
+      },
+      {
+        heading: "Start a 7-day free trial",
+        body: "Upgrade to any paid plan and enjoy a 7-day free trial. No charge until the trial ends. You can cancel anytime during the trial from the Billing page.",
       },
     ],
   },
@@ -46,6 +50,10 @@ const sections = [
         heading: "Edit or duplicate an invoice",
         body: "Open an invoice and click Edit to update details. Use Duplicate to create a copy for a repeat client — saves time on data entry.",
       },
+      {
+        heading: "What counts as an active invoice?",
+        body: "Any invoice not marked as Paid, Cancelled, or Archived. Paused invoices still count toward your plan limit.",
+      },
     ],
   },
   {
@@ -66,6 +74,27 @@ const sections = [
     ],
   },
   {
+    title: "Email Deliverability",
+    items: [
+      {
+        heading: "Why didn't my client receive the reminder?",
+        body: "Check the invoice activity timeline for send status. Common reasons: the email went to spam, the client's inbox is full, or the email address has a typo. Ask your client to add reminders@paynudge.com to their contacts.",
+      },
+      {
+        heading: "Reminders going to spam",
+        body: "Ask your client to mark PayNudge emails as 'Not Spam' and add reminders@paynudge.com to their address book. This trains their email provider to trust future messages.",
+      },
+      {
+        heading: "Bounced or suppressed emails",
+        body: "If a client's email address bounces, it is automatically suppressed to protect deliverability. Double-check the email address for typos and update it on the invoice if needed.",
+      },
+      {
+        heading: "Unsubscribe requests",
+        body: "Every reminder includes an unsubscribe link. If a client unsubscribes, reminders to that email stop. You'll see this in the invoice activity log.",
+      },
+    ],
+  },
+  {
     title: "Billing & Plans",
     items: [
       {
@@ -73,12 +102,20 @@ const sections = [
         body: "Go to Settings → Billing and choose a plan. You'll be redirected to a secure checkout. Changes take effect immediately.",
       },
       {
-        heading: "What counts as an active invoice?",
-        body: "Any invoice not marked as Paid, Cancelled, or Archived. Paused invoices still count toward your limit.",
+        heading: "Free trial details",
+        body: "All paid plans include a 7-day free trial. You won't be charged until the trial ends. Cancel anytime during the trial — no questions asked.",
       },
       {
         heading: "Cancel your subscription",
         body: "Go to Billing → Manage Subscription. You can cancel anytime — your plan stays active until the end of the billing period.",
+      },
+      {
+        heading: "What happens when I downgrade?",
+        body: "Your current plan stays active until the billing period ends. After that, your account switches to the new plan. If you exceed the new plan's invoice limit, you'll need to archive or mark invoices as paid before creating new ones.",
+      },
+      {
+        heading: "Payment methods",
+        body: "We accept all major credit and debit cards via Stripe. You can update your payment method from Billing → Manage Subscription.",
       },
     ],
   },
@@ -94,8 +131,37 @@ const sections = [
         body: "Go to Settings to update your account email. You'll need to verify the new address.",
       },
       {
+        heading: "Reset your password",
+        body: "Click 'Forgot password?' on the login page. You'll receive a reset link via email. The link expires after 1 hour.",
+      },
+      {
         heading: "Delete your account",
-        body: "Go to Settings → Delete Account. This permanently removes all your data including invoices, reminders, and profile information.",
+        body: "Go to Settings → Delete Account. This permanently removes all your data including invoices, reminders, and profile information. This action cannot be undone.",
+      },
+    ],
+  },
+  {
+    title: "Troubleshooting",
+    items: [
+      {
+        heading: "I'm not receiving any emails from PayNudge",
+        body: "Check your spam/junk folder. Add support@getpaynudge.com and reminders@paynudge.com to your contacts. If using Gmail, check the Promotions or Updates tab.",
+      },
+      {
+        heading: "My invoice limit says I've reached the max",
+        body: "Archive or mark old invoices as Paid/Cancelled to free up slots. Paused invoices still count. Alternatively, upgrade your plan for a higher limit.",
+      },
+      {
+        heading: "Payment link isn't showing in reminders",
+        body: "Make sure the payment link field is filled in on the invoice. Edit the invoice and paste a valid URL (must start with https://). Save and the next reminder will include it.",
+      },
+      {
+        heading: "I upgraded but my limits haven't changed",
+        body: "Go to Billing and click 'Refresh'. If the issue persists, sign out and back in. Plan changes take effect immediately after successful payment.",
+      },
+      {
+        heading: "The page looks broken or won't load",
+        body: "Try a hard refresh (Ctrl+Shift+R or Cmd+Shift+R). Clear your browser cache if the issue continues. PayNudge works best in Chrome, Firefox, Safari, and Edge.",
       },
     ],
   },
