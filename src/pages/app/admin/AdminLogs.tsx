@@ -92,10 +92,8 @@ export default function AdminLogs() {
   const eventsByMessageId = useMemo(() => {
     const map = new Map<string, Set<string>>();
     for (const ev of emailEvents) {
-      // tracking_id format: {invoice_id}_{message_id}
-      const sepIdx = ev.tracking_id.indexOf("_");
-      if (sepIdx === -1) continue;
-      const messageId = ev.tracking_id.slice(sepIdx + 1);
+      // tracking_id format: {invoice_uuid}_{message_uuid} — UUID is 36 chars
+      const messageId = ev.tracking_id.length > 37 ? ev.tracking_id.slice(37) : ev.tracking_id;
       if (!map.has(messageId)) map.set(messageId, new Set());
       map.get(messageId)!.add(ev.event_type);
     }
