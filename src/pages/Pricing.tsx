@@ -18,7 +18,7 @@ const stagger = {
 };
 
 const comparisonFeatures = [
-  { name: "Active invoices", values: ["1", "10", "50", "Unlimited"] },
+  { name: "Active invoices", values: ["3", "20", "60", "Unlimited"] },
   { name: "Email reminders", values: [true, true, true, true] },
   { name: "Pay link in reminders", values: [true, true, true, true] },
   { name: "Default cadence", values: [true, true, true, true] },
