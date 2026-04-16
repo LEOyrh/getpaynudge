@@ -122,7 +122,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
         <Button asChild>
-          <Link to="/app/invoices/new">New Invoice</Link>
+          <Link to="/invoices/new">New Invoice</Link>
         </Button>
       </div>
 
@@ -139,7 +139,7 @@ export default function Dashboard() {
               </p>
             </div>
             <Button size="sm" asChild>
-              <Link to="/app/billing">
+              <Link to="/billing">
                 Upgrade <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
               </Link>
             </Button>
@@ -155,7 +155,7 @@ export default function Dashboard() {
               You've reached your {limit}-invoice limit. Upgrade to add more.
             </p>
             <Button size="sm" variant="outline" asChild>
-              <Link to="/app/billing">Upgrade</Link>
+              <Link to="/billing">Upgrade</Link>
             </Button>
           </CardContent>
         </Card>
@@ -184,7 +184,7 @@ export default function Dashboard() {
               Add your first invoice and we'll start sending payment reminders automatically.
             </p>
             <Button asChild>
-              <Link to="/app/invoices/new">Add Your First Invoice</Link>
+              <Link to="/invoices/new">Add Your First Invoice</Link>
             </Button>
           </CardContent>
         </Card>
@@ -195,7 +195,7 @@ export default function Dashboard() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg">Recent Invoices</CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/app/invoices">View all</Link>
+                <Link to="/invoices">View all</Link>
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">

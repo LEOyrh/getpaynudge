@@ -248,7 +248,7 @@ export default function InvoiceDetail() {
     return (
       <div className="py-16 text-center">
         <p className="text-muted-foreground">Invoice not found.</p>
-        <Button asChild className="mt-4"><Link to="/app/invoices">Back to Invoices</Link></Button>
+        <Button asChild className="mt-4"><Link to="/invoices">Back to Invoices</Link></Button>
       </div>
     );
   }
@@ -268,7 +268,7 @@ export default function InvoiceDetail() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild>
-          <Link to="/app/invoices"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link to="/invoices"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
           <h1 className="font-heading text-2xl font-bold text-foreground">{invoice.invoice_number}</h1>
