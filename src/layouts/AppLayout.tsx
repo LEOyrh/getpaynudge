@@ -9,18 +9,18 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
 const sidebarLinks = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Invoices", href: "/invoices", icon: FileText },
-  { label: "Billing", href: "/billing", icon: CreditCard },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
+  { label: "Invoices", href: "/app/invoices", icon: FileText },
+  { label: "Billing", href: "/app/billing", icon: CreditCard },
+  { label: "Settings", href: "/app/settings", icon: Settings },
   { label: "Help", href: "/help", icon: HelpCircle },
 ];
 
 const adminLinks = [
-  { label: "Finance", href: "/admin/finance", icon: BarChart3 },
-  { label: "Users", href: "/admin/users", icon: Users },
-  { label: "Invoices", href: "/admin/invoices", icon: Shield },
-  { label: "Logs", href: "/admin/logs", icon: ScrollText },
+  { label: "Finance", href: "/app/admin/finance", icon: BarChart3 },
+  { label: "Users", href: "/app/admin/users", icon: Users },
+  { label: "Invoices", href: "/app/admin/invoices", icon: Shield },
+  { label: "Logs", href: "/app/admin/logs", icon: ScrollText },
 ];
 
 export default function AppLayout() {
@@ -32,7 +32,8 @@ export default function AppLayout() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/");
+    // Redirect to marketing domain
+    window.location.href = brand.url;
   };
 
   return (

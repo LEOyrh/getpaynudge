@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminRoute from "@/components/AdminRoute";
+import DomainRouter from "@/components/DomainRouter";
 
 import MarketingLayout from "@/layouts/MarketingLayout";
 import AppLayout from "@/layouts/AppLayout";
@@ -46,10 +47,11 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function LegacyAppRedirect() {
+/** Redirect bare /dashboard, /invoices etc. to /app/dashboard, /app/invoices */
+function LegacyRootRedirect() {
   const params = useParams();
   const rest = params["*"] || "dashboard";
-  return <Navigate to={`/${rest}`} replace />;
+  return <Navigate to={`/app/${rest}`} replace />;
 }
 
 const App = () => (
@@ -59,6 +61,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <DomainRouter />
           <Routes>
             {/* Marketing site */}
             <Route element={<MarketingLayout />}>
@@ -88,29 +91,35 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
 
-            {/* App (protected) */}
+            {/* App (protected, under /app/*) */}
             <Route
+              path="/app"
               element={
                 <ProtectedRoute>
                   <AppLayout />
                 </ProtectedRoute>
               }
             >
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/invoices" element={<Invoices />} />
-              <Route path="/invoices/new" element={<NewInvoice />} />
-              <Route path="/invoices/:id" element={<InvoiceDetail />} />
-              <Route path="/settings" element={<AppSettings />} />
-              <Route path="/billing" element={<Billing />} />
-              <Route path="/admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
-              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-              <Route path="/admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
-              <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
-              <Route path="/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
+              <Route index element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="invoices" element={<Invoices />} />
+              <Route path="invoices/new" element={<NewInvoice />} />
+              <Route path="invoices/:id" element={<InvoiceDetail />} />
+              <Route path="settings" element={<AppSettings />} />
+              <Route path="billing" element={<Billing />} />
+              <Route path="admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
+              <Route path="admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
+              <Route path="admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
+              <Route path="admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
             </Route>
 
-            {/* Legacy /app/* redirects */}
-            <Route path="/app/*" element={<LegacyAppRedirect />} />
+            {/* Legacy bare routes → redirect to /app/* */}
+            <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+            <Route path="/invoices/*" element={<LegacyRootRedirect />} />
+            <Route path="/billing" element={<Navigate to="/app/billing" replace />} />
+            <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
+            <Route path="/admin/*" element={<LegacyRootRedirect />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
