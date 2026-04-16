@@ -16,7 +16,7 @@ export const brand = {
     companyName: "PayNudge",
     jurisdiction: "United States",
   },
-  turnstileSiteKey: "", // TODO: paste your Cloudflare Turnstile site key here
+  turnstileSiteKey: "0x4AAAAAAC-KGvkqkpqkf6rb",
 } as const;
 
 export interface PricingPlan {
