@@ -8,6 +8,7 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { brand } from "@/config/brand";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import Turnstile from "@/components/Turnstile";
 
 export default function Contact() {
   usePageMeta({
@@ -17,6 +18,7 @@ export default function Contact() {
 
   const { toast } = useToast();
   const [sending, setSending] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,12 +35,30 @@ export default function Contact() {
       return;
     }
 
+    if (brand.turnstileSiteKey && !turnstileToken) {
+      toast({ title: "Please complete the security check", variant: "destructive" });
+      setSending(false);
+      return;
+    }
+
+    // Verify turnstile token server-side
+    if (brand.turnstileSiteKey && turnstileToken) {
+      const { data } = await supabase.functions.invoke("verify-turnstile", {
+        body: { token: turnstileToken },
+      });
+      if (!data?.success) {
+        toast({ title: "Security verification failed", description: "Please try again.", variant: "destructive" });
+        setSending(false);
+        return;
+      }
+    }
+
     try {
       const id = crypto.randomUUID();
       await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "contact-form-notification",
-          recipientEmail: email, // fallback; template.to overrides this
+          recipientEmail: email,
           idempotencyKey: `contact-${id}`,
           templateData: { name, email, message },
         },
@@ -49,6 +69,7 @@ export default function Contact() {
         description: "We'll get back to you as soon as possible.",
       });
       (e.target as HTMLFormElement).reset();
+      setTurnstileToken(null);
     } catch {
       toast({
         title: "Something went wrong",
@@ -138,6 +159,14 @@ export default function Contact() {
                       maxLength={2000}
                     />
                   </div>
+                  {brand.turnstileSiteKey && (
+                    <Turnstile
+                      siteKey={brand.turnstileSiteKey}
+                      onVerify={setTurnstileToken}
+                      onExpire={() => setTurnstileToken(null)}
+                      className="flex justify-center"
+                    />
+                  )}
                   <Button type="submit" className="w-full" disabled={sending}>
                     {sending ? "Sending…" : "Send Message"}
                   </Button>
