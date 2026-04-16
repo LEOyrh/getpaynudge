@@ -75,7 +75,7 @@ export default function NewInvoice() {
       toast.error("Failed to create invoice");
     } else {
       toast.success("Invoice created");
-      navigate("/app/invoices");
+      navigate("/invoices");
     }
     setSubmitting(false);
   };
@@ -84,7 +84,7 @@ export default function NewInvoice() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild>
-          <Link to="/app/invoices"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link to="/invoices"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <h1 className="font-heading text-2xl font-bold text-foreground">New Invoice</h1>
       </div>
@@ -101,7 +101,7 @@ export default function NewInvoice() {
                 Your {planKey.charAt(0).toUpperCase() + planKey.slice(1)} plan allows {limit} active invoice{limit !== 1 ? "s" : ""}. Upgrade to add more.
               </p>
               <Button size="sm" className="mt-2" asChild>
-                <Link to="/app/billing">Upgrade Plan</Link>
+                <Link to="/billing">Upgrade Plan</Link>
               </Button>
             </div>
           </CardContent>
@@ -206,7 +206,7 @@ export default function NewInvoice() {
                 <Button type="submit" disabled={submitting || atLimit}>
                   {submitting ? "Creating…" : "Create Invoice"}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => navigate("/app/invoices")}>
+                <Button type="button" variant="outline" onClick={() => navigate("/invoices")}>
                   Cancel
                 </Button>
               </div>

@@ -9,7 +9,7 @@ export default function AdminRoute({ children }: { children: React.ReactNode }) 
   }
 
   if (!isAdmin) {
-    return <Navigate to="/app/dashboard" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
