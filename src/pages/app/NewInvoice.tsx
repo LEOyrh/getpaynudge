@@ -75,7 +75,7 @@ export default function NewInvoice() {
       toast.error("Failed to create invoice");
     } else {
       toast.success("Invoice created");
-      navigate("/invoices");
+      navigate("/app/invoices");
     }
     setSubmitting(false);
   };
@@ -206,7 +206,7 @@ export default function NewInvoice() {
                 <Button type="submit" disabled={submitting || atLimit}>
                   {submitting ? "Creating…" : "Create Invoice"}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => navigate("/invoices")}>
+                <Button type="button" variant="outline" onClick={() => navigate("/app/invoices")}>
                   Cancel
                 </Button>
               </div>

@@ -12,7 +12,14 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    // Redirect to login on the marketing domain
+    if (window.location.hostname !== "localhost" && !window.location.hostname.includes("lovable.app")) {
+      window.location.href = `https://getpaynudge.com/login`;
+      return null;
+    }
+    return <Navigate to="/login" replace />;
+  }
 
   return <>{children}</>;
 }
