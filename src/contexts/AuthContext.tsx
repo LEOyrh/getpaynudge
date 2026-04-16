@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { brand } from "@/config/brand";
 
 export interface SubscriptionState {
   subscribed: boolean;
@@ -93,12 +94,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session, checkSubscription]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
+    // After email confirmation, redirect to login on the marketing domain
+    const redirectUrl = `${brand.url}/login`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: redirectUrl,
       },
     });
     return { error: error as Error | null };
@@ -114,8 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
+    // Password reset link should go to the marketing domain's reset-password page
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${brand.url}/reset-password`,
     });
     return { error: error as Error | null };
   };

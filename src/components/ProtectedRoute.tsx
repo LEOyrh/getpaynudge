@@ -1,8 +1,10 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { brand, isLocalDev } from "@/config/brand";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -13,12 +15,16 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   if (!user) {
-    // Redirect to login on the marketing domain
-    if (window.location.hostname !== "localhost" && !window.location.hostname.includes("lovable.app")) {
-      window.location.href = `https://getpaynudge.com/login`;
-      return null;
+    // Encode the current path so login can redirect back after auth
+    const returnTo = encodeURIComponent(location.pathname + location.search);
+
+    if (isLocalDev()) {
+      return <Navigate to={`/login?returnTo=${returnTo}`} replace />;
     }
-    return <Navigate to="/login" replace />;
+
+    // Redirect to login on the marketing domain with returnTo
+    window.location.href = `${brand.url}/login?returnTo=${returnTo}`;
+    return null;
   }
 
   return <>{children}</>;

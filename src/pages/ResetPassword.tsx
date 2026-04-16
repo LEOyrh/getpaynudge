@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { supabase } from "@/integrations/supabase/client";
+import { brand, isLocalDev } from "@/config/brand";
 import { toast } from "sonner";
 
 export default function ResetPassword() {
@@ -15,12 +16,10 @@ export default function ResetPassword() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Check for recovery session from URL hash
     const hash = window.location.hash;
     if (hash.includes("type=recovery")) {
       setReady(true);
     } else {
-      // Also check if user already has a session from the recovery link
       supabase.auth.getSession().then(({ data }) => {
         if (data.session) setReady(true);
       });
@@ -36,7 +35,11 @@ export default function ResetPassword() {
       toast.error(error.message);
     } else {
       toast.success("Password updated successfully");
-      navigate("/app/dashboard");
+      if (isLocalDev()) {
+        navigate("/app/dashboard");
+      } else {
+        window.location.href = `${brand.appUrl}/app/dashboard`;
+      }
     }
   };
 

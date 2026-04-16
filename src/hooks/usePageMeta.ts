@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { brand } from "@/config/brand";
+import { brand, isAppDomain } from "@/config/brand";
 
 interface StructuredData {
   [key: string]: unknown;
@@ -18,11 +18,6 @@ const noIndexRoutes = new Set([
   "/forgot-password",
   "/reset-password",
   "/unsubscribe",
-  "/dashboard",
-  "/invoices",
-  "/settings",
-  "/billing",
-  "/admin",
 ]);
 
 const segmentLabels: Record<string, string> = {
@@ -39,6 +34,7 @@ const segmentLabels: Record<string, string> = {
   "forgot-password": "Forgot Password",
   "reset-password": "Reset Password",
   unsubscribe: "Unsubscribe",
+  app: "App",
   dashboard: "Dashboard",
   invoices: "Invoices",
   billing: "Billing",
@@ -72,12 +68,16 @@ function humanizeSegment(segment: string) {
 }
 
 function resolveCanonical(pathname: string) {
+  // App pages get canonical on app subdomain; marketing pages on root domain
+  if (pathname.startsWith("/app")) {
+    return new URL(pathname, `${brand.appUrl}/`).toString();
+  }
   return new URL(pathname, `${brand.url}/`).toString();
 }
 
 function buildBreadcrumbSchema(pathname: string) {
-  const appRoutes = ["/dashboard", "/invoices", "/settings", "/billing", "/admin"];
-  if (pathname === "/" || appRoutes.some(r => pathname.startsWith(r)) || noIndexRoutes.has(pathname)) {
+  // No breadcrumbs for app pages or noindex pages
+  if (pathname.startsWith("/app") || pathname === "/" || noIndexRoutes.has(pathname)) {
     return null;
   }
 
@@ -116,9 +116,12 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     const pathname = window.location.pathname;
     const fullTitle = title === brand.name ? title : `${title} | ${brand.name}`;
     const canonical = resolveCanonical(pathname);
+
+    // All /app/* routes and the app subdomain itself should be noindex
     const shouldNoIndex = noIndex ?? (
       noIndexRoutes.has(pathname) ||
-      ["/dashboard", "/invoices", "/settings", "/billing", "/admin"].some(r => pathname.startsWith(r))
+      pathname.startsWith("/app") ||
+      isAppDomain()
     );
     const robotsContent = shouldNoIndex ? "noindex, nofollow" : "index, follow";
 
