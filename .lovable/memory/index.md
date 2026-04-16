@@ -2,9 +2,8 @@
 
 ## Core
 PayNudge micro-SaaS. Teal primary (166 72% 34%). DM Sans body, Plus Jakarta Sans headings.
-Split-domain SPA: getpaynudge.com = marketing, app.getpaynudge.com = authenticated app under /app/*.
-Auth pages on marketing domain. Post-login redirects to app.getpaynudge.com/app/dashboard.
-Lovable Cloud backend. Built-in email. Stripe for SaaS billing only.
+Split-domain SPA: getpaynudge.com = marketing + auth, app.getpaynudge.com = authenticated app (no /app prefix).
+Post-login redirects to app.getpaynudge.com/dashboard. Lovable Cloud backend. Stripe for billing.
 
 ## Memories
 - [Brand config](mem://features/brand) — Centralized brand constants, pricing plans, domain config
