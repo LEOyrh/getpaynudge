@@ -18,7 +18,7 @@ export function UpgradePrompt({ feature, requiredPlan }: UpgradePromptProps) {
         </p>
       </div>
       <Button size="sm" variant="outline" asChild>
-        <Link to="/app/billing">Upgrade</Link>
+        <Link to="/billing">Upgrade</Link>
       </Button>
     </div>
   );

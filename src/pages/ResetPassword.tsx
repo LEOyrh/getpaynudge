@@ -36,9 +36,9 @@ export default function ResetPassword() {
     } else {
       toast.success("Password updated successfully");
       if (isLocalDev()) {
-        navigate("/app/dashboard");
+        navigate("/dashboard");
       } else {
-        window.location.href = `${brand.appUrl}/app/dashboard`;
+        window.location.href = `${brand.appUrl}/dashboard`;
       }
     }
   };

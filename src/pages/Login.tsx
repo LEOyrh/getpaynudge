@@ -51,7 +51,7 @@ export default function Login() {
       toast.error(error.message);
     } else {
       // After successful login, redirect to app subdomain
-      const returnTo = searchParams.get("returnTo") || "/app/dashboard";
+      const returnTo = searchParams.get("returnTo") || "/dashboard";
       if (isLocalDev()) {
         navigate(returnTo);
       } else {
