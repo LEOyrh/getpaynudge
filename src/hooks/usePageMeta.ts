@@ -68,8 +68,13 @@ function humanizeSegment(segment: string) {
 }
 
 function resolveCanonical(pathname: string) {
-  // App pages get canonical on app subdomain; marketing pages on root domain
-  if (pathname.startsWith("/app")) {
+  // On the app subdomain, canonical points to app subdomain
+  if (isAppDomain()) {
+    return new URL(pathname, `${brand.appUrl}/`).toString();
+  }
+  // App-like paths (in dev) get app subdomain canonical
+  const appPaths = ["/dashboard", "/invoices", "/settings", "/billing", "/admin"];
+  if (appPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
     return new URL(pathname, `${brand.appUrl}/`).toString();
   }
   return new URL(pathname, `${brand.url}/`).toString();
@@ -77,7 +82,8 @@ function resolveCanonical(pathname: string) {
 
 function buildBreadcrumbSchema(pathname: string) {
   // No breadcrumbs for app pages or noindex pages
-  if (pathname.startsWith("/app") || pathname === "/" || noIndexRoutes.has(pathname)) {
+  const appPaths = ["/dashboard", "/invoices", "/settings", "/billing", "/admin"];
+  if (appPaths.some((p) => pathname === p || pathname.startsWith(p + "/")) || pathname === "/" || noIndexRoutes.has(pathname)) {
     return null;
   }
 
@@ -117,10 +123,12 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     const fullTitle = title === brand.name ? title : `${title} | ${brand.name}`;
     const canonical = resolveCanonical(pathname);
 
-    // All /app/* routes and the app subdomain itself should be noindex
+    // All app routes and the app subdomain should be noindex
+    const appPaths = ["/dashboard", "/invoices", "/settings", "/billing", "/admin"];
+    const isAppRoute = appPaths.some((p) => pathname === p || pathname.startsWith(p + "/"));
     const shouldNoIndex = noIndex ?? (
       noIndexRoutes.has(pathname) ||
-      pathname.startsWith("/app") ||
+      isAppRoute ||
       isAppDomain()
     );
     const robotsContent = shouldNoIndex ? "noindex, nofollow" : "index, follow";
