@@ -1,7 +1,6 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X, Shield, Users, BarChart3, HelpCircle, ScrollText } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { brand } from "@/config/brand";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
@@ -9,30 +8,28 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
 const sidebarLinks = [
-  { label: "Dashboard", href: "/app/dashboard", icon: LayoutDashboard },
-  { label: "Invoices", href: "/app/invoices", icon: FileText },
-  { label: "Billing", href: "/app/billing", icon: CreditCard },
-  { label: "Settings", href: "/app/settings", icon: Settings },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Invoices", href: "/invoices", icon: FileText },
+  { label: "Billing", href: "/billing", icon: CreditCard },
+  { label: "Settings", href: "/settings", icon: Settings },
   { label: "Help", href: "/help", icon: HelpCircle },
 ];
 
 const adminLinks = [
-  { label: "Finance", href: "/app/admin/finance", icon: BarChart3 },
-  { label: "Users", href: "/app/admin/users", icon: Users },
-  { label: "Invoices", href: "/app/admin/invoices", icon: Shield },
-  { label: "Logs", href: "/app/admin/logs", icon: ScrollText },
+  { label: "Finance", href: "/admin/finance", icon: BarChart3 },
+  { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Invoices", href: "/admin/invoices", icon: Shield },
+  { label: "Logs", href: "/admin/logs", icon: ScrollText },
 ];
 
 export default function AppLayout() {
   const { signOut, user } = useAuth();
   const { isAdmin } = useAdminRole();
   const location = useLocation();
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
-    // Redirect to marketing domain
     window.location.href = brand.url;
   };
 

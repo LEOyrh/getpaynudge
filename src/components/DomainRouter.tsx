@@ -7,9 +7,8 @@ import { brand, isAppDomain, isMarketingDomain, isLocalDev } from "@/config/bran
  *
  * Both getpaynudge.com and app.getpaynudge.com serve the same SPA.
  * This component enforces:
- *  - Marketing pages only on getpaynudge.com
- *  - App pages (/app/*) only on app.getpaynudge.com
- *  - Auth pages (/login, /signup, etc.) only on getpaynudge.com
+ *  - Marketing + auth pages only on getpaynudge.com
+ *  - App pages (/dashboard, /invoices, etc.) only on app.getpaynudge.com
  *
  * On localhost / lovable.app previews it does nothing.
  */
@@ -25,31 +24,52 @@ const marketingPaths = new Set([
   "/terms",
 ]);
 
+const authPaths = new Set([
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/unsubscribe",
+]);
+
+const appPaths = [
+  "/dashboard",
+  "/invoices",
+  "/billing",
+  "/settings",
+  "/admin",
+];
+
 function isMarketingPath(pathname: string) {
-  return (
-    marketingPaths.has(pathname) ||
-    pathname.startsWith("/templates")
-  );
+  return marketingPaths.has(pathname) || pathname.startsWith("/templates");
 }
 
 function isAuthPath(pathname: string) {
-  return ["/login", "/signup", "/forgot-password", "/reset-password", "/unsubscribe"].some(
-    (p) => pathname === p
-  );
+  return authPaths.has(pathname);
+}
+
+function isAppPath(pathname: string) {
+  return appPaths.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
 
 export default function DomainRouter() {
   const location = useLocation();
 
   useEffect(() => {
-    // Skip domain routing in dev/preview
     if (isLocalDev()) return;
 
     const { pathname, search, hash } = location;
 
-    // On getpaynudge.com: redirect /app/* to app.getpaynudge.com
-    if (isMarketingDomain() && pathname.startsWith("/app")) {
+    // On getpaynudge.com: redirect app paths to app.getpaynudge.com
+    if (isMarketingDomain() && isAppPath(pathname)) {
       window.location.href = `${brand.appUrl}${pathname}${search}${hash}`;
+      return;
+    }
+
+    // On getpaynudge.com: strip legacy /app prefix and redirect
+    if (isMarketingDomain() && pathname.startsWith("/app")) {
+      const stripped = pathname.replace(/^\/app/, "") || "/dashboard";
+      window.location.href = `${brand.appUrl}${stripped}${search}${hash}`;
       return;
     }
 
@@ -61,7 +81,7 @@ export default function DomainRouter() {
 
     // On app.getpaynudge.com: bare root → dashboard
     if (isAppDomain() && pathname === "/") {
-      window.location.href = `${brand.appUrl}/app/dashboard`;
+      window.location.href = `${brand.appUrl}/dashboard`;
       return;
     }
   }, [location]);

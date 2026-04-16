@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -47,13 +47,6 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-/** Redirect bare /dashboard, /invoices etc. to /app/dashboard, /app/invoices */
-function LegacyRootRedirect() {
-  const params = useParams();
-  const rest = params["*"] || "dashboard";
-  return <Navigate to={`/app/${rest}`} replace />;
-}
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -91,35 +84,30 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
 
-            {/* App (protected, under /app/*) */}
+            {/* App (protected) — on app subdomain these are /dashboard, /invoices, etc. */}
             <Route
-              path="/app"
               element={
                 <ProtectedRoute>
                   <AppLayout />
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Navigate to="/app/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="invoices" element={<Invoices />} />
-              <Route path="invoices/new" element={<NewInvoice />} />
-              <Route path="invoices/:id" element={<InvoiceDetail />} />
-              <Route path="settings" element={<AppSettings />} />
-              <Route path="billing" element={<Billing />} />
-              <Route path="admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
-              <Route path="admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-              <Route path="admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
-              <Route path="admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
-              <Route path="admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/invoices/new" element={<NewInvoice />} />
+              <Route path="/invoices/:id" element={<InvoiceDetail />} />
+              <Route path="/settings" element={<AppSettings />} />
+              <Route path="/billing" element={<Billing />} />
+              <Route path="/admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
+              <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
+              <Route path="/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
             </Route>
 
-            {/* Legacy bare routes → redirect to /app/* */}
-            <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
-            <Route path="/invoices/*" element={<LegacyRootRedirect />} />
-            <Route path="/billing" element={<Navigate to="/app/billing" replace />} />
-            <Route path="/settings" element={<Navigate to="/app/settings" replace />} />
-            <Route path="/admin/*" element={<LegacyRootRedirect />} />
+            {/* Legacy /app/* redirects — strip the prefix */}
+            <Route path="/app" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/app/*" element={<LegacyAppRedirect />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
@@ -129,5 +117,11 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+/** Strip /app prefix for legacy URLs */
+function LegacyAppRedirect() {
+  const path = window.location.pathname.replace(/^\/app/, "") || "/dashboard";
+  return <Navigate to={path} replace />;
+}
 
 export default App;
