@@ -4,9 +4,7 @@ export const brand = {
   description:
     "Automated invoice reminder software for freelancers and small businesses. Send polite payment reminder emails and get paid faster.",
   domain: "getpaynudge.com",
-  appDomain: "app.getpaynudge.com",
   url: "https://getpaynudge.com",
-  appUrl: "https://app.getpaynudge.com",
   supportEmail: "support@getpaynudge.com",
   remindersEmail: "reminders@getpaynudge.com",
   social: {

@@ -62,8 +62,8 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 7,
       },
-      success_url: `${origin}/app/billing?success=true`,
-      cancel_url: `${origin}/app/billing?canceled=true`,
+      success_url: `${origin}/billing?success=true`,
+      cancel_url: `${origin}/billing?canceled=true`,
     });
     logStep("Checkout session created", { sessionId: session.id });
 

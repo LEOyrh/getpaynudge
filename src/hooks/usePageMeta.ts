@@ -18,6 +18,11 @@ const noIndexRoutes = new Set([
   "/forgot-password",
   "/reset-password",
   "/unsubscribe",
+  "/dashboard",
+  "/invoices",
+  "/settings",
+  "/billing",
+  "/admin",
 ]);
 
 const segmentLabels: Record<string, string> = {
@@ -67,14 +72,12 @@ function humanizeSegment(segment: string) {
 }
 
 function resolveCanonical(pathname: string) {
-  const isAppPath = pathname.startsWith("/app");
-  const routePath = isAppPath ? pathname.replace(/^\/app(?=\/|$)/, "") || "/" : pathname;
-  const baseUrl = isAppPath ? brand.appUrl : brand.url;
-  return new URL(routePath, `${baseUrl}/`).toString();
+  return new URL(pathname, `${brand.url}/`).toString();
 }
 
 function buildBreadcrumbSchema(pathname: string) {
-  if (pathname === "/" || pathname.startsWith("/app") || noIndexRoutes.has(pathname)) {
+  const appRoutes = ["/dashboard", "/invoices", "/settings", "/billing", "/admin"];
+  if (pathname === "/" || appRoutes.some(r => pathname.startsWith(r)) || noIndexRoutes.has(pathname)) {
     return null;
   }
 
@@ -113,7 +116,10 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     const pathname = window.location.pathname;
     const fullTitle = title === brand.name ? title : `${title} | ${brand.name}`;
     const canonical = resolveCanonical(pathname);
-    const shouldNoIndex = noIndex ?? (pathname.startsWith("/app") || noIndexRoutes.has(pathname));
+    const shouldNoIndex = noIndex ?? (
+      noIndexRoutes.has(pathname) ||
+      ["/dashboard", "/invoices", "/settings", "/billing", "/admin"].some(r => pathname.startsWith(r))
+    );
     const robotsContent = shouldNoIndex ? "noindex, nofollow" : "index, follow";
 
     document.title = fullTitle;
