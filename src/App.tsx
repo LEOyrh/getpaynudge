@@ -52,6 +52,7 @@ function LegacyAppRedirect() {
   return <Navigate to={`/${rest}`} replace />;
 }
 
+const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
