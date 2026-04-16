@@ -90,18 +90,17 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route path="/app/dashboard" element={<Dashboard />} />
-              <Route path="/app/invoices" element={<Invoices />} />
-              <Route path="/app/invoices/new" element={<NewInvoice />} />
-              <Route path="/app/invoices/:id" element={<InvoiceDetail />} />
-              <Route path="/app/settings" element={<AppSettings />} />
-              <Route path="/app/billing" element={<Billing />} />
-              <Route path="/app/help" element={<Help />} />
-              <Route path="/app/admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
-              <Route path="/app/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
-              <Route path="/app/admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
-              <Route path="/app/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
-              <Route path="/app/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/invoices" element={<Invoices />} />
+              <Route path="/invoices/new" element={<NewInvoice />} />
+              <Route path="/invoices/:id" element={<InvoiceDetail />} />
+              <Route path="/settings" element={<AppSettings />} />
+              <Route path="/billing" element={<Billing />} />
+              <Route path="/admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/admin/users/:userId" element={<AdminRoute><AdminUserDetail /></AdminRoute>} />
+              <Route path="/admin/invoices" element={<AdminRoute><AdminInvoices /></AdminRoute>} />
+              <Route path="/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
             </Route>
 
             {/* Catch-all */}

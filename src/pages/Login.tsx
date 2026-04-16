@@ -49,7 +49,7 @@ export default function Login() {
     if (error) {
       toast.error(error.message);
     } else {
-      navigate("/app/dashboard");
+      navigate("/dashboard");
     }
   };
 

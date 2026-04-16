@@ -69,7 +69,7 @@ export default function AdminUsers() {
               {filtered.map((u) => (
                 <TableRow key={u.id}>
                   <TableCell>
-                    <Link to={`/app/admin/users/${u.id}`} className="text-primary underline">
+                    <Link to={`/admin/users/${u.id}`} className="text-primary underline">
                       {u.email}
                     </Link>
                   </TableCell>

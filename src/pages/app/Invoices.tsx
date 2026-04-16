@@ -88,7 +88,7 @@ export default function Invoices() {
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-2xl font-bold text-foreground">Invoices</h1>
         <Button asChild>
-          <Link to="/app/invoices/new">New Invoice</Link>
+          <Link to="/invoices/new">New Invoice</Link>
         </Button>
       </div>
 
@@ -131,7 +131,7 @@ export default function Invoices() {
               Track your invoices and automate payment reminders. Add one to get started.
             </p>
             <Button asChild>
-              <Link to="/app/invoices/new">Add Your First Invoice</Link>
+              <Link to="/invoices/new">Add Your First Invoice</Link>
             </Button>
           </CardContent>
         </Card>
@@ -153,7 +153,7 @@ export default function Invoices() {
               {filtered.map((inv) => {
                 const tracking = trackingByInvoice.get(inv.id);
                 return (
-                  <TableRow key={inv.id} className="cursor-pointer" onClick={() => navigate(`/app/invoices/${inv.id}`)}>
+                  <TableRow key={inv.id} className="cursor-pointer" onClick={() => navigate(`/invoices/${inv.id}`)}>
                     <TableCell className="font-medium">{inv.invoice_number}</TableCell>
                     <TableCell>{inv.client_name}</TableCell>
                     <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
