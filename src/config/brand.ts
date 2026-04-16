@@ -94,7 +94,7 @@ export const plans: PricingPlan[] = [
       "Everything in Pro",
       "Dedicated email support",
     ],
-    cta: "Contact Sales",
+    cta: "Start 7-Day Free Trial",
     highlighted: false,
   },
 ];
