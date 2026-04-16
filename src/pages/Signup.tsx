@@ -7,6 +7,8 @@ import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
 import { brand } from "@/config/brand";
 import { toast } from "sonner";
+import Turnstile from "@/components/Turnstile";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Signup() {
   usePageMeta({
@@ -20,10 +22,29 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (brand.turnstileSiteKey && !turnstileToken) {
+      toast.error("Please complete the security check.");
+      return;
+    }
+
     setLoading(true);
+
+    if (brand.turnstileSiteKey && turnstileToken) {
+      const { data } = await supabase.functions.invoke("verify-turnstile", {
+        body: { token: turnstileToken },
+      });
+      if (!data?.success) {
+        toast.error("Security verification failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+    }
+
     const { error } = await signUp(email, password, name);
     setLoading(false);
     if (error) {
@@ -96,6 +117,14 @@ export default function Signup() {
                   autoComplete="new-password"
                 />
               </div>
+              {brand.turnstileSiteKey && (
+                <Turnstile
+                  siteKey={brand.turnstileSiteKey}
+                  onVerify={setTurnstileToken}
+                  onExpire={() => setTurnstileToken(null)}
+                  className="flex justify-center"
+                />
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creating account…" : "Create Free Account"}
               </Button>
