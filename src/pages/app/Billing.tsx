@@ -240,7 +240,7 @@ export default function Billing() {
                     </Button>
                   ) : (
                     <Button className="w-full" variant="outline" asChild>
-                      <a href="mailto:support@getpaynudge.com">Contact Sales</a>
+                      <Link to="/contact">Contact Sales</Link>
                     </Button>
                   )}
                 </div>
