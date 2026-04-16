@@ -46,7 +46,12 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+function LegacyAppRedirect() {
+  const params = useParams();
+  const rest = params["*"] || "dashboard";
+  return <Navigate to={`/${rest}`} replace />;
+}
+
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
