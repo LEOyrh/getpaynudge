@@ -28,9 +28,15 @@ export default function AppLayout() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSignOut = async () => {
     await signOut();
-    window.location.href = brand.url;
+    if (isLocalDev()) {
+      navigate("/login");
+    } else {
+      window.location.href = brand.url;
+    }
   };
 
   return (
