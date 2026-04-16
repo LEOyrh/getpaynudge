@@ -113,7 +113,7 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     const pathname = window.location.pathname;
     const fullTitle = title === brand.name ? title : `${title} | ${brand.name}`;
     const canonical = resolveCanonical(pathname);
-    const shouldNoIndex = noIndex ?? pathname.startsWith("/app") || noIndexRoutes.has(pathname);
+    const shouldNoIndex = noIndex ?? (pathname.startsWith("/app") || noIndexRoutes.has(pathname));
     const robotsContent = shouldNoIndex ? "noindex, nofollow" : "index, follow";
 
     document.title = fullTitle;
