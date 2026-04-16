@@ -52,7 +52,11 @@ serve(async (req) => {
       logStep("Existing Stripe customer found", { customerId });
     }
 
+    // Use origin header, but for production always redirect back to app subdomain
     const origin = req.headers.get("origin") || "http://localhost:3000";
+    const billingBase = origin.includes("localhost") || origin.includes("lovable.app")
+      ? origin
+      : "https://app.getpaynudge.com";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -62,8 +66,8 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 7,
       },
-      success_url: `${origin}/billing?success=true`,
-      cancel_url: `${origin}/billing?canceled=true`,
+      success_url: `${billingBase}/app/billing?success=true`,
+      cancel_url: `${billingBase}/app/billing?canceled=true`,
     });
     logStep("Checkout session created", { sessionId: session.id });
 

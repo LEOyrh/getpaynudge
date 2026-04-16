@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
-import { brand } from "@/config/brand";
+import { brand, isLocalDev } from "@/config/brand";
 import { toast } from "sonner";
 import Turnstile from "@/components/Turnstile";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,7 @@ export default function Login() {
 
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,13 @@ export default function Login() {
     if (error) {
       toast.error(error.message);
     } else {
-      navigate("/app/dashboard");
+      // After successful login, redirect to app subdomain
+      const returnTo = searchParams.get("returnTo") || "/app/dashboard";
+      if (isLocalDev()) {
+        navigate(returnTo);
+      } else {
+        window.location.href = `${brand.appUrl}${returnTo}`;
+      }
     }
   };
 
