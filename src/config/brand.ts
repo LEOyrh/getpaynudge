@@ -4,7 +4,9 @@ export const brand = {
   description:
     "Automated invoice reminder software for freelancers and small businesses. Send polite payment reminder emails and get paid faster.",
   domain: "getpaynudge.com",
+  appDomain: "app.getpaynudge.com",
   url: "https://getpaynudge.com",
+  appUrl: "https://app.getpaynudge.com",
   supportEmail: "support@getpaynudge.com",
   remindersEmail: "reminders@getpaynudge.com",
   social: {
@@ -16,6 +18,26 @@ export const brand = {
   },
   turnstileSiteKey: "0x4AAAAAAC-KGvkqkpqkf6rb",
 } as const;
+
+// --- helpers for domain-aware routing ---
+
+/** True when running on the app subdomain (app.getpaynudge.com) */
+export function isAppDomain() {
+  return window.location.hostname === brand.appDomain;
+}
+
+/** True when running on the marketing domain (getpaynudge.com) */
+export function isMarketingDomain() {
+  return window.location.hostname === brand.domain;
+}
+
+/** True when running locally (dev / preview) */
+export function isLocalDev() {
+  const h = window.location.hostname;
+  return h === "localhost" || h.includes("lovable.app") || h === "127.0.0.1";
+}
+
+// --- pricing (unchanged) ---
 
 export interface PricingPlan {
   id: string;
