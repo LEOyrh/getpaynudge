@@ -103,7 +103,7 @@ export default function Pricing() {
                       variant={plan.highlighted ? "default" : "outline"}
                       asChild
                     >
-                      <Link to="/signup">{plan.cta}</Link>
+                      <Link to={plan.cta === "Contact Sales" ? "/contact" : "/signup"}>{plan.cta}</Link>
                     </Button>
                   </CardContent>
                 </Card>
