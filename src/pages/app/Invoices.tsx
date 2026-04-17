@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
+import { NewInvoiceButton } from "@/components/NewInvoiceButton";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -87,9 +88,7 @@ export default function Invoices() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-2xl font-bold text-foreground">Invoices</h1>
-        <Button asChild>
-          <Link to="/invoices/new">New Invoice</Link>
-        </Button>
+        <NewInvoiceButton />
       </div>
 
       {invoices.length > 0 && (
@@ -130,9 +129,7 @@ export default function Invoices() {
             <p className="mb-4 max-w-sm text-sm text-muted-foreground">
               Track your invoices and automate payment reminders. Add one to get started.
             </p>
-            <Button asChild>
-              <Link to="/invoices/new">Add Your First Invoice</Link>
-            </Button>
+            <NewInvoiceButton label="Add Your First Invoice" />
           </CardContent>
         </Card>
       ) : filtered.length === 0 ? (
