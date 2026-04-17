@@ -72,7 +72,11 @@ export default function NewInvoice() {
     } as any);
 
     if (error) {
-      toast.error("Failed to create invoice");
+      // Surface the DB trigger's friendly message (e.g. plan limit exceeded)
+      const friendly = error.message?.includes("Active invoice limit reached")
+        ? error.message
+        : "Failed to create invoice";
+      toast.error(friendly);
     } else {
       toast.success("Invoice created");
       navigate("/invoices");
