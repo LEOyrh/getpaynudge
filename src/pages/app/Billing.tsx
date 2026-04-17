@@ -171,7 +171,7 @@ export default function Billing() {
       </Card>
 
       {subscription.subscribed && (
-        <p className="rounded-xl border border-border bg-secondary/30 px-4 py-3 text-sm text-muted-foreground">
+        <p className="border-l-2 border-primary bg-card border-y border-r border-border px-4 py-3 text-sm text-muted-foreground">
           Already on a paid plan or trial? Use <span className="font-medium text-foreground">Manage Subscription</span>
           {" "}or the plan buttons below to switch plans without creating a second subscription.
         </p>
@@ -188,8 +188,8 @@ export default function Billing() {
               className={cn(
                 "relative h-full transition-shadow",
                 isCurrentPlan
-                  ? "border-primary shadow-md ring-1 ring-primary"
-                  : "border-border hover:shadow-sm"
+                  ? "border-primary ring-1 ring-primary"
+                  : "border-border "
               )}
             >
               {isCurrentPlan && (

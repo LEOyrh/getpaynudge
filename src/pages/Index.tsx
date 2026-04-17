@@ -217,7 +217,7 @@ function HowItWorksSection() {
             <motion.div key={step.number} variants={fadeIn}>
               <Card className="relative h-full border-border bg-card">
                 <CardContent className="pt-8 pb-8">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-accent">
                     <step.icon className="h-6 w-6 text-accent-foreground" />
                   </div>
                   <span className="text-xs font-bold uppercase tracking-wider text-primary">
@@ -436,7 +436,7 @@ function PricingPreview() {
                 className={cn(
                   "relative h-full",
                   plan.highlighted
-                    ? "border-primary shadow-lg ring-1 ring-primary"
+                    ? "border-primary ring-1 ring-primary"
                     : "border-border"
                 )}
               >
@@ -522,7 +522,7 @@ function TrustSection() {
         <div className="mt-14 grid gap-8 md:grid-cols-3">
           {items.map((item) => (
             <div key={item.title} className="text-center">
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-accent">
                 <item.icon className="h-6 w-6 text-accent-foreground" />
               </div>
               <h3 className="font-heading text-lg font-semibold text-foreground">{item.title}</h3>

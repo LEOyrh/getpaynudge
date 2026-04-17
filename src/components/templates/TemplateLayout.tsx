@@ -24,7 +24,7 @@ export default function TemplateLayout({ title, description, children, relatedLi
                 ← Back to Templates
               </Link>
             </div>
-            <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h1 className="text-display text-4xl text-foreground md:text-5xl">
               {title}
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">{description}</p>

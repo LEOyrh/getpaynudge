@@ -49,7 +49,7 @@ export default function Pricing() {
           >
             <motion.h1
               variants={fadeIn}
-              className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl"
+              className="text-display text-5xl text-foreground md:text-6xl"
             >
               Simple pricing. No surprises.
             </motion.h1>
@@ -70,7 +70,7 @@ export default function Pricing() {
                   className={cn(
                     "relative h-full",
                     plan.highlighted
-                      ? "border-primary shadow-lg ring-1 ring-primary"
+                      ? "border-primary ring-1 ring-primary"
                       : "border-border"
                   )}
                 >

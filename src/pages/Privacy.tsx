@@ -11,7 +11,7 @@ export default function Privacy() {
     <section className="py-20 md:py-28">
       <div className="container">
         <article className="prose prose-sm prose-gray mx-auto max-w-3xl">
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+          <h1 className="text-display text-4xl text-foreground md:text-5xl">
             Privacy Policy
           </h1>
           <p className="text-sm text-muted-foreground">Effective date: April 16, 2026</p>

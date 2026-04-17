@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
+import { brand } from "@/config/brand";
 import { toast } from "sonner";
 
 export default function ForgotPassword() {
@@ -29,14 +30,15 @@ export default function ForgotPassword() {
   return (
     <section className="flex min-h-screen items-center justify-center py-12">
       <div className="w-full max-w-md px-4">
-        <div className="mb-8 text-center">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-              <span className="text-lg font-bold text-primary-foreground">P</span>
-            </div>
+        <div className="mb-10 text-center">
+          <Link to="/" className="inline-flex items-baseline gap-0.5">
+            <span className="font-heading text-2xl font-extrabold tracking-tightest text-foreground">
+              {brand.name}
+            </span>
+            <span className="h-1.5 w-1.5 translate-y-[-1px] bg-primary" aria-hidden />
           </Link>
-          <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">Reset your password</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="mt-8 text-display text-3xl text-foreground md:text-4xl">Reset your password</h1>
+          <p className="mt-3 text-sm text-muted-foreground">
             We'll send you a link to reset your password.
           </p>
         </div>
