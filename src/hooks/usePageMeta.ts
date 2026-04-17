@@ -152,6 +152,14 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     upsertMeta('meta[property="og:url"]', { property: "og:url", content: canonical });
     upsertMeta('meta[name="robots"]', { name: "robots", content: robotsContent });
 
+    const ogImage = `${brand.url}/og-image.png`;
+    upsertMeta('meta[property="og:image"]', { property: "og:image", content: ogImage });
+    upsertMeta('meta[property="og:image:width"]', { property: "og:image:width", content: "1216" });
+    upsertMeta('meta[property="og:image:height"]', { property: "og:image:height", content: "640" });
+    upsertMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
+    upsertMeta('meta[name="twitter:image"]', { name: "twitter:image", content: ogImage });
+    upsertMeta('meta[name="theme-color"]', { name: "theme-color", content: "#0A0A0A" });
+
     let canonicalLink = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!canonicalLink) {
       canonicalLink = document.createElement("link");
