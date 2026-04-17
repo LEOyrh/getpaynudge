@@ -148,6 +148,20 @@ export default function AppLayout() {
                   onClick={() => setMobileOpen(false)}
                 />
               ))}
+              {externalLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                >
+                  <link.icon className="h-4 w-4" />
+                  {link.label}
+                  <span className="ml-auto text-sidebar-foreground/30">↗</span>
+                </a>
+              ))}
               {isAdmin && (
                 <>
                   <Separator className="my-2" />
