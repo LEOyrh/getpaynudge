@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
+import { brand } from "@/config/brand";
 import { toast } from "sonner";
 
 export default function ForgotPassword() {
