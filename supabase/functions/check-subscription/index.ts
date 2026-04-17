@@ -90,9 +90,9 @@ serve(async (req) => {
 
     // Mirror plan tier into user_plans so DB triggers can enforce limits
     const planKeyMap: Record<string, string> = {
-      "prod_UKzUakyN8jk3RY": "starter",
-      "prod_UKzU4mKXA1elNj": "pro",
-      "prod_UKzVpA4xqTNk5L": "business",
+      "prod_ULkKOb5YXF3omw": "starter",
+      "prod_ULkKBYqnmDokUG": "pro",
+      "prod_ULkKetWVQnfmPl": "business",
     };
     const planKey = (hasActiveSub && productId && planKeyMap[productId]) || "free";
     await supabaseClient.from("user_plans").upsert(

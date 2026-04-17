@@ -3,16 +3,16 @@ import { plans } from "@/config/brand";
 /** Stripe product ↔ price mapping for PayNudge plans */
 export const stripePlans = {
   starter: {
-    productId: "prod_UKzUakyN8jk3RY",
-    priceId: "price_1TMJVfAS51isIvERnqeNjslJ",
+    productId: "prod_ULkKOb5YXF3omw",
+    priceId: "price_1TN2qDAJV5JIDaSe4hvE8XuJ",
   },
   pro: {
-    productId: "prod_UKzU4mKXA1elNj",
-    priceId: "price_1TMJVyAS51isIvERYvKDjnoB",
+    productId: "prod_ULkKBYqnmDokUG",
+    priceId: "price_1TN2qFAJV5JIDaSeuU0pxIdc",
   },
   business: {
-    productId: "prod_UKzVpA4xqTNk5L",
-    priceId: "price_1TMJWEAS51isIvERWzjqay5b",
+    productId: "prod_ULkKetWVQnfmPl",
+    priceId: "price_1TN2qDAJV5JIDaSekS9gQqa5",
   },
 } as const;
 
