@@ -1,6 +1,7 @@
 import { FileText, Clock, DollarSign, Bell, ArrowUpRight, Mail, MousePointerClick, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { NewInvoiceButton } from "@/components/NewInvoiceButton";
 import { Link } from "react-router-dom";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { useAuth } from "@/contexts/AuthContext";
@@ -121,9 +122,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-2xl font-bold text-foreground">Dashboard</h1>
-        <Button asChild>
-          <Link to="/invoices/new">New Invoice</Link>
-        </Button>
+        <NewInvoiceButton />
       </div>
 
       {/* Upgrade banner for free users */}
@@ -183,9 +182,7 @@ export default function Dashboard() {
             <p className="mb-4 max-w-sm text-sm text-muted-foreground">
               Add your first invoice and we'll start sending payment reminders automatically.
             </p>
-            <Button asChild>
-              <Link to="/invoices/new">Add Your First Invoice</Link>
-            </Button>
+            <NewInvoiceButton label="Add Your First Invoice" />
           </CardContent>
         </Card>
       ) : (
