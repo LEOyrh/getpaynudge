@@ -30,9 +30,11 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Templates that may be invoked without an authenticated user JWT.
+// These MUST have a fixed `to` address defined in the template (so an anonymous
+// caller cannot choose the recipient) and should be safe to expose publicly
+// (e.g. contact form notifications sent to the site owner).
+const PUBLIC_TEMPLATES = new Set<string>(['contact-form-notification'])
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -42,6 +44,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Missing required environment variables')
