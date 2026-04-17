@@ -17,3 +17,6 @@ project_id = "zplvyglorabxdufjdelh"
     verify_jwt = false
   [functions.track-email-event]
     verify_jwt = false
+  [functions.submit-indexnow]
+    verify_jwt = false
+
