@@ -203,28 +203,37 @@ export default function FAQ() {
       <section className="py-20 md:py-28">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="font-heading text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            <h1 className="text-display text-4xl text-foreground md:text-6xl">
               Frequently Asked Questions
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-6 text-lg text-muted-foreground">
               Straight answers about pricing, reminders, billing, and how {brand.name} works.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="border-t border-border pb-20">
+      <section className="border-t border-border pb-24">
         <div className="container">
-          <div className="mx-auto max-w-4xl space-y-12">
-            {faqCategories.map((category) => (
-              <section key={category.title} className="pt-12 first:pt-0">
-                <h2 className="mb-6 font-heading text-2xl font-bold text-foreground">
+          <div className="mx-auto max-w-4xl">
+            {faqCategories.map((category, idx) => (
+              <section
+                key={category.title}
+                className={idx === 0 ? "pt-16" : "mt-20 border-t border-border pt-16"}
+              >
+                <p className="text-eyebrow mb-8 text-muted-foreground">
+                  <span className="mr-3 inline-block h-1 w-1 translate-y-[-2px] bg-primary align-middle" aria-hidden />
                   {category.title}
-                </h2>
-                <div className="space-y-4">
+                </p>
+                <div className="space-y-3">
                   {category.items.map((faq) => (
-                    <article key={faq.q} className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                      <h3 className="font-heading text-lg font-semibold text-foreground">{faq.q}</h3>
+                    <article
+                      key={faq.q}
+                      className="border border-border bg-card p-6 transition-colors hover:border-foreground/30"
+                    >
+                      <h3 className="font-heading text-lg font-bold tracking-tight text-foreground">
+                        {faq.q}
+                      </h3>
                       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
                     </article>
                   ))}
