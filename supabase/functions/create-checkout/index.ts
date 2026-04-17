@@ -78,9 +78,21 @@ serve(async (req) => {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: msg });
-    return new Response(JSON.stringify({ error: msg }), {
+
+    // Map known errors to safe codes; hide internals from clients
+    let clientError = "An unexpected error occurred. Please try again.";
+    let status = 500;
+    if (msg.includes("not authenticated") || msg.includes("email not available")) {
+      clientError = "unauthenticated";
+      status = 401;
+    } else if (msg === "Invalid priceId") {
+      clientError = "invalid_price";
+      status = 400;
+    }
+
+    return new Response(JSON.stringify({ error: clientError }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status,
     });
   }
 });

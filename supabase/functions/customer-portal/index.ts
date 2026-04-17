@@ -60,9 +60,21 @@ serve(async (req) => {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: msg });
-    return new Response(JSON.stringify({ error: msg }), {
+
+    // Map known errors to safe codes; hide internals from clients
+    let clientError = "An unexpected error occurred. Please try again.";
+    let status = 500;
+    if (msg.includes("No authorization header") || msg.startsWith("Authentication error") || msg.includes("not authenticated")) {
+      clientError = "unauthenticated";
+      status = 401;
+    } else if (msg.includes("No Stripe customer found")) {
+      clientError = "no_customer";
+      status = 404;
+    }
+
+    return new Response(JSON.stringify({ error: clientError }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status,
     });
   }
 });
