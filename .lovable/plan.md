@@ -1,100 +1,74 @@
 
 
-# Plan: Go-Live Readiness — Contact Form, Expanded FAQ, Help Docs, Email Tracking, and Cleanup
+# Site-wide Visual Overhaul: Bold, Dark, Confident
 
-## Current State Assessment
+## Design Direction (the "why")
 
-**Built and working:**
-- Marketing site (homepage, how it works, pricing, templates, privacy, terms)
-- Auth (signup, login, forgot/reset password)
-- Invoice CRUD with payment link field
-- Reminder automation (process-reminders edge function)
-- Billing with Stripe (checkout, subscription check, customer portal)
-- Admin panel (users, invoices, finance)
-- SEO basics (OG tags, schema markup, robots.txt, canonical)
-- Dashboard with stats
+Going for **"Quiet Authority"** — black canvas, oversized white display type, single high-saturation accent for action moments only. Psychology: black + heavy serif/grotesque type signal seriousness, expertise, financial authority (think Stripe Press, Linear, Ramp, Mercury, Patrick Collison letterhead). White type on near-black reads as confident and definitive, not aggressive. We keep generous whitespace (welcoming, premium) so it feels brave without feeling like a debt-collector.
 
-**Missing or needs fixing (from OG prompt + your requests):**
+**Accent strategy:** swap teal → **electric lime/yellow `#D7FF1E`** as a single high-contrast accent used sparingly (CTAs, "Most Popular" tag, key highlights). Lime against black is the most attention-arresting combo in fintech right now (used by Linear's marketing, modern fintech) and reads as *energy + money* without being childish.
 
-### 1. Contact form is fake
-The current Contact page uses a `setTimeout` to fake a send. It doesn't actually deliver the message anywhere. Need to wire it to actually send an email to `support@getpaynudge.com` via the transactional email system.
+## What changes
 
-### 2. FAQ needs expansion — more self-service troubleshooting
-Current FAQ has ~13 questions across 4 categories. Need to add:
-- **Getting Started**: How to create your first invoice, how to set up reminders, what happens after signup
-- **Using the App**: How to pause/resume reminders, how to mark paid, how to add a payment link, how to edit an invoice, what statuses mean
-- **Troubleshooting**: Reminder didn't send, client says they didn't get the email, how to change reminder schedule, invoice limit reached
-- **Account**: How to change email, how to delete account, how to update business name
+### 1. Design tokens (`src/index.css` + `tailwind.config.ts`)
+- Default theme becomes **dark** (forced). No light mode toggle on marketing/app.
+- New palette:
+  - `--background`: near-black `0 0% 4%`
+  - `--foreground`: pure white `0 0% 100%`
+  - `--card`: `0 0% 7%` with subtle `0 0% 14%` border
+  - `--primary`: lime `72 100% 56%` with **black** foreground (high-contrast CTA)
+  - `--muted-foreground`: `0 0% 65%` (readable but quieter)
+  - `--destructive`: `0 84% 62%`
+- Font swap: headings → **"Instrument Serif"** (editorial, confident, slight literary feel — matches "we get you paid" gravitas) OR **"Inter Tight"** at 800 with tight tracking. Body stays clean grotesque: **"Inter"** instead of DM Sans (sharper, more fintech).
+  - Recommendation: **Inter Tight (heading, 800, tracking-tighter) + Inter (body)** — safer, more universally bold than serif, fits "sharp + brave."
+- Add a custom utility for "display" type: `text-balance`, ultra-tight tracking, oversized scale (up to `text-7xl` for hero).
 
-### 3. No help/documentation page
-Create a `/help` or `/docs` page with a quick-start guide:
-- Step 1: Create your account
-- Step 2: Add your first invoice (with payment link)
-- Step 3: Reminders are set automatically
-- Step 4: Track activity and mark paid
-- Include screenshots/descriptions of key UI areas
+### 2. Marketing site (`Index.tsx`, `MarketingLayout.tsx`, all marketing pages)
+- **Hero:** Massive white headline (`text-6xl md:text-8xl`, font-weight 800, tight tracking). Drop the pill badge or restyle as bare uppercase eyebrow text (`tracking-[0.2em]`). Replace soft radial gradient with a subtle noise/grain texture + thin lime underline accent under one word.
+- **CTAs:** Primary = lime button with black text, sharp corners (radius 0). Secondary = ghost with white border.
+- **Sections:** Hard horizontal rules between sections instead of background color shifts. Remove `bg-secondary/30` alternating bands.
+- **Cards:** Flat black with 1px white/10 border, no shadow, sharper radius. Icons in lime, not teal.
+- **Header:** Black, thin border-bottom, logo monospace-style wordmark (no rounded square). Mobile nav becomes full-screen overlay.
+- **Footer:** Black, oversized brand wordmark, small uppercase link labels.
 
-### 4. Support email — simple approach
-Add `support@getpaynudge.com` as the visible support channel across the app. Add a help link in the app sidebar. No on-call or live chat needed for now.
+### 3. Authenticated app (`AppLayout.tsx`, all `pages/app/*`)
+- Same dark palette, same fonts → consistent brand experience post-login.
+- Sidebar: black, lime active-state indicator (left border), uppercase nav labels.
+- Cards/tables: same flat dark treatment as marketing.
+- Status badges: paid = lime, overdue = red, paused = white/20.
 
-### 5. Open & click tracking for reminder emails
-Currently referenced on the homepage, How It Works, and Pricing pages but NOT built. Two options:
+### 4. Favicon — "simplest but dopest"
+- Concept: single bold lime "P" glyph on black square, sharp corners. No icon, no envelope, no bell — just the typographic mark. Generated as inline SVG at `public/favicon.svg` (32×32, scales perfectly), plus a 180×180 `apple-touch-icon.png`.
+- Delete `public/favicon.ico` (current Lovable default).
 
-**Option A (Recommended for MVP):** Remove tracking claims from marketing pages (already partially done in brand.ts but not in Index.tsx, HowItWorks.tsx, Pricing.tsx). Be honest about what's built.
+### 5. Social / SEO image
+- Generate a **1200×630 OG image** (`public/og-image.png`):
+  - Black background, oversized white headline "Get paid. Without asking twice." with lime accent underline, small `PayNudge` wordmark bottom-left, subtle grain.
+- Wire it into `index.html` (`og:image`, `twitter:image` with `summary_large_image`) and into `usePageMeta.ts` so every page advertises it.
+- Add `<meta name="theme-color" content="#0A0A0A">` for mobile browser chrome.
 
-**Option B (Build it):** Implement tracking via:
-- A tracking pixel endpoint (edge function) that logs opens
-- Wrapping payment links through a redirect endpoint that logs clicks
-- New `email_events` table for open/click events
-- Dashboard cards for open rate and click rate
+### 6. Remove all Lovable artifacts
+- Audit + remove: `public/favicon.ico` (Lovable default), `public/placeholder.svg` (Lovable heart), the `3d5b5fc43a4b49fa9d79fb7d8a38e80f.txt` verification file (keep — that's domain verification, not Lovable branding — will confirm before deleting).
+- Search codebase for any `lovable`-named imports/assets and replace.
 
-### 6. Pricing page still lists unbuilt features
-`Pricing.tsx` feature comparison table still shows "Open tracking", "Click tracking", "Team access", "Priority support" — need to clean those up to match the updated `brand.ts`.
+### 7. Memory updates
+- Rewrite `mem://design/tokens` with new palette + fonts.
+- Update `mem://index.md` Core rules: "Dark theme only. Black bg, white text, lime `#D7FF1E` accent. Inter Tight headings 800 tight-tracking, Inter body. Sharp corners (radius 0–4px), flat surfaces, generous whitespace."
 
-### 7. Index.tsx still claims "Open & Click Tracking"
-Feature card on homepage still promotes this.
+## Out of scope (intentionally)
+- Copywriting changes — visual overhaul only. Headlines stay as-is unless you want a copy pass after.
+- Email template restyling — separate job; will flag if you want it next.
 
-### 8. HowItWorks.tsx still mentions "Open and click tracking"
+## Files touched
+**Tokens & global:** `src/index.css`, `tailwind.config.ts`, `index.html`
+**Layouts:** `src/layouts/MarketingLayout.tsx`, `src/layouts/AppLayout.tsx`
+**Marketing pages:** `src/pages/Index.tsx`, `Pricing.tsx`, `HowItWorks.tsx`, `FAQ.tsx`, `Contact.tsx`, `Help.tsx`, `templates/TemplatesHub.tsx` + template subpages, `Login.tsx`, `Signup.tsx`, `ForgotPassword.tsx`, `ResetPassword.tsx`
+**App pages:** `Dashboard.tsx`, `Invoices.tsx`, `InvoiceDetail.tsx`, `NewInvoice.tsx`, `Billing.tsx`, `AppSettings.tsx`, admin pages
+**Components:** `Turnstile.tsx`, `UpgradePrompt.tsx`, `templates/TemplateLayout.tsx`, button/card variant tweaks if needed
+**SEO:** `src/hooks/usePageMeta.ts` (add og:image), `index.html` (og + twitter image, theme-color, favicon refs)
+**New assets:** `public/favicon.svg`, `public/apple-touch-icon.png`, `public/og-image.png`
+**Delete:** `public/favicon.ico`, `public/placeholder.svg`
+**Memory:** `.lovable/memory/index.md`, `.lovable/memory/design/tokens.md`
 
----
-
-## Proposed Plan
-
-### Step 1: Wire up Contact form
-- Create a `contact-form` edge function that sends the message to `support@getpaynudge.com` via the transactional email system
-- Update Contact.tsx to call it
-
-### Step 2: Expand FAQ
-- Add 15–20 more FAQs covering Getting Started, Using the App, Troubleshooting, and Account management
-- Use accordion-style collapsible sections for better UX
-
-### Step 3: Create Help/Quick Start page
-- New `/help` route under MarketingLayout
-- Sections: Getting Started, Managing Invoices, Reminders, Billing, Account
-- Written as practical how-to content, not marketing fluff
-- Link from app sidebar ("Help" link) and marketing footer
-
-### Step 4: Add support touchpoints
-- Add "Help" link to app sidebar
-- Add support email in app footer/settings
-- Ensure Contact page is linked from app and marketing
-
-### Step 5: Clean up unbuilt feature claims
-- Remove "Open & Click Tracking" feature card from Index.tsx
-- Remove tracking mentions from HowItWorks.tsx
-- Remove tracking/team rows from Pricing.tsx comparison table
-- Replace with features that ARE built (e.g., "Payment link in reminders", "Activity timeline")
-
-### Step 6: Build email open & click tracking (if you want it)
-This is a significant feature. If you want it now:
-- Create `email_events` table (invoice_id, event_type, timestamp, metadata)
-- Create `track-email-event` edge function (tracking pixel for opens, redirect for clicks)
-- Update `send-transactional-email` to inject tracking pixel and wrap payment links
-- Update Dashboard to show open/click rates
-
----
-
-## Questions for you
-
-I want to confirm one thing before proceeding:
+## Approve and I'll ship it in one pass.
 
