@@ -125,8 +125,8 @@ export default function Dashboard() {
         <NewInvoiceButton />
       </div>
 
-      {/* Upgrade banner for free users */}
-      {planKey === "free" && (
+      {/* Upgrade banner for free users (hidden for admins/unlimited) */}
+      {planKey === "free" && !isUnlimited && (
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="flex items-center justify-between py-4">
             <div>
