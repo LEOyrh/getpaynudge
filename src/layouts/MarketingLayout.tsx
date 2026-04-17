@@ -12,19 +12,27 @@ const navLinks = [
   { label: "FAQ", href: "/faq" },
 ];
 
+function Wordmark({ className }: { className?: string }) {
+  return (
+    <Link to="/" className={cn("group flex items-baseline gap-0.5", className)}>
+      <span className="font-heading text-2xl font-extrabold tracking-tightest text-foreground">
+        {brand.name}
+      </span>
+      <span className="h-1.5 w-1.5 translate-y-[-1px] bg-primary" aria-hidden />
+    </Link>
+  );
+}
+
 function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">P</span>
-          </div>
-          <span className="font-heading text-xl font-bold text-foreground">{brand.name}</span>
-        </Link>
+        <div onClick={() => setMobileOpen(false)}>
+          <Wordmark />
+        </div>
 
         <nav className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => (
@@ -32,10 +40,10 @@ function Header() {
               key={link.href}
               to={link.href}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-foreground",
+                "px-3 py-2 text-xs font-semibold uppercase tracking-[0.15em] transition-colors",
                 location.pathname === link.href
                   ? "text-foreground"
-                  : "text-muted-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {link.label}
@@ -43,17 +51,17 @@ function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm" asChild>
+        <div className="hidden items-center gap-2 md:flex">
+          <Button variant="ghost" size="sm" asChild className="text-xs uppercase tracking-[0.15em]">
             <Link to="/login">Log in</Link>
           </Button>
-          <Button size="sm" asChild>
-            <Link to="/signup">Start Free</Link>
+          <Button size="sm" asChild className="text-xs font-bold uppercase tracking-[0.15em]">
+            <Link to="/signup">Start Free →</Link>
           </Button>
         </div>
 
         <button
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md md:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -62,27 +70,27 @@ function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-border bg-background px-4 py-4 md:hidden">
-          <nav className="flex flex-col gap-2">
+        <div className="fixed inset-0 top-16 z-40 flex flex-col bg-background px-6 py-10 md:hidden">
+          <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="border-b border-border py-4 font-heading text-2xl font-bold tracking-tightest text-foreground"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/login" onClick={() => setMobileOpen(false)}>Log in</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link to="/signup" onClick={() => setMobileOpen(false)}>Start Free</Link>
-              </Button>
-            </div>
           </nav>
+          <div className="mt-8 flex flex-col gap-3">
+            <Button variant="outline" size="lg" asChild className="uppercase tracking-[0.15em]">
+              <Link to="/login" onClick={() => setMobileOpen(false)}>Log in</Link>
+            </Button>
+            <Button size="lg" asChild className="font-bold uppercase tracking-[0.15em]">
+              <Link to="/signup" onClick={() => setMobileOpen(false)}>Start Free</Link>
+            </Button>
+          </div>
         </div>
       )}
     </header>
@@ -112,30 +120,27 @@ const footerLinks = {
 
 function Footer() {
   return (
-    <footer className="border-t border-border bg-secondary/50">
-      <div className="container py-12 md:py-16">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t border-border bg-background">
+      <div className="container py-16 md:py-20">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-sm font-bold text-primary-foreground">P</span>
-              </div>
-              <span className="font-heading text-xl font-bold text-foreground">{brand.name}</span>
-            </Link>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <Wordmark />
+            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
               {brand.tagline}
             </p>
           </div>
 
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="mb-3 text-sm font-semibold text-foreground">{category}</h4>
-              <ul className="space-y-2">
+              <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                {category}
+              </h4>
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="text-sm text-foreground/80 transition-colors hover:text-primary"
                     >
                       {link.label}
                     </Link>
@@ -146,9 +151,12 @@ function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 border-t border-border pt-6 text-center">
-          <p className="text-sm text-muted-foreground">
+        <div className="mt-16 flex flex-col items-start justify-between gap-6 border-t border-border pt-8 md:flex-row md:items-center">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             © {new Date().getFullYear()} {brand.name}. All rights reserved.
+          </p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Get paid. Without asking twice.
           </p>
         </div>
       </div>
@@ -158,9 +166,9 @@ function Footer() {
 
 export default function MarketingLayout() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1">
+      <main className="relative z-[2] flex-1">
         <Outlet />
       </main>
       <Footer />

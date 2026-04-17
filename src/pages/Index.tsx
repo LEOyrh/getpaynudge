@@ -54,32 +54,50 @@ export default function Index() {
 
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden py-20 md:py-32">
+    <section className="relative overflow-hidden border-b border-border py-24 md:py-36">
+      {/* Lime spotlight */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.18]"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 0%, hsl(var(--primary) / 0.55), transparent 70%)",
+        }}
+      />
+      {/* Grid texture */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+
       <div className="container relative z-10">
         <motion.div
-          className="mx-auto max-w-3xl text-center"
+          className="mx-auto max-w-5xl text-center"
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
         >
           <motion.div variants={fadeIn}>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-medium text-muted-foreground">
-              <Bell className="h-3 w-3" />
+            <span className="text-eyebrow inline-flex items-center gap-2 text-muted-foreground">
+              <span className="h-1 w-1 bg-primary" aria-hidden />
               Invoice reminders on autopilot
             </span>
           </motion.div>
 
           <motion.h1
             variants={fadeIn}
-            className="mt-6 font-heading text-4xl font-800 tracking-tight text-foreground sm:text-5xl md:text-6xl"
+            className="text-display mt-8 text-5xl text-foreground sm:text-6xl md:text-7xl lg:text-8xl"
           >
             Get paid without the{" "}
-            <span className="text-primary">awkward follow-up</span>
+            <span className="lime-underline">awkward follow-up</span>
           </motion.h1>
 
           <motion.p
             variants={fadeIn}
-            className="mt-6 text-lg text-muted-foreground md:text-xl"
+            className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
             {brand.name} sends polite, escalating invoice reminders automatically — so you can
             focus on your work instead of chasing payments.
@@ -87,25 +105,28 @@ function HeroSection() {
 
           <motion.div
             variants={fadeIn}
-            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
+            className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
-            <Button size="lg" asChild>
+            <Button size="lg" asChild className="h-12 px-8 text-sm font-bold uppercase tracking-[0.15em]">
               <Link to="/signup">
                 Start Free <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" asChild>
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="h-12 border-foreground/20 px-8 text-sm font-bold uppercase tracking-[0.15em] hover:border-foreground hover:bg-transparent"
+            >
               <Link to="/how-it-works">See How It Works</Link>
             </Button>
           </motion.div>
 
-          <motion.p variants={fadeIn} className="mt-4 text-sm text-muted-foreground">
-            Free plan available · No credit card required · Set up in under 60 seconds
+          <motion.p variants={fadeIn} className="mt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Free plan · No credit card · 60-second setup
           </motion.p>
         </motion.div>
       </div>
-
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,hsl(var(--accent))_0%,transparent_50%)]" />
     </section>
   );
 }
@@ -121,7 +142,7 @@ function WhoItsForSection() {
   ];
 
   return (
-    <section className="border-y border-border bg-secondary/30 py-12">
+    <section className="border-y border-border py-12">
       <div className="container">
         <p className="mb-6 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Built for people who send invoices
@@ -260,7 +281,7 @@ function FeaturesSection() {
   ];
 
   return (
-    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+    <section className="border-t border-border py-20 md:py-28">
       <div className="container">
         <motion.div
           className="mx-auto max-w-2xl text-center"
@@ -382,7 +403,7 @@ function ReminderSequenceSection() {
 
 function PricingPreview() {
   return (
-    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+    <section className="border-t border-border py-20 md:py-28">
       <div className="container">
         <motion.div
           className="mx-auto max-w-2xl text-center"
@@ -535,7 +556,7 @@ function FAQPreview() {
   ];
 
   return (
-    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+    <section className="border-t border-border py-20 md:py-28">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">

@@ -96,7 +96,7 @@ export default function TemplatesHub() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-secondary/30 py-16">
+      <section className="border-t border-border py-16">
         <div className="container text-center">
           <h2 className="font-heading text-2xl font-bold text-foreground">
             Want to automate the follow-up?

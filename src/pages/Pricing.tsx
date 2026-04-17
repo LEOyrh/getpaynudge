@@ -113,7 +113,7 @@ export default function Pricing() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+      <section className="border-t border-border py-20 md:py-28">
         <div className="container">
           <h2 className="mb-12 text-center font-heading text-3xl font-bold text-foreground">
             Feature comparison
@@ -205,7 +205,7 @@ export default function Pricing() {
         </div>
       </section>
 
-      <section className="border-t border-border bg-secondary/30 py-16">
+      <section className="border-t border-border py-16">
         <div className="container text-center">
           <h2 className="font-heading text-2xl font-bold text-foreground">Ready to get started?</h2>
           <p className="mt-3 text-muted-foreground">
