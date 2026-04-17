@@ -22,6 +22,44 @@ const adminLinks = [
   { label: "Logs", href: "/admin/logs", icon: ScrollText },
 ];
 
+function SidebarLink({
+  link,
+  active,
+  onClick,
+}: {
+  link: { label: string; href: string; icon: React.ComponentType<{ className?: string }> };
+  active: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <Link
+      to={link.href}
+      onClick={onClick}
+      className={cn(
+        "group relative flex items-center gap-3 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] transition-colors",
+        active
+          ? "bg-sidebar-accent text-foreground"
+          : "text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+      )}
+    >
+      {active && <span className="absolute left-0 top-0 h-full w-0.5 bg-primary" aria-hidden />}
+      <link.icon className="h-4 w-4" />
+      {link.label}
+    </Link>
+  );
+}
+
+function Wordmark() {
+  return (
+    <div className="flex items-baseline gap-0.5">
+      <span className="font-heading text-xl font-extrabold tracking-tightest text-sidebar-foreground">
+        {brand.name}
+      </span>
+      <span className="h-1 w-1 translate-y-[-1px] bg-primary" aria-hidden />
+    </div>
+  );
+}
+
 export default function AppLayout() {
   const { signOut, user } = useAuth();
   const { isAdmin } = useAdminRole();
@@ -40,58 +78,33 @@ export default function AppLayout() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
-      <aside className="hidden w-60 flex-col border-r border-sidebar-border bg-sidebar-background lg:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
-            <span className="text-sm font-bold text-sidebar-primary-foreground">P</span>
-          </div>
-          <span className="font-heading text-lg font-bold text-sidebar-foreground">{brand.name}</span>
+      <aside className="hidden w-64 flex-col border-r border-sidebar-border bg-sidebar-background lg:flex">
+        <div className="flex h-16 items-center border-b border-sidebar-border px-5">
+          <Wordmark />
         </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3">
+        <nav className="flex flex-1 flex-col gap-0.5 py-3">
           {sidebarLinks.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                location.pathname.startsWith(link.href)
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}
-            >
-              <link.icon className="h-4 w-4" />
-              {link.label}
-            </Link>
+            <SidebarLink key={link.href} link={link} active={location.pathname.startsWith(link.href)} />
           ))}
           {isAdmin && (
             <>
-              <Separator className="my-2" />
-              <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/40">Admin</p>
+              <Separator className="my-3" />
+              <p className="mb-1 px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-sidebar-foreground/40">
+                Admin
+              </p>
               {adminLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                    location.pathname.startsWith(link.href)
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-                  )}
-                >
-                  <link.icon className="h-4 w-4" />
-                  {link.label}
-                </Link>
+                <SidebarLink key={link.href} link={link} active={location.pathname.startsWith(link.href)} />
               ))}
             </>
           )}
         </nav>
-        <div className="border-t border-sidebar-border p-3">
-          <p className="mb-2 truncate px-3 text-xs text-sidebar-foreground/50">{user?.email}</p>
+        <div className="border-t border-sidebar-border p-4">
+          <p className="mb-3 truncate text-xs text-sidebar-foreground/50">{user?.email}</p>
           <button
             onClick={handleSignOut}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+            className="flex w-full items-center gap-3 px-2 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60 transition-colors hover:text-foreground"
           >
             <LogOut className="h-4 w-4" />
             Log out
@@ -102,61 +115,42 @@ export default function AppLayout() {
       {/* Mobile header + content */}
       <div className="flex flex-1 flex-col">
         <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4 lg:hidden">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <span className="text-xs font-bold text-primary-foreground">P</span>
-            </div>
-            <span className="font-heading font-bold text-foreground">{brand.name}</span>
-          </div>
+          <Wordmark />
           <button onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </header>
 
         {mobileOpen && (
-          <div className="border-b border-border bg-background p-3 lg:hidden">
-            <nav className="flex flex-col gap-1">
+          <div className="border-b border-border bg-background py-2 lg:hidden">
+            <nav className="flex flex-col">
               {sidebarLinks.map((link) => (
-                <Link
+                <SidebarLink
                   key={link.href}
-                  to={link.href}
+                  link={link}
+                  active={location.pathname.startsWith(link.href)}
                   onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
-                    location.pathname.startsWith(link.href)
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <link.icon className="h-4 w-4" />
-                  {link.label}
-                </Link>
+                />
               ))}
               {isAdmin && (
                 <>
                   <Separator className="my-2" />
-                  <p className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">Admin</p>
+                  <p className="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    Admin
+                  </p>
                   {adminLinks.map((link) => (
-                    <Link
+                    <SidebarLink
                       key={link.href}
-                      to={link.href}
+                      link={link}
+                      active={location.pathname.startsWith(link.href)}
                       onClick={() => setMobileOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
-                        location.pathname.startsWith(link.href)
-                          ? "bg-accent text-accent-foreground"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      <link.icon className="h-4 w-4" />
-                      {link.label}
-                    </Link>
+                    />
                   ))}
                 </>
               )}
               <button
                 onClick={handleSignOut}
-                className="mt-2 flex items-center gap-3 rounded-md border-t border-border px-3 py-2 pt-3 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="mt-2 flex items-center gap-3 border-t border-border px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground"
               >
                 <LogOut className="h-4 w-4" />
                 Log out
@@ -165,7 +159,7 @@ export default function AppLayout() {
           </div>
         )}
 
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-8">
           <Outlet />
         </main>
       </div>
