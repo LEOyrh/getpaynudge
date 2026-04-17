@@ -278,12 +278,12 @@ export default function InvoiceDetail() {
           <Badge variant="secondary" className={statusColors[invoice.status]}>
             {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
           </Badge>
-          {totalOpens > 0 && (
+          {emailTracking && totalOpens > 0 && (
             <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20 text-xs">
               <Eye className="mr-0.5 h-3 w-3" />Opened
             </Badge>
           )}
-          {totalClicks > 0 && (
+          {emailTracking && totalClicks > 0 && (
             <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20 text-xs">
               <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked
             </Badge>
