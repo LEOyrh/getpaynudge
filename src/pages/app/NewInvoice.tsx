@@ -59,30 +59,96 @@ export default function NewInvoice() {
   const onSubmit = async (data: InvoiceForm) => {
     if (!user) return;
     setSubmitting(true);
-    const { error } = await supabase.from("invoices").insert({
-      user_id: user.id,
-      client_name: data.client_name,
-      client_email: data.client_email || null,
-      invoice_number: data.invoice_number,
-      amount: data.amount,
-      currency: data.currency,
-      due_date: format(data.due_date, "yyyy-MM-dd"),
-      payment_link: data.payment_link || null,
-      status: "sent",
-    } as any);
+    const { data: created, error } = await supabase
+      .from("invoices")
+      .insert({
+        user_id: user.id,
+        client_name: data.client_name,
+        client_email: data.client_email || null,
+        invoice_number: data.invoice_number,
+        amount: data.amount,
+        currency: data.currency,
+        due_date: format(data.due_date, "yyyy-MM-dd"),
+        payment_link: data.payment_link || null,
+        status: data.client_email ? "sent" : "draft",
+      } as any)
+      .select("id, client_name, client_email, invoice_number, amount, currency, due_date, payment_link")
+      .single();
 
-    if (error) {
-      // Surface the DB trigger's friendly message (e.g. plan limit exceeded)
-      const friendly = error.message?.includes("Active invoice limit reached")
+    if (error || !created) {
+      const friendly = error?.message?.includes("Active invoice limit reached")
         ? error.message
         : "Failed to create invoice";
       toast.error(friendly);
-    } else {
-      toast.success("Invoice created");
-      navigate("/invoices");
+      setSubmitting(false);
+      return;
     }
+
+    // Auto-send the initial invoice email when a client email is on file
+    if (created.client_email) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("business_name, full_name")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        const businessName =
+          profile?.business_name || profile?.full_name || "Your service provider";
+        const amountStr = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: created.currency,
+        }).format(Number(created.amount));
+        const formattedDue = format(new Date(created.due_date), "MMMM d, yyyy");
+
+        const { error: sendError } = await supabase.functions.invoke(
+          "send-transactional-email",
+          {
+            body: {
+              templateName: "payment-reminder",
+              recipientEmail: created.client_email,
+              idempotencyKey: `invoice-created-${created.id}`,
+              templateData: {
+                invoiceId: created.id,
+                clientName: created.client_name,
+                invoiceNumber: created.invoice_number,
+                amount: amountStr,
+                dueDate: formattedDue,
+                businessName,
+                tone: "friendly",
+                payLink: created.payment_link || undefined,
+              },
+            },
+          }
+        );
+
+        if (sendError) throw sendError;
+
+        await supabase.from("invoice_activities").insert({
+          invoice_id: created.id,
+          activity_type: "invoice_sent",
+          description: `Invoice email sent to ${created.client_email}`,
+        });
+
+        toast.success("Invoice created and emailed");
+      } catch (sendErr) {
+        // Invoice exists; just warn that the email didn't go out
+        await supabase.from("invoice_activities").insert({
+          invoice_id: created.id,
+          activity_type: "send_failed",
+          description: `Initial invoice email failed to send to ${created.client_email}`,
+        });
+        toast.warning(
+          "Invoice created, but the email didn't go out. Use 'Send Reminder' to retry."
+        );
+      }
+    } else {
+      toast.success("Invoice created as draft (no client email)");
+    }
+
+    navigate("/invoices");
     setSubmitting(false);
   };
+
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
