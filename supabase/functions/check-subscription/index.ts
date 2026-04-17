@@ -88,6 +88,18 @@ serve(async (req) => {
       logStep("No active/trialing subscription");
     }
 
+    // Mirror plan tier into user_plans so DB triggers can enforce limits
+    const planKeyMap: Record<string, string> = {
+      "prod_UKzUakyN8jk3RY": "starter",
+      "prod_UKzU4mKXA1elNj": "pro",
+      "prod_UKzVpA4xqTNk5L": "business",
+    };
+    const planKey = (hasActiveSub && productId && planKeyMap[productId]) || "free";
+    await supabaseClient.from("user_plans").upsert(
+      { user_id: user.id, plan_key: planKey, product_id: productId, updated_at: new Date().toISOString() },
+      { onConflict: "user_id" }
+    );
+
     return new Response(
       JSON.stringify({ subscribed: hasActiveSub, product_id: productId, price_id: priceId, subscription_end: subscriptionEnd, cancel_at_period_end: cancelAtPeriodEnd, is_trialing: isTrialing, trial_end: trialEnd }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
