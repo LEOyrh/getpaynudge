@@ -59,9 +59,9 @@ export default function ResetPassword() {
   return (
     <section className="flex min-h-screen items-center justify-center py-12">
       <div className="w-full max-w-md px-4">
-        <div className="mb-8 text-center">
-          <h1 className="font-heading text-2xl font-bold text-foreground">Set new password</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Choose a strong password for your account.</p>
+        <div className="mb-10 text-center">
+          <h1 className="text-display text-3xl text-foreground md:text-4xl">Set new password</h1>
+          <p className="mt-3 text-sm text-muted-foreground">Choose a strong password for your account.</p>
         </div>
         <Card className="border-border">
           <CardContent className="pt-6 pb-6">
