@@ -13,14 +13,14 @@ const featuresByPlan: Record<string, PlanFeatures> = {
     customCadence: false,
     toneSelection: false,
     activityTimeline: false,
-    emailTracking: false,
+    emailTracking: true,
     payLinkInReminders: true,
   },
   starter: {
     customCadence: true,
     toneSelection: true,
     activityTimeline: true,
-    emailTracking: false,
+    emailTracking: true,
     payLinkInReminders: true,
   },
   pro: {
