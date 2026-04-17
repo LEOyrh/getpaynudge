@@ -3,6 +3,10 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 // This edge function handles two tracking endpoints:
 // GET /track-email-event?t=<trackingId>&e=open  → returns 1x1 transparent pixel
 // GET /track-email-event?t=<trackingId>&e=click&r=<url> → logs click, redirects to url
+//
+// Security: the redirect target is NOT trusted from the query string. It is
+// validated against the invoice's stored payment_link to prevent open-redirect
+// abuse (phishing via the legit app domain).
 
 const TRANSPARENT_PIXEL = Uint8Array.from(atob(
   'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
@@ -39,21 +43,64 @@ Deno.serve(async (req) => {
     if (error) console.error('Failed to log email event', { error, trackingId, eventType })
   })
 
-  if (eventType === 'click' && redirectUrl) {
-    // Validate redirect URL to prevent open redirect attacks
+  if (eventType === 'click') {
+    if (!redirectUrl) {
+      return new Response('Missing redirect', { status: 400 })
+    }
+
+    // Basic URL parse first — must be a well-formed http(s) URL
+    let parsedRequested: URL
     try {
-      const parsed = new URL(redirectUrl)
-      if (!['http:', 'https:'].includes(parsed.protocol)) {
+      parsedRequested = new URL(redirectUrl)
+      if (!['http:', 'https:'].includes(parsedRequested.protocol)) {
         return new Response('Invalid redirect', { status: 400 })
       }
     } catch {
       return new Response('Invalid redirect URL', { status: 400 })
     }
 
+    // Look up the invoice's stored payment_link and verify the requested
+    // redirect matches. This prevents callers from substituting an arbitrary
+    // URL (open-redirect / phishing).
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
+      .select('payment_link')
+      .eq('id', invoiceId)
+      .maybeSingle()
+
+    if (invoiceError || !invoice?.payment_link) {
+      console.warn('Click redirect rejected — no payment_link on invoice', {
+        invoiceId,
+        error: invoiceError,
+      })
+      return new Response('Invalid redirect', { status: 400 })
+    }
+
+    let parsedStored: URL
+    try {
+      parsedStored = new URL(invoice.payment_link)
+    } catch {
+      return new Response('Invalid redirect', { status: 400 })
+    }
+
+    // Require an exact match on origin + pathname. Query/fragment may differ
+    // harmlessly, but the destination host and path must be the one we sent.
+    if (
+      parsedRequested.origin !== parsedStored.origin ||
+      parsedRequested.pathname !== parsedStored.pathname
+    ) {
+      console.warn('Click redirect rejected — does not match stored payment_link', {
+        invoiceId,
+        requested: parsedRequested.href,
+        stored: parsedStored.href,
+      })
+      return new Response('Invalid redirect', { status: 400 })
+    }
+
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': redirectUrl,
+        'Location': invoice.payment_link,
         'Cache-Control': 'no-store, no-cache, must-revalidate',
       },
     })
