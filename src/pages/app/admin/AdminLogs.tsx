@@ -190,6 +190,8 @@ export default function AdminLogs() {
     return activities.filter((a) => {
       if (actorFilter === "admin" && !a.is_admin) return false;
       if (actorFilter === "user" && a.is_admin) return false;
+      if (archivedFilter === "active" && a.archived_at) return false;
+      if (archivedFilter === "archived" && !a.archived_at) return false;
       if (!search) return true;
       const q = search.toLowerCase();
       return (
@@ -198,7 +200,7 @@ export default function AdminLogs() {
         a.invoice_id.toLowerCase().includes(q)
       );
     });
-  }, [activities, actorFilter, search]);
+  }, [activities, actorFilter, archivedFilter, search]);
 
   if (isLoading) {
     return <div className="py-16 text-center text-muted-foreground">Loading logs…</div>;
