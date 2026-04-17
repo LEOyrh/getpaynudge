@@ -30,9 +30,11 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Templates that may be invoked without an authenticated user JWT.
+// These MUST have a fixed `to` address defined in the template (so an anonymous
+// caller cannot choose the recipient) and should be safe to expose publicly
+// (e.g. contact form notifications sent to the site owner).
+const PUBLIC_TEMPLATES = new Set<string>(['contact-form-notification'])
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -42,6 +44,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
   if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Missing required environment variables')
@@ -105,9 +108,51 @@ Deno.serve(async (req) => {
     )
   }
 
+  // 1b. Authentication gate.
+  // Templates not in PUBLIC_TEMPLATES require a valid user JWT or service-role key.
+  // Public templates (e.g. contact-form-notification) may be invoked anonymously
+  // because the recipient is fixed by template.to — the caller cannot choose it.
+  const authHeader = req.headers.get('Authorization')
+  const isPublicTemplate = PUBLIC_TEMPLATES.has(templateName)
+
+  if (!isPublicTemplate) {
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    const token = authHeader.replace('Bearer ', '')
+    // Allow service-role key (used by server-side callers like process-reminders)
+    if (token !== supabaseServiceKey) {
+      // Otherwise validate as a user JWT
+      const authClient = createClient(supabaseUrl, supabaseAnonKey ?? '', {
+        global: { headers: { Authorization: authHeader } },
+      })
+      const { data: claimsData, error: claimsError } =
+        await authClient.auth.getClaims(token)
+      if (claimsError || !claimsData?.claims) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+    }
+  } else if (template.to == null) {
+    // Defensive: a public template MUST have a fixed recipient. Refuse otherwise.
+    console.error('Public template missing fixed recipient', { templateName })
+    return new Response(
+      JSON.stringify({ error: 'Template misconfigured' }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
   // Resolve effective recipient: template-level `to` takes precedence over
-  // the caller-provided recipientEmail. This allows notification templates
-  // to always send to a fixed address (e.g., site owner from env var).
+  // the caller-provided recipientEmail. For public templates, recipientEmail
+  // is IGNORED — only the fixed template.to is used.
   const effectiveRecipient = template.to || recipientEmail
 
   if (!effectiveRecipient) {
