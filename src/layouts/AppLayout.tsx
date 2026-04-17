@@ -12,7 +12,10 @@ const sidebarLinks = [
   { label: "Invoices", href: "/invoices", icon: FileText },
   { label: "Billing", href: "/billing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
-  { label: "Help", href: "/help", icon: HelpCircle },
+];
+
+const externalLinks = [
+  { label: "Help", href: `${brand.url}/help`, icon: HelpCircle },
 ];
 
 const adminLinks = [
@@ -88,6 +91,19 @@ export default function AppLayout() {
           {sidebarLinks.map((link) => (
             <SidebarLink key={link.href} link={link} active={location.pathname.startsWith(link.href)} />
           ))}
+          {externalLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative flex items-center gap-3 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+            >
+              <link.icon className="h-4 w-4" />
+              {link.label}
+              <span className="ml-auto text-sidebar-foreground/30">↗</span>
+            </a>
+          ))}
           {isAdmin && (
             <>
               <Separator className="my-3" />
@@ -131,6 +147,20 @@ export default function AppLayout() {
                   active={location.pathname.startsWith(link.href)}
                   onClick={() => setMobileOpen(false)}
                 />
+              ))}
+              {externalLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                >
+                  <link.icon className="h-4 w-4" />
+                  {link.label}
+                  <span className="ml-auto text-sidebar-foreground/30">↗</span>
+                </a>
               ))}
               {isAdmin && (
                 <>
