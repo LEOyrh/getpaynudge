@@ -70,7 +70,7 @@ export default function Pricing() {
                   className={cn(
                     "relative h-full",
                     plan.highlighted
-                      ? "border-primary shadow-lg ring-1 ring-primary"
+                      ? "border-primary ring-1 ring-primary"
                       : "border-border"
                   )}
                 >

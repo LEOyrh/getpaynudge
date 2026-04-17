@@ -44,18 +44,18 @@ interface InvoiceActivity {
 const statusBadge = (status: string) => {
   switch (status) {
     case "sent":
-      return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100"><CheckCircle2 className="mr-1 h-3 w-3" />Sent</Badge>;
+      return <Badge className="bg-primary/15 text-primary hover:bg-primary/15 border border-primary/30"><CheckCircle2 className="mr-1 h-3 w-3" />Sent</Badge>;
     case "pending":
       return <Badge variant="secondary"><Clock className="mr-1 h-3 w-3" />Pending</Badge>;
     case "dlq":
     case "failed":
       return <Badge variant="destructive"><AlertCircle className="mr-1 h-3 w-3" />Failed</Badge>;
     case "suppressed":
-      return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Suppressed</Badge>;
+      return <Badge className="bg-destructive/15 text-destructive hover:bg-destructive/15 border border-destructive/30">Suppressed</Badge>;
     case "bounced":
       return <Badge variant="destructive">Bounced</Badge>;
     case "complained":
-      return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">Complained</Badge>;
+      return <Badge className="bg-destructive/15 text-destructive hover:bg-destructive/15 border border-destructive/30">Complained</Badge>;
     default:
       return <Badge variant="outline">{status}</Badge>;
   }
@@ -314,12 +314,12 @@ export default function AdminLogs() {
                       <div className="flex flex-wrap gap-1">
                         {statusBadge(log.status)}
                         {hasOpen && (
-                          <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100">
+                          <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20">
                             <Eye className="mr-1 h-3 w-3" />Opened
                           </Badge>
                         )}
                         {hasClick && (
-                          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                          <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20">
                             <MousePointerClick className="mr-1 h-3 w-3" />Clicked
                           </Badge>
                         )}
@@ -382,7 +382,7 @@ export default function AdminLogs() {
                       {ev.event_type === "open" ? (
                         <Badge variant="secondary"><Eye className="mr-1 h-3 w-3" />Open</Badge>
                       ) : (
-                        <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100"><MousePointerClick className="mr-1 h-3 w-3" />Click</Badge>
+                        <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20"><MousePointerClick className="mr-1 h-3 w-3" />Click</Badge>
                       )}
                     </TableCell>
                     <TableCell className="font-mono text-xs">{ev.invoice_id.slice(0, 8)}…</TableCell>

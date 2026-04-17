@@ -279,12 +279,12 @@ export default function InvoiceDetail() {
             {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
           </Badge>
           {totalOpens > 0 && (
-            <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+            <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20 text-xs">
               <Eye className="mr-0.5 h-3 w-3" />Opened
             </Badge>
           )}
           {totalClicks > 0 && (
-            <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+            <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20 text-xs">
               <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked
             </Badge>
           )}
@@ -449,16 +449,16 @@ export default function InvoiceDetail() {
                     <span className="text-sm font-medium">Reminder #{idx + 1}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100 text-xs">
+                    <Badge className="bg-primary/15 text-primary hover:bg-primary/15 border border-primary/30 text-xs">
                       <CheckCircle className="mr-0.5 h-3 w-3" />Sent
                     </Badge>
                     {stats.opens > 0 && (
-                      <Badge className="bg-violet-100 text-violet-800 hover:bg-violet-100 text-xs">
+                      <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20 text-xs">
                         <Eye className="mr-0.5 h-3 w-3" />Opened{stats.opens > 1 ? ` ×${stats.opens}` : ""}
                       </Badge>
                     )}
                     {stats.clicks > 0 && (
-                      <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                      <Badge className="bg-foreground/10 text-foreground hover:bg-foreground/10 border border-foreground/20 text-xs">
                         <MousePointerClick className="mr-0.5 h-3 w-3" />Clicked{stats.clicks > 1 ? ` ×${stats.clicks}` : ""}
                       </Badge>
                     )}

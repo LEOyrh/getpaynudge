@@ -78,7 +78,7 @@ export default function TemplatesHub() {
           <div className="mx-auto mt-14 grid max-w-4xl gap-6 md:grid-cols-2">
             {templates.map((t) => (
               <Link key={t.slug} to={`/templates/${t.slug}`}>
-                <Card className="h-full border-border transition-shadow hover:shadow-md">
+                <Card className="h-full border-border ">
                   <CardContent className="pt-6 pb-6">
                     <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-accent">
                       <FileText className="h-5 w-5 text-accent-foreground" />
