@@ -50,10 +50,12 @@ Deno.serve(async (req) => {
 
   let action = 'stats'
   let userId: string | null = null
+  let activityId: string | null = null
   try {
     const body = await req.json()
     action = body.action || 'stats'
     userId = body.userId || null
+    activityId = body.activityId || null
   } catch {
     // no body = default stats
   }
@@ -185,20 +187,6 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'archive-activity' || action === 'restore-activity') {
-      let activityId: string | null = null
-      try {
-        const body = await req.clone().json()
-        activityId = body.activityId || null
-      } catch {
-        // already consumed; activityId comes from earlier parse below if reused
-      }
-      // Fall back to earlier-parsed body
-      if (!activityId) {
-        try {
-          const body = await req.json()
-          activityId = body.activityId || null
-        } catch { /* ignore */ }
-      }
       if (!activityId) {
         return new Response(JSON.stringify({ error: 'activityId required' }), {
           status: 400,
