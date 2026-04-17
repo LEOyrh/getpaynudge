@@ -12,7 +12,10 @@ const sidebarLinks = [
   { label: "Invoices", href: "/invoices", icon: FileText },
   { label: "Billing", href: "/billing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
-  { label: "Help", href: "/help", icon: HelpCircle },
+];
+
+const externalLinks = [
+  { label: "Help", href: `${brand.url}/help`, icon: HelpCircle },
 ];
 
 const adminLinks = [
