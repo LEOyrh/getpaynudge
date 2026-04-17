@@ -25,9 +25,9 @@ type Reminder = Tables<"invoice_reminders">;
 
 const statusColors: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
-  sent: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  paid: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  overdue: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+  sent: "bg-foreground/10 text-foreground border border-foreground/20",
+  paid: "bg-primary/15 text-primary border border-primary/30",
+  overdue: "bg-destructive/15 text-destructive border border-destructive/30",
   cancelled: "bg-muted text-muted-foreground",
 };
 
