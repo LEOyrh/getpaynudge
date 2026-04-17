@@ -50,10 +50,12 @@ Deno.serve(async (req) => {
 
   let action = 'stats'
   let userId: string | null = null
+  let activityId: string | null = null
   try {
     const body = await req.json()
     action = body.action || 'stats'
     userId = body.userId || null
+    activityId = body.activityId || null
   } catch {
     // no body = default stats
   }
@@ -184,6 +186,29 @@ Deno.serve(async (req) => {
       })
     }
 
+    if (action === 'archive-activity' || action === 'restore-activity') {
+      if (!activityId) {
+        return new Response(JSON.stringify({ error: 'activityId required' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      const { error: updateErr } = await supabase
+        .from('invoice_activities')
+        .update({ archived_at: action === 'archive-activity' ? new Date().toISOString() : null })
+        .eq('id', activityId)
+      if (updateErr) {
+        console.error('archive/restore error:', updateErr)
+        return new Response(JSON.stringify({ error: 'update_failed' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     if (action === 'logs') {
       // Get admin user IDs for filtering
       const { data: adminRoles } = await supabase
@@ -204,19 +229,21 @@ Deno.serve(async (req) => {
         .order('created_at', { ascending: false })
         .limit(500)
 
+      // Service-role query returns ALL activities including archived ones
       const { data: activities } = await supabase
         .from('invoice_activities')
         .select('*, invoices!inner(user_id)')
         .order('created_at', { ascending: false })
         .limit(500)
 
-      // Tag activities with is_admin flag
+      // Tag activities with is_admin flag and surface archived_at
       const taggedActivities = (activities || []).map(a => ({
         id: a.id,
         invoice_id: a.invoice_id,
         activity_type: a.activity_type,
         description: a.description,
         created_at: a.created_at,
+        archived_at: (a as any).archived_at ?? null,
         is_admin: adminUserIds.has((a as any).invoices?.user_id),
       }))
 

@@ -1,15 +1,17 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { Search, Mail, MousePointerClick, Eye, Activity, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { Search, Mail, MousePointerClick, Eye, Activity, AlertCircle, CheckCircle2, Clock, Archive, ArchiveRestore } from "lucide-react";
 
 interface SendLog {
   id: string;
@@ -38,6 +40,7 @@ interface InvoiceActivity {
   activity_type: string;
   description: string;
   created_at: string;
+  archived_at?: string | null;
   is_admin?: boolean;
 }
 
@@ -68,6 +71,24 @@ export default function AdminLogs() {
   const [templateFilter, setTemplateFilter] = useState("all");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
   const [actorFilter, setActorFilter] = useState("all"); // "all" | "admin" | "user"
+  const [archivedFilter, setArchivedFilter] = useState<"active" | "archived" | "all">("active");
+  const queryClient = useQueryClient();
+
+  const archiveMutation = useMutation({
+    mutationFn: async ({ id, archive }: { id: string; archive: boolean }) => {
+      const { error } = await supabase.functions.invoke("admin-stats", {
+        body: { action: archive ? "archive-activity" : "restore-activity", activityId: id },
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast({ title: vars.archive ? "Activity archived" : "Activity restored" });
+      queryClient.invalidateQueries({ queryKey: ["admin-logs"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Action failed", description: err?.message || "Try again.", variant: "destructive" });
+    },
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-logs"],
@@ -169,6 +190,8 @@ export default function AdminLogs() {
     return activities.filter((a) => {
       if (actorFilter === "admin" && !a.is_admin) return false;
       if (actorFilter === "user" && a.is_admin) return false;
+      if (archivedFilter === "active" && a.archived_at) return false;
+      if (archivedFilter === "archived" && !a.archived_at) return false;
       if (!search) return true;
       const q = search.toLowerCase();
       return (
@@ -177,7 +200,7 @@ export default function AdminLogs() {
         a.invoice_id.toLowerCase().includes(q)
       );
     });
-  }, [activities, actorFilter, search]);
+  }, [activities, actorFilter, archivedFilter, search]);
 
   if (isLoading) {
     return <div className="py-16 text-center text-muted-foreground">Loading logs…</div>;
@@ -403,7 +426,18 @@ export default function AdminLogs() {
         </TabsContent>
 
         {/* Invoice Activities */}
-        <TabsContent value="activities">
+        <TabsContent value="activities" className="space-y-4">
+          <Select value={archivedFilter} onValueChange={(v) => setArchivedFilter(v as any)}>
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active only</SelectItem>
+              <SelectItem value="archived">Archived only</SelectItem>
+              <SelectItem value="all">All (incl. archived)</SelectItem>
+            </SelectContent>
+          </Select>
+
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -412,24 +446,56 @@ export default function AdminLogs() {
                   <TableHead>Type</TableHead>
                   <TableHead>Invoice ID</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead className="w-32 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredActivities.slice(0, 100).map((a) => (
-                  <TableRow key={a.id}>
-                    <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
-                      {format(new Date(a.created_at), "MMM d, HH:mm:ss")}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{a.activity_type}</Badge>
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">{a.invoice_id.slice(0, 8)}…</TableCell>
-                    <TableCell className="text-sm">{a.description}</TableCell>
-                  </TableRow>
-                ))}
+                {filteredActivities.slice(0, 100).map((a) => {
+                  const isArchived = !!a.archived_at;
+                  return (
+                    <TableRow key={a.id} className={isArchived ? "opacity-60" : undefined}>
+                      <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+                        {format(new Date(a.created_at), "MMM d, HH:mm:ss")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline">{a.activity_type}</Badge>
+                          {isArchived && (
+                            <Badge variant="secondary" className="gap-1">
+                              <Archive className="h-3 w-3" />Archived
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">{a.invoice_id.slice(0, 8)}…</TableCell>
+                      <TableCell className="text-sm">{a.description}</TableCell>
+                      <TableCell className="text-right">
+                        {isArchived ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={archiveMutation.isPending}
+                            onClick={() => archiveMutation.mutate({ id: a.id, archive: false })}
+                          >
+                            <ArchiveRestore className="mr-1 h-3.5 w-3.5" />Restore
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={archiveMutation.isPending}
+                            onClick={() => archiveMutation.mutate({ id: a.id, archive: true })}
+                          >
+                            <Archive className="mr-1 h-3.5 w-3.5" />Archive
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
                 {filteredActivities.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">No activities found.</TableCell>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">No activities found.</TableCell>
                   </TableRow>
                 )}
               </TableBody>

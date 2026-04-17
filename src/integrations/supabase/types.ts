@@ -131,6 +131,7 @@ export type Database = {
       invoice_activities: {
         Row: {
           activity_type: string
+          archived_at: string | null
           created_at: string
           description: string
           id: string
@@ -138,6 +139,7 @@ export type Database = {
         }
         Insert: {
           activity_type: string
+          archived_at?: string | null
           created_at?: string
           description: string
           id?: string
@@ -145,6 +147,7 @@ export type Database = {
         }
         Update: {
           activity_type?: string
+          archived_at?: string | null
           created_at?: string
           description?: string
           id?: string
