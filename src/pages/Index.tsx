@@ -142,7 +142,7 @@ function WhoItsForSection() {
   ];
 
   return (
-    <section className="border-y border-border bg-secondary/30 py-12">
+    <section className="border-y border-border py-12">
       <div className="container">
         <p className="mb-6 text-center text-sm font-medium uppercase tracking-wider text-muted-foreground">
           Built for people who send invoices
@@ -281,7 +281,7 @@ function FeaturesSection() {
   ];
 
   return (
-    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+    <section className="border-t border-border py-20 md:py-28">
       <div className="container">
         <motion.div
           className="mx-auto max-w-2xl text-center"
@@ -403,7 +403,7 @@ function ReminderSequenceSection() {
 
 function PricingPreview() {
   return (
-    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+    <section className="border-t border-border py-20 md:py-28">
       <div className="container">
         <motion.div
           className="mx-auto max-w-2xl text-center"
@@ -556,7 +556,7 @@ function FAQPreview() {
   ];
 
   return (
-    <section className="border-t border-border bg-secondary/30 py-20 md:py-28">
+    <section className="border-t border-border py-20 md:py-28">
       <div className="container">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl">
