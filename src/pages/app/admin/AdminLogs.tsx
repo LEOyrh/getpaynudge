@@ -1,15 +1,17 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { Search, Mail, MousePointerClick, Eye, Activity, AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { Search, Mail, MousePointerClick, Eye, Activity, AlertCircle, CheckCircle2, Clock, Archive, ArchiveRestore } from "lucide-react";
 
 interface SendLog {
   id: string;
@@ -38,6 +40,7 @@ interface InvoiceActivity {
   activity_type: string;
   description: string;
   created_at: string;
+  archived_at?: string | null;
   is_admin?: boolean;
 }
 
@@ -68,6 +71,24 @@ export default function AdminLogs() {
   const [templateFilter, setTemplateFilter] = useState("all");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
   const [actorFilter, setActorFilter] = useState("all"); // "all" | "admin" | "user"
+  const [archivedFilter, setArchivedFilter] = useState<"active" | "archived" | "all">("active");
+  const queryClient = useQueryClient();
+
+  const archiveMutation = useMutation({
+    mutationFn: async ({ id, archive }: { id: string; archive: boolean }) => {
+      const { error } = await supabase.functions.invoke("admin-stats", {
+        body: { action: archive ? "archive-activity" : "restore-activity", activityId: id },
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast({ title: vars.archive ? "Activity archived" : "Activity restored" });
+      queryClient.invalidateQueries({ queryKey: ["admin-logs"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Action failed", description: err?.message || "Try again.", variant: "destructive" });
+    },
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-logs"],
