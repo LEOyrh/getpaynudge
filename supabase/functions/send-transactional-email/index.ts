@@ -108,9 +108,51 @@ Deno.serve(async (req) => {
     )
   }
 
+  // 1b. Authentication gate.
+  // Templates not in PUBLIC_TEMPLATES require a valid user JWT or service-role key.
+  // Public templates (e.g. contact-form-notification) may be invoked anonymously
+  // because the recipient is fixed by template.to — the caller cannot choose it.
+  const authHeader = req.headers.get('Authorization')
+  const isPublicTemplate = PUBLIC_TEMPLATES.has(templateName)
+
+  if (!isPublicTemplate) {
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    const token = authHeader.replace('Bearer ', '')
+    // Allow service-role key (used by server-side callers like process-reminders)
+    if (token !== supabaseServiceKey) {
+      // Otherwise validate as a user JWT
+      const authClient = createClient(supabaseUrl, supabaseAnonKey ?? '', {
+        global: { headers: { Authorization: authHeader } },
+      })
+      const { data: claimsData, error: claimsError } =
+        await authClient.auth.getClaims(token)
+      if (claimsError || !claimsData?.claims) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+    }
+  } else if (template.to == null) {
+    // Defensive: a public template MUST have a fixed recipient. Refuse otherwise.
+    console.error('Public template missing fixed recipient', { templateName })
+    return new Response(
+      JSON.stringify({ error: 'Template misconfigured' }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
   // Resolve effective recipient: template-level `to` takes precedence over
-  // the caller-provided recipientEmail. This allows notification templates
-  // to always send to a fixed address (e.g., site owner from env var).
+  // the caller-provided recipientEmail. For public templates, recipientEmail
+  // is IGNORED — only the fixed template.to is used.
   const effectiveRecipient = template.to || recipientEmail
 
   if (!effectiveRecipient) {
