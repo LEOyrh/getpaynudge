@@ -32,6 +32,9 @@ const authPaths = new Set([
   "/unsubscribe",
 ]);
 
+/** Auth paths that must remain on the app subdomain (e.g. cross-domain handoff). */
+const appAuthPaths = new Set(["/auth/handoff"]);
+
 const appPaths = [
   "/dashboard",
   "/invoices",
