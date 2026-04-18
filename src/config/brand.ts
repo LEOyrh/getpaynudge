@@ -2,7 +2,7 @@ export const brand = {
   name: "PayNudge",
   tagline: "Get paid without the awkward follow-up.",
   description:
-    "Automated invoice reminder software for freelancers and small businesses. Send polite payment reminder emails and get paid faster.",
+    "The accounts-receivable autopilot for solo operators. Connect your invoicing tool — PayNudge chases every late invoice in your voice and predicts when each client will pay.",
   domain: "getpaynudge.com",
   appDomain: "app.getpaynudge.com",
   url: "https://getpaynudge.com",
