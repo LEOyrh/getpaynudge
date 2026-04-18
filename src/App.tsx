@@ -44,6 +44,7 @@ import ReminderSchedule from "@/pages/templates/ReminderSchedule";
 import InvoiceFollowUpTips from "@/pages/templates/InvoiceFollowUpTips";
 import SmallBusinessWorkflow from "@/pages/templates/SmallBusinessWorkflow";
 import Unsubscribe from "@/pages/Unsubscribe";
+import AuthHandoff from "@/pages/AuthHandoff";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
