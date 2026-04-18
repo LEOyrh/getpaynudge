@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
  *
  * Flow: getpaynudge.com/login → on success →
  *   app.getpaynudge.com/auth/handoff#access_token=...&refresh_token=...&next=/dashboard
- * → setSession → navigate to `next`.
+ * → setSession → verify persisted → navigate to `next`.
  *
  * Uses the URL hash so tokens never hit the server / logs.
  */
@@ -28,14 +28,33 @@ export default function AuthHandoff() {
       return;
     }
 
+    // Wipe the hash immediately so a stray re-render or back-nav can't
+    // re-trigger the handoff with stale tokens.
+    history.replaceState(null, "", window.location.pathname);
+
     (async () => {
-      const { error } = await supabase.auth.setSession({ access_token, refresh_token });
-      if (error) {
-        setError(error.message);
+      const { data, error: setErr } = await supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      });
+      if (setErr || !data.session) {
+        setError(setErr?.message ?? "Failed to install session.");
         return;
       }
-      // Use replace so the hash (with tokens) is wiped from history.
-      window.location.replace(next);
+
+      // Confirm the session has been written to localStorage by reading it
+      // back. Without this, navigating to /dashboard can race the storage
+      // write and ProtectedRoute sees `user=null` → bounces back to login →
+      // auto-handoff re-fires → refresh loop.
+      for (let i = 0; i < 20; i++) {
+        const { data: check } = await supabase.auth.getSession();
+        if (check.session?.access_token === access_token) break;
+        await new Promise((r) => setTimeout(r, 50));
+      }
+
+      // Use SPA navigation so AuthProvider keeps its in-memory session
+      // and we don't re-run getSession() from scratch.
+      window.location.assign(next);
     })();
   }, []);
 
