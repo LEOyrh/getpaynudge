@@ -32,6 +32,9 @@ const authPaths = new Set([
   "/unsubscribe",
 ]);
 
+/** Auth paths that must remain on the app subdomain (e.g. cross-domain handoff). */
+const appAuthPaths = new Set(["/auth/handoff"]);
+
 const appPaths = [
   "/dashboard",
   "/invoices",
@@ -74,7 +77,12 @@ export default function DomainRouter() {
     }
 
     // On app.getpaynudge.com: redirect marketing/auth pages to getpaynudge.com
-    if (isAppDomain() && (isMarketingPath(pathname) || isAuthPath(pathname))) {
+    // (except cross-domain auth handoff routes that must run here)
+    if (
+      isAppDomain() &&
+      !appAuthPaths.has(pathname) &&
+      (isMarketingPath(pathname) || isAuthPath(pathname))
+    ) {
       window.location.href = `${brand.url}${pathname}${search}${hash}`;
       return;
     }

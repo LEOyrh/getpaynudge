@@ -44,6 +44,7 @@ import ReminderSchedule from "@/pages/templates/ReminderSchedule";
 import InvoiceFollowUpTips from "@/pages/templates/InvoiceFollowUpTips";
 import SmallBusinessWorkflow from "@/pages/templates/SmallBusinessWorkflow";
 import Unsubscribe from "@/pages/Unsubscribe";
+import AuthHandoff from "@/pages/AuthHandoff";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -85,6 +86,7 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/auth/handoff" element={<AuthHandoff />} />
 
             {/* App (protected) — on app subdomain these are /dashboard, /invoices, etc. */}
             <Route
