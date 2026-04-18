@@ -853,8 +853,3 @@ function CompetitorComparisonSection() {
     </section>
   );
 }
-
-// keep BrainCircuit import referenced (used in HowItWorks rebrand) by exporting nothing — eslint will treat as unused otherwise
-const _icons = { BrainCircuit, Bell };
-void _icons;
-
