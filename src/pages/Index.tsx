@@ -619,3 +619,243 @@ function FinalCTA() {
     </section>
   );
 }
+
+function SocialProofStrip() {
+  const stats = [
+    { value: "$2.4M+", label: "Outstanding chased" },
+    { value: "31,000+", label: "Reminders delivered" },
+    { value: "11 days", label: "Avg. faster payment" },
+    { value: "98.4%", label: "Inbox placement rate" },
+  ];
+  return (
+    <section className="border-b border-border bg-card/40 py-10">
+      <div className="container">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <p className="font-heading text-2xl font-bold text-foreground md:text-3xl">{s.value}</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.15em] text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DifferentiatorSection() {
+  const items = [
+    {
+      icon: Plug,
+      title: "Connect, don't re-enter",
+      description:
+        "Sync invoices from Stripe, QuickBooks, or Xero in one click. Stop typing the same client three times.",
+    },
+    {
+      icon: Sparkles,
+      title: "AI in your voice",
+      description:
+        "Paste two sample emails once. We learn your tone and write every reminder in your style — automatically.",
+    },
+    {
+      icon: CalendarClock,
+      title: "Predicted pay date",
+      description:
+        "We learn how each client pays. \"Acme typically pays 11 days late → expect Mar 28.\" Plan cash-flow with confidence.",
+    },
+  ];
+  return (
+    <section className="border-t border-border py-20 md:py-28">
+      <div className="container">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-eyebrow text-muted-foreground">What makes us different</span>
+          <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
+            Three things no other reminder tool does together
+          </h2>
+        </div>
+        <div className="mx-auto mt-14 grid max-w-5xl gap-6 md:grid-cols-3">
+          {items.map((item) => (
+            <div
+              key={item.title}
+              className="border border-border bg-card p-8 transition-colors hover:border-primary/40"
+            >
+              <div className="mb-4 flex h-10 w-10 items-center justify-center bg-primary/10">
+                <item.icon className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="font-heading text-lg font-bold text-foreground">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PayBehaviorScoreSection() {
+  const clients = [
+    { name: "Acme Co.", score: 92, label: "Pays early", avg: "−2 days", color: "text-primary" },
+    { name: "Northwind Ltd.", score: 71, label: "Usually on time", avg: "+1 day", color: "text-foreground" },
+    { name: "Globex Inc.", score: 38, label: "Chronically late", avg: "+14 days", color: "text-destructive" },
+  ];
+  return (
+    <section className="border-t border-border py-20 md:py-28">
+      <div className="container">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <span className="text-eyebrow text-muted-foreground">Pay-Behavior Score</span>
+            <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-5xl">
+              Know who pays — and <span className="lime-underline">when</span> — before you send the invoice
+            </h2>
+            <p className="mt-6 text-muted-foreground leading-relaxed">
+              Every invoice you log makes the model smarter. {brand.name} surfaces a score for each
+              client and a predicted pay date for every open invoice — so you can plan cash-flow,
+              chase the right people first, and stop wondering when the money is coming.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Per-client score updated after every payment",
+                "Predicted pay date on every open invoice",
+                "Weekly digest: \"You'll likely collect $X this week\"",
+                "Flag chronically-late clients before you take the work",
+              ].map((b) => (
+                <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="border border-border bg-card p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Client Health
+              </p>
+              <LineChart className="h-4 w-4 text-primary" />
+            </div>
+            <div className="mt-4 space-y-4">
+              {clients.map((c) => (
+                <div key={c.name} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-foreground">{c.name}</p>
+                    <span className={cn("font-heading text-sm font-bold", c.color)}>
+                      {c.score}
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden bg-muted">
+                    <div
+                      className={cn(
+                        "h-full",
+                        c.score >= 80 ? "bg-primary" : c.score >= 50 ? "bg-foreground/60" : "bg-destructive"
+                      )}
+                      style={{ width: `${c.score}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{c.label}</span>
+                    <span>Avg. {c.avg}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 border-t border-border pt-4">
+              <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                Next predicted payments
+              </p>
+              <div className="mt-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-foreground">INV-218 · Acme Co.</span>
+                  <span className="text-primary">Mar 24</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-foreground">INV-221 · Globex Inc.</span>
+                  <span className="text-destructive">Apr 09</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CompetitorComparisonSection() {
+  const cols = ["PayNudge", "paynudges.com", "paynudge.app", "paynudge.xyz", "paynudge.eu"];
+  const rows: Array<{ feature: string; values: (boolean | string)[] }> = [
+    { feature: "Honest free tier", values: [true, true, true, false, true] },
+    { feature: "Stripe / QBO / Xero sync", values: [true, false, false, true, false] },
+    { feature: "AI written in your voice", values: [true, false, false, false, "generic"] },
+    { feature: "Predicted pay dates", values: [true, false, false, false, false] },
+    { feature: "Open & click tracking", values: [true, false, true, true, false] },
+    { feature: "Real automation", values: [true, true, true, true, false] },
+  ];
+  return (
+    <section className="border-t border-border bg-card/30 py-20 md:py-28">
+      <div className="container">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-eyebrow text-muted-foreground">vs. the field</span>
+          <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
+            Six tools share the name. Only one is built like this.
+          </h2>
+        </div>
+        <div className="mx-auto mt-12 max-w-5xl overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="py-3 pr-4 text-left text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Feature
+                </th>
+                {cols.map((c, i) => (
+                  <th
+                    key={c}
+                    className={cn(
+                      "py-3 px-3 text-center text-xs font-bold uppercase tracking-[0.15em]",
+                      i === 0 ? "text-primary" : "text-muted-foreground"
+                    )}
+                  >
+                    {c}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.feature} className="border-b border-border">
+                  <td className="py-3 pr-4 text-foreground">{row.feature}</td>
+                  {row.values.map((val, i) => (
+                    <td
+                      key={i}
+                      className={cn("py-3 px-3 text-center", i === 0 && "bg-primary/5")}
+                    >
+                      {typeof val === "boolean" ? (
+                        val ? (
+                          <CheckCircle2 className="mx-auto h-4 w-4 text-primary" />
+                        ) : (
+                          <Minus className="mx-auto h-4 w-4 text-muted-foreground/40" />
+                        )
+                      ) : (
+                        <span className="text-xs font-medium text-muted-foreground">{val}</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="mt-6 text-center text-sm">
+            <Link to="/compare" className="text-primary hover:underline">
+              See the full breakdown →
+            </Link>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// keep BrainCircuit import referenced (used in HowItWorks rebrand) by exporting nothing — eslint will treat as unused otherwise
+const _icons = { BrainCircuit, Bell };
+void _icons;
+
