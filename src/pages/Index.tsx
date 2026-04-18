@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Bell,
-  BrainCircuit,
   CalendarClock,
   CheckCircle2,
   Clock,
