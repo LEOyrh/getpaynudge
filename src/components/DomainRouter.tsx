@@ -5,13 +5,21 @@ import { brand, isAppDomain, isMarketingDomain, isLocalDev } from "@/config/bran
 /**
  * Client-side domain router.
  *
- * Both getpaynudge.com and app.getpaynudge.com serve the same SPA.
- * This component enforces:
- *  - Marketing + auth pages only on getpaynudge.com
- *  - App pages (/dashboard, /invoices, etc.) only on app.getpaynudge.com
+ * Intended end-state: marketing on getpaynudge.com, app on app.getpaynudge.com.
  *
- * On localhost / lovable.app previews it does nothing.
+ * IMPORTANT: until `app.getpaynudge.com` is independently hosted (DNS + CDN
+ * config that resolves to a separate origin), this router runs in
+ * **single-domain mode**: both marketing and app routes live on the same
+ * origin. The previous split caused an infinite redirect loop because
+ * `app.getpaynudge.com` actually serves the SPA from `getpaynudge.com`,
+ * so `isAppDomain()` was always false and `/dashboard` was endlessly
+ * redirected to itself.
+ *
+ * To enable cross-domain mode again: deploy the app subdomain as a separate
+ * origin (so `window.location.hostname === "app.getpaynudge.com"`), then
+ * flip the constant below.
  */
+const CROSS_DOMAIN_SPLIT_ENABLED = false;
 
 const marketingPaths = new Set([
   "/",
@@ -60,6 +68,15 @@ export default function DomainRouter() {
 
   useEffect(() => {
     if (isLocalDev()) return;
+    if (!CROSS_DOMAIN_SPLIT_ENABLED) {
+      // Single-domain mode: still strip the legacy /app/* prefix so old
+      // bookmarks land on the new flat routes.
+      if (location.pathname.startsWith("/app")) {
+        const stripped = location.pathname.replace(/^\/app/, "") || "/dashboard";
+        window.location.replace(`${stripped}${location.search}${location.hash}`);
+      }
+      return;
+    }
 
     const { pathname, search, hash } = location;
 
