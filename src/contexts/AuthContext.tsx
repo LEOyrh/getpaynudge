@@ -131,9 +131,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    // Password reset link should go to the marketing domain's reset-password page
+    // Single-domain mode: reset link returns to /reset-password on the
+    // current origin.
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${brand.url}/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     return { error: error as Error | null };
   };
