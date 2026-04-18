@@ -4,14 +4,13 @@ Updated: today
 # Project Memory
 
 ## Core
-PayNudge positioning: "The accounts-receivable autopilot for solo operators."
-Pricing: 3 tiers — Free $0 (3 inv) / Solo $9 (25 inv) / Studio $29 (unlimited). NEVER reintroduce the old starter/pro/business 4-tier structure.
-Differentiators (in marketing copy): integrations sync, AI in user's voice, predicted pay date. Always lead with these vs. "polite reminders."
-Dark theme + lime accent (`#D7FF1E` equiv via `--primary`). Inter Tight headings 800 tight-tracking, Inter body. Sharp corners, flat surfaces.
-Single SPA: marketing at root, app at /app/* (subdomain split). Lovable Cloud backend. Stripe for SaaS billing only.
+PayNudge micro-SaaS. Teal primary (166 72% 34%). DM Sans body, Plus Jakarta Sans headings.
+Single-domain mode: marketing + app both on getpaynudge.com (subdomain split disabled until app.getpaynudge.com is independently hosted).
+Lovable Cloud backend. Built-in email. Stripe for SaaS billing only.
+After ANY SEO change (sitemap, robots, index.html meta/JSON-LD, usePageMeta, new marketing route, plan pricing), call submit-indexnow edge function.
 
 ## Memories
-- [Positioning + competitors](mem://features/positioning) — Wedge, 5 differentiators, 3-tier pricing, Stripe legacy mapping, competitor matrix
 - [Brand config](mem://features/brand) — Centralized brand constants, pricing plans, domain config
-- [Design tokens](mem://design/tokens) — Lime accent, dark palette, font families
-- [Domain architecture](mem://features/domain-arch) — Root = marketing, /app/* = dashboard, subdomain split at deploy time
+- [Design tokens](mem://design/tokens) — Teal accent, white/charcoal palette, font families
+- [Domain architecture](mem://features/domain-arch) — Single-domain mode active; cross-domain split design preserved for later
+- [IndexNow auto-trigger](mem://features/indexnow) — Auto-ping Bing/Yandex after SEO changes; key rotation requires Publish
