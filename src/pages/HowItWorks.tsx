@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Bell,
+  CalendarClock,
   CheckCircle2,
-  Clock,
-  FileText,
-  Link2,
   Mail,
   PauseCircle,
+  Plug,
+  Sparkles,
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ const stagger = {
 export default function HowItWorks() {
   usePageMeta({
     title: "How It Works",
-    description: `Learn how ${brand.name} automates invoice reminders in three simple steps. Add an invoice, set your cadence, and get paid.`,
+    description: `${brand.name} connects to your invoicing tool, learns your voice, predicts when each client will pay, and chases every late invoice for you.`,
   });
 
   return (
@@ -37,19 +37,23 @@ export default function HowItWorks() {
       <section className="py-20 md:py-28">
         <div className="container">
           <motion.div
-            className="mx-auto max-w-2xl text-center"
+            className="mx-auto max-w-3xl text-center"
             initial="hidden"
             animate="visible"
             variants={stagger}
           >
+            <motion.span variants={fadeIn} className="text-eyebrow text-muted-foreground">
+              How it works
+            </motion.span>
             <motion.h1
               variants={fadeIn}
-              className="text-display text-5xl text-foreground md:text-6xl"
+              className="text-display mt-6 text-5xl text-foreground md:text-6xl"
             >
-              How {brand.name} Works
+              Connect. Learn your voice. <span className="lime-underline">Predict & chase.</span>
             </motion.h1>
-            <motion.p variants={fadeIn} className="mt-4 text-lg text-muted-foreground">
-              From invoice to payment — in three steps, under 60 seconds to set up.
+            <motion.p variants={fadeIn} className="mt-6 text-lg text-muted-foreground">
+              No copy-paste. No retyping clients. {brand.name} plugs into the tools you already
+              use and runs your accounts-receivable on autopilot.
             </motion.p>
           </motion.div>
         </div>
@@ -61,42 +65,42 @@ export default function HowItWorks() {
             {[
               {
                 step: "1",
-                icon: FileText,
-                title: "Add your invoice details",
+                icon: Plug,
+                title: "Connect your invoicing tool",
                 description:
-                  "Enter the basics: client name, email, invoice amount, due date, and your payment link (Stripe, QuickBooks, Xero, or any URL). Optional: add bank transfer instructions or notes.",
+                  "One-click sync with Stripe, QuickBooks, or Xero. New invoices flow in automatically — no double entry, no CSV imports, no manual setup.",
                 details: [
-                  "Supports any currency",
-                  "Add your own payment URL — we never touch funds",
-                  "Optional notes for context",
-                  "Duplicate invoices for repeat clients",
+                  "Read-only OAuth — we never touch your funds",
+                  "Auto-imports new invoices on a 15-minute schedule",
+                  "Manual entry still works if you prefer it",
+                  "Studio plan: connect all integrations at once",
                 ],
               },
               {
                 step: "2",
-                icon: Clock,
-                title: "Choose your reminder schedule",
+                icon: Sparkles,
+                title: "Teach us your voice (once)",
                 description:
-                  "Pick a default cadence or create your own. Set the tone — friendly, professional, or firm. Preview the email before activating.",
+                  "Paste two or three reminder emails you've sent before. Our AI learns your tone, your sign-off, and your phrasing — then writes every reminder in your style. Forever.",
                 details: [
-                  "Default: 3 days before, due date, +3, +7, +14 days",
-                  "Custom cadence for any schedule",
-                  "Three tone options with escalation",
-                  "Preview emails before they go out",
+                  "Trained from your own past emails",
+                  "Tone escalates gradually as invoices age",
+                  "You can preview and edit any reminder before it sends",
+                  "Update your voice anytime",
                 ],
               },
               {
-              step: "3",
-              icon: CheckCircle2,
-              title: "Sit back and get paid",
-              description:
-                "Reminders go out automatically on schedule. Track activity per invoice. When you're paid, mark it done — reminders stop instantly.",
-              details: [
-                "Automatic sending on schedule",
-                "Open and click tracking",
-                "Activity timeline per invoice",
-                "Auto-stop on payment or dispute",
-              ],
+                step: "3",
+                icon: CalendarClock,
+                title: "We predict, we chase, you get paid",
+                description:
+                  "Every client gets a Pay-Behavior Score. Every open invoice gets a predicted pay date. Reminders fire on schedule, escalate gracefully, and stop the moment money lands.",
+                details: [
+                  "Per-client Pay-Behavior Score updated after every payment",
+                  "Predicted pay date on every open invoice",
+                  "Auto-stop on payment, dispute, or pause",
+                  "Weekly Receivables Health digest in your inbox",
+                ],
               },
             ].map((item) => (
               <motion.div
@@ -146,25 +150,25 @@ export default function HowItWorks() {
                 icon: Mail,
                 title: "Smart email delivery",
                 description:
-                  "Reminders are sent from our infrastructure with your business name and reply-to address. Clients reply directly to you.",
+                  "Reminders sent from our infrastructure with your business name and reply-to. Clients reply directly to you.",
               },
               {
                 icon: TrendingUp,
-                title: "Escalating tone",
+                title: "Tone that escalates with you",
                 description:
-                  "Early reminders are gentle. Later ones get more direct. The tone matches what you'd write yourself, just consistently.",
+                  "AI matches your voice and gradually firms up as invoices age — without ever crossing into harassment.",
               },
               {
                 icon: PauseCircle,
                 title: "Automatic guardrails",
                 description:
-                  "Reminders stop when an invoice is paid, disputed, or paused. Frequency caps prevent over-contacting.",
+                  "Reminders stop on payment, dispute, or pause. Frequency caps prevent over-contacting any client.",
               },
               {
                 icon: Bell,
-                title: "Activity tracking",
+                title: "Health digest, every Monday",
                 description:
-                  "See every reminder sent, opened, and clicked. Know exactly where each invoice stands without asking.",
+                  "\"You're owed $X across N invoices. Predicted to collect $Y this week.\" One email, total clarity.",
               },
             ].map((item) => (
               <Card key={item.title} className="border-border">
@@ -185,9 +189,11 @@ export default function HowItWorks() {
 
       <section className="border-t border-border py-16">
         <div className="container text-center">
-          <h2 className="font-heading text-2xl font-bold text-foreground">Ready to stop chasing payments?</h2>
+          <h2 className="font-heading text-2xl font-bold text-foreground">
+            Ready to put your accounts-receivable on autopilot?
+          </h2>
           <p className="mt-3 text-muted-foreground">
-            Create your free account and add your first invoice in under a minute.
+            Free forever for 3 invoices. Connect your invoicing tool in under a minute.
           </p>
           <Button size="lg" className="mt-6" asChild>
             <Link to="/signup">
