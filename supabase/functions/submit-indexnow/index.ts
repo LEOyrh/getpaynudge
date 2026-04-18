@@ -7,13 +7,14 @@ const corsHeaders = {
 };
 
 const HOST = "getpaynudge.com";
-const KEY = "3d5b5fc43a4b49fa9d79fb7d8a38e80f";
+const KEY = "4fe07780644e47d2b82d48fc5258fc7e";
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 
 const ALL_URLS = [
   "https://getpaynudge.com/",
   "https://getpaynudge.com/how-it-works",
   "https://getpaynudge.com/pricing",
+  "https://getpaynudge.com/compare",
   "https://getpaynudge.com/faq",
   "https://getpaynudge.com/help",
   "https://getpaynudge.com/contact",
