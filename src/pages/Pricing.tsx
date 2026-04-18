@@ -18,18 +18,31 @@ const stagger = {
 };
 
 const comparisonFeatures = [
-  { name: "Active invoices", values: ["3", "20", "60", "Unlimited"] },
-  { name: "Email reminders", values: [true, true, true, true] },
-  { name: "Pay link in reminders", values: [true, true, true, true] },
-  { name: "Default cadence", values: [true, true, true, true] },
-  { name: "Custom cadence", values: [false, true, true, true] },
-  { name: "Tone selection", values: [false, true, true, true] },
-  { name: "Activity timeline", values: [false, true, true, true] },
-  { name: "Open & click tracking", values: [false, false, true, true] },
-  { name: "Email support", values: [false, true, true, true] },
-  { name: "Priority email support", values: [false, false, true, true] },
-  { name: "Dedicated email support", values: [false, false, false, true] },
+  { name: "Active invoices", values: ["3", "25", "Unlimited"] },
+  { name: "Open & click tracking", values: [true, true, true] },
+  { name: "Pay link in reminders", values: [true, true, true] },
+  { name: "Activity timeline", values: [true, true, true] },
+  { name: "Automatic reminder cadence", values: [false, true, true] },
+  { name: "Custom cadence + tone", values: [false, true, true] },
+  { name: "AI-personalized in your voice", values: [false, true, true] },
+  { name: "Stripe / QuickBooks / Xero sync", values: [false, "1 integration", "All integrations"] },
+  { name: "Predicted pay dates", values: [false, false, true] },
+  { name: "Pay-Behavior Score per client", values: [false, false, true] },
+  { name: "Weekly Receivables Health report", values: [false, false, true] },
+  { name: "Priority email support", values: [false, false, true] },
 ];
+
+const competitorRows: Array<{ feature: string; values: (boolean | string)[] }> = [
+  { feature: "Honest free tier (real limits, no trial-only)", values: [true, true, true, false, true] },
+  { feature: "Real automation (not copy/paste)", values: [true, true, true, true, false] },
+  { feature: "Stripe / QuickBooks / Xero sync", values: [true, false, false, true, false] },
+  { feature: "AI written in your voice", values: [true, false, false, false, "generic"] },
+  { feature: "Predicted pay date per client", values: [true, false, false, false, false] },
+  { feature: "Open & click tracking", values: [true, false, true, true, false] },
+  { feature: "English-first, professional UX", values: [true, true, false, true, false] },
+];
+
+const competitorColumns = ["PayNudge", "paynudges.com", "paynudge.app", "paynudge.xyz", "paynudge.eu"];
 
 export default function Pricing() {
   usePageMeta({
