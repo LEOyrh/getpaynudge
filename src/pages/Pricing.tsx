@@ -174,6 +174,76 @@ export default function Pricing() {
         </div>
       </section>
 
+      <section className="border-t border-border py-20 md:py-28">
+        <div className="container">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="text-eyebrow text-muted-foreground">vs. the field</span>
+            <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
+              Why teams pick PayNudge over the other "paynudges"
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              We're the only one combining real automation, integrations, AI in your voice,
+              and predicted pay dates — at an honest price, with an honest free tier.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-5xl overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="py-3 pr-4 text-left text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Feature
+                  </th>
+                  {competitorColumns.map((col, i) => (
+                    <th
+                      key={col}
+                      className={cn(
+                        "py-3 px-3 text-center text-xs font-bold uppercase tracking-[0.15em]",
+                        i === 0 ? "text-primary" : "text-muted-foreground"
+                      )}
+                    >
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {competitorRows.map((row) => (
+                  <tr key={row.feature} className="border-b border-border">
+                    <td className="py-3 pr-4 text-foreground">{row.feature}</td>
+                    {row.values.map((val, i) => (
+                      <td
+                        key={i}
+                        className={cn(
+                          "py-3 px-3 text-center",
+                          i === 0 && "bg-primary/5"
+                        )}
+                      >
+                        {typeof val === "boolean" ? (
+                          val ? (
+                            <CheckCircle2 className="mx-auto h-4 w-4 text-primary" />
+                          ) : (
+                            <Minus className="mx-auto h-4 w-4 text-muted-foreground/40" />
+                          )
+                        ) : (
+                          <span className="text-xs font-medium text-muted-foreground">{val}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Comparison based on public marketing pages as of {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}.{" "}
+              <Link to="/compare" className="text-primary hover:underline">
+                See full breakdown →
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 md:py-28">
         <div className="container">
           <h2 className="mb-10 text-center font-heading text-3xl font-bold text-foreground">
