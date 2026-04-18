@@ -13,6 +13,7 @@ import AppLayout from "@/layouts/AppLayout";
 import Index from "@/pages/Index";
 import HowItWorks from "@/pages/HowItWorks";
 import Pricing from "@/pages/Pricing";
+import Compare from "@/pages/Compare";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
 import Help from "@/pages/Help";
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/compare" element={<Compare />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/help" element={<Help />} />

@@ -354,7 +354,7 @@ export default function InvoiceDetail() {
             </div>
           )}
           {canSendReminder && !toneSelection && (
-            <UpgradePrompt feature="Reminder tone selection" requiredPlan="Starter" />
+            <UpgradePrompt feature="Reminder tone selection" requiredPlan="Solo" />
           )}
 
           {customCadence ? (
@@ -402,7 +402,7 @@ export default function InvoiceDetail() {
             </div>
           ) : (
             <div className="border-t pt-4">
-              <UpgradePrompt feature="Custom reminder schedule" requiredPlan="Starter" />
+              <UpgradePrompt feature="Custom reminder schedule" requiredPlan="Solo" />
               <p className="mt-3 text-xs text-muted-foreground">
                 Free plan uses the default cadence: 3 days before, on due date, and 7 days after.
               </p>
@@ -507,7 +507,7 @@ export default function InvoiceDetail() {
           </CardContent>
         </Card>
       ) : (
-        <UpgradePrompt feature="Activity timeline" requiredPlan="Starter" />
+        <UpgradePrompt feature="Activity timeline" requiredPlan="Solo" />
       )}
     </div>
   );

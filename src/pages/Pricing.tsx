@@ -18,18 +18,31 @@ const stagger = {
 };
 
 const comparisonFeatures = [
-  { name: "Active invoices", values: ["3", "20", "60", "Unlimited"] },
-  { name: "Email reminders", values: [true, true, true, true] },
-  { name: "Pay link in reminders", values: [true, true, true, true] },
-  { name: "Default cadence", values: [true, true, true, true] },
-  { name: "Custom cadence", values: [false, true, true, true] },
-  { name: "Tone selection", values: [false, true, true, true] },
-  { name: "Activity timeline", values: [false, true, true, true] },
-  { name: "Open & click tracking", values: [false, false, true, true] },
-  { name: "Email support", values: [false, true, true, true] },
-  { name: "Priority email support", values: [false, false, true, true] },
-  { name: "Dedicated email support", values: [false, false, false, true] },
+  { name: "Active invoices", values: ["3", "25", "Unlimited"] },
+  { name: "Open & click tracking", values: [true, true, true] },
+  { name: "Pay link in reminders", values: [true, true, true] },
+  { name: "Activity timeline", values: [true, true, true] },
+  { name: "Automatic reminder cadence", values: [false, true, true] },
+  { name: "Custom cadence + tone", values: [false, true, true] },
+  { name: "AI-personalized in your voice", values: [false, true, true] },
+  { name: "Stripe / QuickBooks / Xero sync", values: [false, "1 integration", "All integrations"] },
+  { name: "Predicted pay dates", values: [false, false, true] },
+  { name: "Pay-Behavior Score per client", values: [false, false, true] },
+  { name: "Weekly Receivables Health report", values: [false, false, true] },
+  { name: "Priority email support", values: [false, false, true] },
 ];
+
+const competitorRows: Array<{ feature: string; values: (boolean | string)[] }> = [
+  { feature: "Honest free tier (real limits, no trial-only)", values: [true, true, true, false, true] },
+  { feature: "Real automation (not copy/paste)", values: [true, true, true, true, false] },
+  { feature: "Stripe / QuickBooks / Xero sync", values: [true, false, false, true, false] },
+  { feature: "AI written in your voice", values: [true, false, false, false, "generic"] },
+  { feature: "Predicted pay date per client", values: [true, false, false, false, false] },
+  { feature: "Open & click tracking", values: [true, false, true, true, false] },
+  { feature: "English-first, professional UX", values: [true, true, false, true, false] },
+];
+
+const competitorColumns = ["PayNudge", "paynudges.com", "paynudge.app", "paynudge.xyz", "paynudge.eu"];
 
 export default function Pricing() {
   usePageMeta({
@@ -59,7 +72,7 @@ export default function Pricing() {
           </motion.div>
 
           <motion.div
-            className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+            className="mx-auto mt-14 grid max-w-5xl gap-6 md:grid-cols-3"
             initial="hidden"
             animate="visible"
             variants={stagger}
@@ -157,6 +170,76 @@ export default function Pricing() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border py-20 md:py-28">
+        <div className="container">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="text-eyebrow text-muted-foreground">vs. the field</span>
+            <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-4xl">
+              Why teams pick PayNudge over the other "paynudges"
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              We're the only one combining real automation, integrations, AI in your voice,
+              and predicted pay dates — at an honest price, with an honest free tier.
+            </p>
+          </div>
+
+          <div className="mx-auto mt-12 max-w-5xl overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="py-3 pr-4 text-left text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                    Feature
+                  </th>
+                  {competitorColumns.map((col, i) => (
+                    <th
+                      key={col}
+                      className={cn(
+                        "py-3 px-3 text-center text-xs font-bold uppercase tracking-[0.15em]",
+                        i === 0 ? "text-primary" : "text-muted-foreground"
+                      )}
+                    >
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {competitorRows.map((row) => (
+                  <tr key={row.feature} className="border-b border-border">
+                    <td className="py-3 pr-4 text-foreground">{row.feature}</td>
+                    {row.values.map((val, i) => (
+                      <td
+                        key={i}
+                        className={cn(
+                          "py-3 px-3 text-center",
+                          i === 0 && "bg-primary/5"
+                        )}
+                      >
+                        {typeof val === "boolean" ? (
+                          val ? (
+                            <CheckCircle2 className="mx-auto h-4 w-4 text-primary" />
+                          ) : (
+                            <Minus className="mx-auto h-4 w-4 text-muted-foreground/40" />
+                          )
+                        ) : (
+                          <span className="text-xs font-medium text-muted-foreground">{val}</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Comparison based on public marketing pages as of {new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}.{" "}
+              <Link to="/compare" className="text-primary hover:underline">
+                See full breakdown →
+              </Link>
+            </p>
           </div>
         </div>
       </section>
