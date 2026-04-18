@@ -1,74 +1,77 @@
 
 
-# Site-wide Visual Overhaul: Bold, Dark, Confident
+## Competitive landscape (what I found)
 
-## Design Direction (the "why")
+| Competitor | Real angle | Pricing | Weakness we can exploit |
+|---|---|---|---|
+| **paynudges.com** | Single $6.99 plan, "minimalist". Tiny feature set. | $6.99/mo flat | No tracking, no integrations, no segmentation. Generic. |
+| **paynudge.app** | Heaviest feature set (WhatsApp via Whapi, multi-business, EN/RO, exports). EU-Romania flavor. | €0 → €29.90 → €49.90 | Pricing is steep; WhatsApp requires user's own Whapi account (friction); cluttered. |
+| **paynudge.xyz** | Integration story (QuickBooks/Square/Jobber/Stripe sync) + one-tap **SMS draft from your own phone**. Trades-niche (cleaners, landscapers). | $29 flat, 14-day trial | Single plan, US/trades-coded, no free tier. |
+| **paynudge.io** | Parked GoDaddy site. "Launching soon." | — | Not a real competitor. |
+| **paynudge.eu** | **AI-rewritten reminders** + EU late-fee/legal-interest calculator. Lifetime €19 deal. | Free → €19 lifetime | Manual flow (copy/paste into your email client), not real automation. EU-only legal flavor. |
+| **paynudge.pos-labs.com** | Philippines-targeted, generic copy, vague feature list. | "Free trial" | Regional, no depth. |
 
-Going for **"Quiet Authority"** — black canvas, oversized white display type, single high-saturation accent for action moments only. Psychology: black + heavy serif/grotesque type signal seriousness, expertise, financial authority (think Stripe Press, Linear, Ramp, Mercury, Patrick Collison letterhead). White type on near-black reads as confident and definitive, not aggressive. We keep generous whitespace (welcoming, premium) so it feels brave without feeling like a debt-collector.
+**Pattern:** they all promise "automated polite reminders." None of them combine: real automation + integrations + AI personalization + tracking + an honest free tier. Each has *one* angle. The market is fragmented and shallow — there's a clear opening for the **default professional choice in English-speaking markets**.
 
-**Accent strategy:** swap teal → **electric lime/yellow `#D7FF1E`** as a single high-contrast accent used sparingly (CTAs, "Most Popular" tag, key highlights). Lime against black is the most attention-arresting combo in fintech right now (used by Linear's marketing, modern fintech) and reads as *energy + money* without being childish.
+---
 
-## What changes
+## Our positioning shift: from "another reminder app" → **"The accounts-receivable autopilot for solo operators"**
 
-### 1. Design tokens (`src/index.css` + `tailwind.config.ts`)
-- Default theme becomes **dark** (forced). No light mode toggle on marketing/app.
-- New palette:
-  - `--background`: near-black `0 0% 4%`
-  - `--foreground`: pure white `0 0% 100%`
-  - `--card`: `0 0% 7%` with subtle `0 0% 14%` border
-  - `--primary`: lime `72 100% 56%` with **black** foreground (high-contrast CTA)
-  - `--muted-foreground`: `0 0% 65%` (readable but quieter)
-  - `--destructive`: `0 84% 62%`
-- Font swap: headings → **"Instrument Serif"** (editorial, confident, slight literary feel — matches "we get you paid" gravitas) OR **"Inter Tight"** at 800 with tight tracking. Body stays clean grotesque: **"Inter"** instead of DM Sans (sharper, more fintech).
-  - Recommendation: **Inter Tight (heading, 800, tracking-tighter) + Inter (body)** — safer, more universally bold than serif, fits "sharp + brave."
-- Add a custom utility for "display" type: `text-balance`, ultra-tight tracking, oversized scale (up to `text-7xl` for hero).
+### The wedge (one sentence)
 
-### 2. Marketing site (`Index.tsx`, `MarketingLayout.tsx`, all marketing pages)
-- **Hero:** Massive white headline (`text-6xl md:text-8xl`, font-weight 800, tight tracking). Drop the pill badge or restyle as bare uppercase eyebrow text (`tracking-[0.2em]`). Replace soft radial gradient with a subtle noise/grain texture + thin lime underline accent under one word.
-- **CTAs:** Primary = lime button with black text, sharp corners (radius 0). Secondary = ghost with white border.
-- **Sections:** Hard horizontal rules between sections instead of background color shifts. Remove `bg-secondary/30` alternating bands.
-- **Cards:** Flat black with 1px white/10 border, no shadow, sharper radius. Icons in lime, not teal.
-- **Header:** Black, thin border-bottom, logo monospace-style wordmark (no rounded square). Mobile nav becomes full-screen overlay.
-- **Footer:** Black, oversized brand wordmark, small uppercase link labels.
+> "Connect your invoicing tool. We chase every late invoice for you in your voice — and tell you exactly when each client will pay."
 
-### 3. Authenticated app (`AppLayout.tsx`, all `pages/app/*`)
-- Same dark palette, same fonts → consistent brand experience post-login.
-- Sidebar: black, lime active-state indicator (left border), uppercase nav labels.
-- Cards/tables: same flat dark treatment as marketing.
-- Status badges: paid = lime, overdue = red, paused = white/20.
+Three ideas baked in that none of them have together:
+1. **Connect, don't re-enter** (kill the manual data entry friction — biggest churn driver in this category).
+2. **AI-personalized in your voice** (eu has AI but it's copy/paste; we make it auto-send).
+3. **Predicted pay date** (nobody is doing this — a small ML/heuristic model that says "Acme typically pays 11 days late → expect ~Mar 28"). Massive perceived sophistication.
 
-### 4. Favicon — "simplest but dopest"
-- Concept: single bold lime "P" glyph on black square, sharp corners. No icon, no envelope, no bell — just the typographic mark. Generated as inline SVG at `public/favicon.svg` (32×32, scales perfectly), plus a 180×180 `apple-touch-icon.png`.
-- Delete `public/favicon.ico` (current Lovable default).
+### Five concrete differentiators to build (priority order)
 
-### 5. Social / SEO image
-- Generate a **1200×630 OG image** (`public/og-image.png`):
-  - Black background, oversized white headline "Get paid. Without asking twice." with lime accent underline, small `PayNudge` wordmark bottom-left, subtle grain.
-- Wire it into `index.html` (`og:image`, `twitter:image` with `summary_large_image`) and into `usePageMeta.ts` so every page advertises it.
-- Add `<meta name="theme-color" content="#0A0A0A">` for mobile browser chrome.
+| # | Differentiator | Why it wins | Build effort |
+|---|---|---|---|
+| 1 | **Stripe / QuickBooks / Xero invoice sync** (read-only) | Removes #1 friction. paynudge.xyz has it but only on $29 plan. We ship it on free. | Medium — OAuth + ingestion edge function |
+| 2 | **AI-personalized reminders ("in your voice")** — learns your tone from 2-3 sample emails you paste once, then writes every reminder in that style | eu has generic AI; we have *your* voice. Sticky moat. | Low–Medium — Lovable AI Gateway prompt with style sample |
+| 3 | **Client Pay-Behavior Score + Predicted Pay Date** | Nobody else has this. Surfaces "Acme pays avg 9 days late" badge. Drives retention because it gets smarter the more invoices you log. | Medium — SQL aggregation + simple heuristic |
+| 4 | **One-tap "Open SMS draft" from your phone** (mobile web → `sms:` link) | xyz's signature feature. Cheap to copy, immediately closes a feature gap. | Low — `<a href="sms:...">` link generator |
+| 5 | **Public "Receivables Health" weekly email** to the user — "You're owed $X across N invoices, predicted to collect $Y this week" | Re-engagement loop. Pulls users back to the app. Brands us as the *finance* tool, not just an email-sender. | Low — cron edge function + email |
 
-### 6. Remove all Lovable artifacts
-- Audit + remove: `public/favicon.ico` (Lovable default), `public/placeholder.svg` (Lovable heart), the `3d5b5fc43a4b49fa9d79fb7d8a38e80f.txt` verification file (keep — that's domain verification, not Lovable branding — will confirm before deleting).
-- Search codebase for any `lovable`-named imports/assets and replace.
+### Brand & visual differentiation
 
-### 7. Memory updates
-- Rewrite `mem://design/tokens` with new palette + fonts.
-- Update `mem://index.md` Core rules: "Dark theme only. Black bg, white text, lime `#D7FF1E` accent. Inter Tight headings 800 tight-tracking, Inter body. Sharp corners (radius 0–4px), flat surfaces, generous whitespace."
+The other six all have either generic SaaS-blue or very plain layouts. We already have the **dark + lime "Quiet Authority"** direction (per `mem://design/tokens` and `.lovable/plan.md`) — that alone makes us look 2x more premium than every competitor in this list. We just need to lean harder on **trust signals** they're missing:
 
-## Out of scope (intentionally)
-- Copywriting changes — visual overhaul only. Headlines stay as-is unless you want a copy pass after.
-- Email template restyling — separate job; will flag if you want it next.
+- **Real screenshots, not mocked tables** (replace the existing Hero illustration with a high-fidelity dashboard screenshot showing the Pay-Behavior Score — visual proof of our unique feature).
+- **Live "outstanding chased today" counter** on the homepage (small, under hero — "$X recovered for users this week"). Even a static-looking ticker reads as social proof.
+- **Customer voice section** with 2-3 testimonials (placeholder until we have real ones, then swap in).
+- **Comparison table** ("vs. other reminder tools") — explicitly listing our integrations + AI voice + predicted pay date as ✅ vs. competitors' ❌. Aggressive but legitimate.
 
-## Files touched
-**Tokens & global:** `src/index.css`, `tailwind.config.ts`, `index.html`
-**Layouts:** `src/layouts/MarketingLayout.tsx`, `src/layouts/AppLayout.tsx`
-**Marketing pages:** `src/pages/Index.tsx`, `Pricing.tsx`, `HowItWorks.tsx`, `FAQ.tsx`, `Contact.tsx`, `Help.tsx`, `templates/TemplatesHub.tsx` + template subpages, `Login.tsx`, `Signup.tsx`, `ForgotPassword.tsx`, `ResetPassword.tsx`
-**App pages:** `Dashboard.tsx`, `Invoices.tsx`, `InvoiceDetail.tsx`, `NewInvoice.tsx`, `Billing.tsx`, `AppSettings.tsx`, admin pages
-**Components:** `Turnstile.tsx`, `UpgradePrompt.tsx`, `templates/TemplateLayout.tsx`, button/card variant tweaks if needed
-**SEO:** `src/hooks/usePageMeta.ts` (add og:image), `index.html` (og + twitter image, theme-color, favicon refs)
-**New assets:** `public/favicon.svg`, `public/apple-touch-icon.png`, `public/og-image.png`
-**Delete:** `public/favicon.ico`, `public/placeholder.svg`
-**Memory:** `.lovable/memory/index.md`, `.lovable/memory/design/tokens.md`
+### Pricing repositioning
 
-## Approve and I'll ship it in one pass.
+Current: Free (3) → $8 (20) → $22 (60) → $48 (unlimited). Four tiers is one too many for this market and our $22/$48 jumps look pricey vs. paynudges.com ($6.99 unlimited) and xyz ($29 unlimited).
+
+Recommendation: **collapse to 3 tiers** that anchor against the field:
+
+| Tier | Price | Limit | Hook |
+|---|---|---|---|
+| **Free** | $0 | 3 active invoices | All tracking + manual reminders |
+| **Solo** | $9/mo | 25 active invoices | Auto-reminders, 1 integration, AI voice |
+| **Studio** | $29/mo | Unlimited | All integrations, predicted pay dates, weekly health report, priority support |
+
+Undercuts xyz at the high end, matches paynudges.com at the low end, but with a vastly stronger feature set than either. Drop the Business tier — it doesn't pull weight at this stage.
+
+---
+
+## What I'll change (file-level, one pass)
+
+1. **`src/pages/Index.tsx`** — rewrite hero copy + add three new sections: live "$ recovered" stat strip, **Comparison table**, **Pay-Behavior Score** feature spotlight with screenshot.
+2. **`src/config/brand.ts`** — collapse to 3-tier pricing (Free / Solo $9 / Studio $29).
+3. **`src/pages/Pricing.tsx`** — sync to new tiers + add a comparison-vs-competitors block.
+4. **`src/hooks/usePlanFeatures.ts`** — re-map feature gates to the new 3 tiers; add `aiVoice`, `integrations`, `predictedPayDate`, `weeklyHealthReport` flags (gated to Studio for now; UI placeholders, real builds in follow-up tasks).
+5. **`src/pages/HowItWorks.tsx`** — reframe from generic 3-step to "Connect → We learn your voice → We predict & chase."
+6. **New `src/pages/Compare.tsx`** — dedicated SEO landing page: "PayNudge vs. PayNudge.app, .xyz, .eu" — captures branded competitor searches.
+7. **Memory updates** — record the positioning ("AR autopilot for solo operators"), the 5 differentiators, and the new pricing in `mem://features/positioning.md` + index.
+
+**Out of scope this pass** (build next, in order): Stripe/QBO sync, AI-voice trainer, Pay-Behavior Score backend, weekly health report cron. This pass is **positioning + pricing + landing-page** only — the moves that get traffic to *believe* we're different. Then we build to back it up.
+
+**Approve and I'll ship the positioning + pricing + landing changes in one pass, then we can pick which differentiator (sync, AI voice, pay-date prediction) to build first.**
 
