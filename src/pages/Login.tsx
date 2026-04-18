@@ -55,7 +55,19 @@ export default function Login() {
       if (isLocalDev()) {
         navigate(returnTo);
       } else {
-        window.location.href = `${brand.appUrl}${returnTo}`;
+        // Pass session tokens via URL hash so the app subdomain can install
+        // them in its own localStorage (Supabase storage is per-origin).
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token && session?.refresh_token) {
+          const params = new URLSearchParams({
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+            next: returnTo,
+          });
+          window.location.href = `${brand.appUrl}/auth/handoff#${params.toString()}`;
+        } else {
+          window.location.href = `${brand.appUrl}${returnTo}`;
+        }
       }
     }
   };
