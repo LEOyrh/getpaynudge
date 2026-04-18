@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,13 +16,32 @@ export default function Login() {
     description: `Log in to your ${brand.name} account.`,
   });
 
-  const { signIn } = useAuth();
+  const { signIn, session } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  // If the user already has a session on this domain (e.g. ProtectedRoute on
+  // the app subdomain bounced them here), hand the session off immediately
+  // instead of forcing a re-login.
+  useEffect(() => {
+    if (!session?.access_token || !session?.refresh_token) return;
+    const returnTo = searchParams.get("returnTo") || "/dashboard";
+    if (isLocalDev()) {
+      navigate(returnTo, { replace: true });
+      return;
+    }
+    const params = new URLSearchParams({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      next: returnTo,
+    });
+    window.location.replace(`${brand.appUrl}/auth/handoff#${params.toString()}`);
+  }, [session, searchParams, navigate]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
