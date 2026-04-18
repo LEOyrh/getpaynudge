@@ -86,6 +86,7 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/auth/handoff" element={<AuthHandoff />} />
 
             {/* App (protected) — on app subdomain these are /dashboard, /invoices, etc. */}
             <Route
