@@ -79,6 +79,7 @@ export default function Login() {
     } else {
       // After successful login, redirect to app subdomain
       const returnTo = searchParams.get("returnTo") || "/dashboard";
+      sessionStorage.removeItem("pn_handoff_attempted");
       if (isLocalDev()) {
         navigate(returnTo);
       } else {
