@@ -107,8 +107,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session, checkSubscription]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    // After email confirmation, redirect to login on the marketing domain
-    const redirectUrl = `${brand.url}/login`;
+    // Single-domain mode: confirmation email returns the user to /login on
+    // whatever origin they're currently using.
+    const redirectUrl = `${window.location.origin}/login`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
