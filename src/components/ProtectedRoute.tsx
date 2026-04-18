@@ -1,6 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { brand, isLocalDev } from "@/config/brand";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -15,16 +14,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   if (!user) {
-    // Encode the current path so login can redirect back after auth
+    // Single-domain mode: stay on this origin. (Cross-domain redirect to
+    // brand.url disabled because app.getpaynudge.com isn't yet hosted as
+    // a separate origin — see DomainRouter for details.)
     const returnTo = encodeURIComponent(location.pathname + location.search);
-
-    if (isLocalDev()) {
-      return <Navigate to={`/login?returnTo=${returnTo}`} replace />;
-    }
-
-    // Redirect to login on the marketing domain with returnTo
-    window.location.href = `${brand.url}/login?returnTo=${returnTo}`;
-    return null;
+    return <Navigate to={`/login?returnTo=${returnTo}`} replace />;
   }
 
   return <>{children}</>;

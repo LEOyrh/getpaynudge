@@ -107,8 +107,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [session, checkSubscription]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    // After email confirmation, redirect to login on the marketing domain
-    const redirectUrl = `${brand.url}/login`;
+    // Single-domain mode: confirmation email returns the user to /login on
+    // whatever origin they're currently using.
+    const redirectUrl = `${window.location.origin}/login`;
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -130,9 +131,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    // Password reset link should go to the marketing domain's reset-password page
+    // Single-domain mode: reset link returns to /reset-password on the
+    // current origin.
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${brand.url}/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     return { error: error as Error | null };
   };
