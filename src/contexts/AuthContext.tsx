@@ -64,10 +64,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+
+    // 1. Restore session from storage FIRST. Only after this resolves do we
+    //    flip `loading=false`, so ProtectedRoute never sees a transient
+    //    "logged out" state on initial mount (which caused a redirect loop
+    //    on app.getpaynudge.com after the handoff).
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      setSession(session);
+      setLoading(false);
+      if (session) checkSubscription();
+      else setSubscription({ ...defaultSub, loading: false });
+    });
+
+    // 2. Subscribe to subsequent auth state changes (sign-in, sign-out,
+    //    token refresh, setSession from /auth/handoff). Don't touch
+    //    `loading` here — getSession owns the initial flip.
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        if (!mounted) return;
         setSession(session);
-        setLoading(false);
         if (session) {
           setTimeout(() => checkSubscription(), 0);
         } else {
@@ -76,14 +93,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      if (session) checkSubscription();
-      else setSubscription({ ...defaultSub, loading: false });
-    });
-
-    return () => authSub.unsubscribe();
+    return () => {
+      mounted = false;
+      authSub.unsubscribe();
+    };
   }, [checkSubscription]);
 
   // Auto-refresh subscription every 60s
