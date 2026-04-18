@@ -3,21 +3,18 @@ import { plans } from "@/config/brand";
 /**
  * Stripe product ↔ price mapping for PayNudge plans.
  *
- * Note: legacy Stripe products (starter / pro / business) are reused for the
- * new 3-tier structure to avoid breaking active subscriptions:
- *   - "solo"   → legacy "starter" product
- *   - "studio" → legacy "pro" product
- * The legacy "business" product is mapped to "studio" so existing customers
- * continue to receive unlimited access.
+ * Live products: PayNudge Solo ($9) and PayNudge Studio ($29).
+ * Legacy products (starter $8, pro $22, business $48, old solo $9) are mapped
+ * forward so any existing subscribers keep correct access until migrated.
  */
 export const stripePlans = {
   solo: {
-    productId: "prod_ULkKOb5YXF3omw",
-    priceId: "price_1TN2qDAJV5JIDaSe4hvE8XuJ",
+    productId: "prod_UMKTujHPntf68n",
+    priceId: "price_1TNboLAJV5JIDaSeXraEH73v",
   },
   studio: {
-    productId: "prod_ULkKBYqnmDokUG",
-    priceId: "price_1TN2qFAJV5JIDaSeuU0pxIdc",
+    productId: "prod_UMKTAkSvp6iNLd",
+    priceId: "price_1TNbokAJV5JIDaSegGPDQmcP",
   },
 } as const;
 
@@ -25,7 +22,10 @@ export type StripePlanKey = keyof typeof stripePlans;
 
 /** Legacy product IDs that should still resolve to a current plan. */
 const legacyProductMap: Record<string, StripePlanKey> = {
-  prod_ULkKetWVQnfmPl: "studio", // old "business" → studio (unlimited)
+  prod_ULkKOb5YXF3omw: "solo",   // legacy Starter ($8) → solo
+  prod_ULkKd211wLLBmP: "solo",   // legacy PayNudge Starter ($9) → solo
+  prod_ULkKBYqnmDokUG: "studio", // legacy Pro ($22) → studio
+  prod_ULkKetWVQnfmPl: "studio", // legacy Business ($48) → studio (unlimited)
 };
 
 /** Resolve plan key from Stripe product ID */
