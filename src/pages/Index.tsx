@@ -40,10 +40,14 @@ export default function Index() {
   return (
     <>
       <HeroSection />
+      <SocialProofStrip />
       <WhoItsForSection />
+      <DifferentiatorSection />
       <HowItWorksSection />
+      <PayBehaviorScoreSection />
       <FeaturesSection />
       <ReminderSequenceSection />
+      <CompetitorComparisonSection />
       <PricingPreview />
       <TrustSection />
       <FAQPreview />
@@ -91,16 +95,16 @@ function HeroSection() {
             variants={fadeIn}
             className="text-display mt-8 text-5xl text-foreground sm:text-6xl md:text-7xl lg:text-8xl"
           >
-            Get paid without the{" "}
-            <span className="lime-underline">awkward follow-up</span>
+            The accounts-receivable{" "}
+            <span className="lime-underline">autopilot</span> for solo operators
           </motion.h1>
 
           <motion.p
             variants={fadeIn}
             className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            {brand.name} sends polite, escalating invoice reminders automatically — so you can
-            focus on your work instead of chasing payments.
+            Connect your invoicing tool. {brand.name} chases every late invoice for you in your
+            voice — and tells you exactly when each client will pay.
           </motion.p>
 
           <motion.div
