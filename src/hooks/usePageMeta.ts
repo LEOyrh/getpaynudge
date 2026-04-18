@@ -68,15 +68,10 @@ function humanizeSegment(segment: string) {
 }
 
 function resolveCanonical(pathname: string) {
-  // On the app subdomain, canonical points to app subdomain
-  if (isAppDomain()) {
-    return new URL(pathname, `${brand.appUrl}/`).toString();
-  }
-  // App-like paths (in dev) get app subdomain canonical
-  const appPaths = ["/dashboard", "/invoices", "/settings", "/billing", "/admin"];
-  if (appPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-    return new URL(pathname, `${brand.appUrl}/`).toString();
-  }
+  // Single-domain mode: everything canonicalizes to the root marketing domain.
+  // App routes are noindex anyway, but we still emit a canonical for consistency
+  // and to avoid pointing crawlers at the app subdomain (which currently mirrors
+  // the root origin and would produce duplicate-content signals).
   return new URL(pathname, `${brand.url}/`).toString();
 }
 

@@ -1,11 +1,17 @@
 User-agent: *
 Allow: /
 Disallow: /app/
+Disallow: /dashboard
+Disallow: /invoices
+Disallow: /billing
+Disallow: /settings
+Disallow: /admin
 Disallow: /login
 Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /unsubscribe
+Disallow: /auth/
 
 Host: getpaynudge.com
 Sitemap: https://getpaynudge.com/sitemap.xml
