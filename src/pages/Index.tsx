@@ -3,14 +3,20 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Bell,
+  BrainCircuit,
+  CalendarClock,
   CheckCircle2,
   Clock,
   FileText,
+  LineChart,
   Link2,
   Mail,
+  Minus,
   MousePointerClick,
   PauseCircle,
+  Plug,
   Shield,
+  Sparkles,
   TrendingUp,
   Users,
   Zap,
@@ -428,7 +434,7 @@ function PricingPreview() {
         </motion.div>
 
         <motion.div
-          className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4"
+          className="mx-auto mt-14 grid max-w-5xl gap-6 md:grid-cols-3"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
