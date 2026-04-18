@@ -26,7 +26,8 @@ export default function Login() {
 
   // If the user already has a session on this domain (e.g. ProtectedRoute on
   // the app subdomain bounced them here), hand the session off immediately
-  // instead of forcing a re-login.
+  // instead of forcing a re-login. Guarded by sessionStorage so a broken
+  // handoff can't trigger an infinite refresh loop between the two domains.
   useEffect(() => {
     if (!session?.access_token || !session?.refresh_token) return;
     const returnTo = searchParams.get("returnTo") || "/dashboard";
@@ -34,6 +35,13 @@ export default function Login() {
       navigate(returnTo, { replace: true });
       return;
     }
+    const guardKey = "pn_handoff_attempted";
+    if (sessionStorage.getItem(guardKey)) {
+      // Already tried once this tab session — don't loop. The user can click
+      // "Log in" manually to retry.
+      return;
+    }
+    sessionStorage.setItem(guardKey, "1");
     const params = new URLSearchParams({
       access_token: session.access_token,
       refresh_token: session.refresh_token,
@@ -71,6 +79,7 @@ export default function Login() {
     } else {
       // After successful login, redirect to app subdomain
       const returnTo = searchParams.get("returnTo") || "/dashboard";
+      sessionStorage.removeItem("pn_handoff_attempted");
       if (isLocalDev()) {
         navigate(returnTo);
       } else {
