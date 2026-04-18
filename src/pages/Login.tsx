@@ -24,30 +24,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-  // If the user already has a session on this domain (e.g. ProtectedRoute on
-  // the app subdomain bounced them here), hand the session off immediately
-  // instead of forcing a re-login. Guarded by sessionStorage so a broken
-  // handoff can't trigger an infinite refresh loop between the two domains.
+  // Single-domain mode: if already authenticated, just navigate to the
+  // returnTo path on this same origin. The previous cross-domain handoff
+  // caused infinite redirect loops because app.getpaynudge.com isn't yet
+  // hosted as a separate origin (see DomainRouter for details).
   useEffect(() => {
-    if (!session?.access_token || !session?.refresh_token) return;
+    if (!session?.access_token) return;
     const returnTo = searchParams.get("returnTo") || "/dashboard";
-    if (isLocalDev()) {
-      navigate(returnTo, { replace: true });
-      return;
-    }
-    const guardKey = "pn_handoff_attempted";
-    if (sessionStorage.getItem(guardKey)) {
-      // Already tried once this tab session — don't loop. The user can click
-      // "Log in" manually to retry.
-      return;
-    }
-    sessionStorage.setItem(guardKey, "1");
-    const params = new URLSearchParams({
-      access_token: session.access_token,
-      refresh_token: session.refresh_token,
-      next: returnTo,
-    });
-    window.location.replace(`${brand.appUrl}/auth/handoff#${params.toString()}`);
+    navigate(returnTo, { replace: true });
   }, [session, searchParams, navigate]);
 
 
