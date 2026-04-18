@@ -61,26 +61,10 @@ export default function Login() {
     if (error) {
       toast.error(error.message);
     } else {
-      // After successful login, redirect to app subdomain
+      // Single-domain mode: navigate locally on this origin.
       const returnTo = searchParams.get("returnTo") || "/dashboard";
       sessionStorage.removeItem("pn_handoff_attempted");
-      if (isLocalDev()) {
-        navigate(returnTo);
-      } else {
-        // Pass session tokens via URL hash so the app subdomain can install
-        // them in its own localStorage (Supabase storage is per-origin).
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.access_token && session?.refresh_token) {
-          const params = new URLSearchParams({
-            access_token: session.access_token,
-            refresh_token: session.refresh_token,
-            next: returnTo,
-          });
-          window.location.href = `${brand.appUrl}/auth/handoff#${params.toString()}`;
-        } else {
-          window.location.href = `${brand.appUrl}${returnTo}`;
-        }
-      }
+      navigate(returnTo);
     }
   };
 
