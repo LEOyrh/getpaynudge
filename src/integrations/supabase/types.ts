@@ -211,6 +211,7 @@ export type Database = {
           issue_date: string
           notes: string | null
           payment_link: string | null
+          source: string
           status: Database["public"]["Enums"]["invoice_status"]
           updated_at: string
           user_id: string
@@ -227,6 +228,7 @@ export type Database = {
           issue_date?: string
           notes?: string | null
           payment_link?: string | null
+          source?: string
           status?: Database["public"]["Enums"]["invoice_status"]
           updated_at?: string
           user_id: string
@@ -243,6 +245,7 @@ export type Database = {
           issue_date?: string
           notes?: string | null
           payment_link?: string | null
+          source?: string
           status?: Database["public"]["Enums"]["invoice_status"]
           updated_at?: string
           user_id?: string
@@ -275,6 +278,92 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      stripe_connections: {
+        Row: {
+          api_key_last4: string
+          created_at: string
+          encrypted_api_key: string
+          id: string
+          invoices_synced_count: number
+          last_sync_at: string | null
+          last_sync_error: string | null
+          last_sync_status: string | null
+          stripe_account_email: string | null
+          stripe_account_id: string
+          stripe_account_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key_last4: string
+          created_at?: string
+          encrypted_api_key: string
+          id?: string
+          invoices_synced_count?: number
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          stripe_account_email?: string | null
+          stripe_account_id: string
+          stripe_account_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key_last4?: string
+          created_at?: string
+          encrypted_api_key?: string
+          id?: string
+          invoices_synced_count?: number
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          stripe_account_email?: string | null
+          stripe_account_id?: string
+          stripe_account_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stripe_invoice_map: {
+        Row: {
+          created_at: string
+          id: string
+          invoice_id: string
+          last_synced_at: string
+          stripe_account_id: string
+          stripe_invoice_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invoice_id: string
+          last_synced_at?: string
+          stripe_account_id: string
+          stripe_invoice_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          last_synced_at?: string
+          stripe_account_id?: string
+          stripe_invoice_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stripe_invoice_map_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       suppressed_emails: {
         Row: {
@@ -350,7 +439,51 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      stripe_connections_safe: {
+        Row: {
+          api_key_last4: string | null
+          created_at: string | null
+          id: string | null
+          invoices_synced_count: number | null
+          last_sync_at: string | null
+          last_sync_error: string | null
+          last_sync_status: string | null
+          stripe_account_email: string | null
+          stripe_account_id: string | null
+          stripe_account_name: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          api_key_last4?: string | null
+          created_at?: string | null
+          id?: string | null
+          invoices_synced_count?: number | null
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          stripe_account_email?: string | null
+          stripe_account_id?: string | null
+          stripe_account_name?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          api_key_last4?: string | null
+          created_at?: string | null
+          id?: string | null
+          invoices_synced_count?: number | null
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          stripe_account_email?: string | null
+          stripe_account_id?: string | null
+          stripe_account_name?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
