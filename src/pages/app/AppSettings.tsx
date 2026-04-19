@@ -88,6 +88,8 @@ export default function AppSettings() {
           )}
         </CardContent>
       </Card>
+
+      <StripeConnectionCard />
     </div>
   );
 }
