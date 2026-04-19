@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Mic, Sparkles, Wand2, Check, Loader2, Copy, RefreshCcw, Trash2 } from "lucide-react";
+import { Mic, Sparkles, Wand2, Check, Loader2, Copy, RefreshCcw, Trash2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ type VoiceProfileRow = {
   samples: string[];
   tone_profile: ToneProfile | null;
   analyzed_at: string | null;
+  voice_enabled: boolean;
 };
 
 const STAGES = [
@@ -186,6 +188,26 @@ export default function Voice() {
     },
   });
 
+  const toggleVoiceMutation = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      const { error } = await supabase
+        .from("voice_profiles" as any)
+        .update({ voice_enabled: enabled })
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return enabled;
+    },
+    onSuccess: (enabled) => {
+      toast.success(
+        enabled
+          ? "Outgoing reminders will use your voice"
+          : "Outgoing reminders will use the standard tone"
+      );
+      qc.invalidateQueries({ queryKey: ["voice-profile", user?.id] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Could not update setting"),
+  });
+
   const tone = profile?.tone_profile ?? null;
 
   const reminder = previewMutation.data;
@@ -218,6 +240,38 @@ export default function Voice() {
           </Badge>
         )}
       </div>
+
+      {/* Opt-in toggle: only meaningful once a voice profile exists */}
+      {tone && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 rounded-md bg-primary/15 p-2 text-primary">
+                <Zap className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">
+                  Use my trained voice for outgoing reminders
+                </p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  When on, scheduled reminders are written in your voice. If anything goes wrong,
+                  PayNudge silently falls back to the standard tone so the reminder still goes out.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 sm:flex-shrink-0">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                {profile?.voice_enabled ? "On" : "Off"}
+              </span>
+              <Switch
+                checked={!!profile?.voice_enabled}
+                disabled={toggleVoiceMutation.isPending}
+                onCheckedChange={(checked) => toggleVoiceMutation.mutate(checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* LEFT: samples + analyze */}
