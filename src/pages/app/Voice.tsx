@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Mic, Sparkles, Wand2, Check, Loader2, Copy, RefreshCcw, Trash2, Zap } from "lucide-react";
+import { Mic, Sparkles, Wand2, Check, Loader2, Copy, RefreshCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -40,7 +40,6 @@ type VoiceProfileRow = {
   samples: string[];
   tone_profile: ToneProfile | null;
   analyzed_at: string | null;
-  voice_enabled: boolean;
 };
 
 const STAGES = [
