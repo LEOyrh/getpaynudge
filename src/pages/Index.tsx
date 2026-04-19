@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
+  AlertTriangle,
   ArrowRight,
   Bell,
   CalendarClock,
@@ -9,6 +10,7 @@ import {
   FileText,
   LineChart,
   Link2,
+  Lock,
   Mail,
   Minus,
   MousePointerClick,
@@ -825,10 +827,60 @@ function StripeSyncSection() {
 
 function PayBehaviorScoreSection() {
   const clients = [
-    { name: "Acme Co.", score: 92, label: "Pays early", avg: "−2 days", color: "text-primary" },
-    { name: "Northwind Ltd.", score: 71, label: "Usually on time", avg: "+1 day", color: "text-foreground" },
-    { name: "Globex Inc.", score: 38, label: "Chronically late", avg: "+14 days", color: "text-destructive" },
+    {
+      name: "Acme Co.",
+      score: 92,
+      tier: "great" as const,
+      onTime: 96,
+      avgLate: "−1.2",
+      paid: 14,
+      predicted: "Mar 24, 2026",
+    },
+    {
+      name: "Northwind Ltd.",
+      score: 64,
+      tier: "okay" as const,
+      onTime: 72,
+      avgLate: "3.4",
+      paid: 8,
+      predicted: "Mar 31, 2026",
+    },
+    {
+      name: "Globex Inc.",
+      score: 28,
+      tier: "risky" as const,
+      onTime: 25,
+      avgLate: "14.6",
+      paid: 6,
+      predicted: "Apr 09, 2026",
+    },
   ];
+
+  const tierStyles = {
+    great: {
+      label: "Reliable",
+      Icon: TrendingUp,
+      badge: "bg-primary/15 text-primary border border-primary/30",
+      bar: "bg-primary",
+    },
+    okay: {
+      label: "Average",
+      Icon: Clock,
+      badge: "bg-foreground/10 text-foreground border border-foreground/20",
+      bar: "bg-foreground/60",
+    },
+    risky: {
+      label: "Slow payer",
+      Icon: AlertTriangle,
+      badge: "bg-destructive/15 text-destructive border border-destructive/30",
+      bar: "bg-destructive",
+    },
+  } as const;
+
+  const featured = clients[0];
+  const featuredCfg = tierStyles[featured.tier];
+  const FeaturedIcon = featuredCfg.Icon;
+
   return (
     <section className="border-t border-border py-20 md:py-28">
       <div className="container">
@@ -858,51 +910,103 @@ function PayBehaviorScoreSection() {
             </ul>
           </div>
 
-          <div className="border border-border bg-card p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
-                Client Health
-              </p>
-              <LineChart className="h-4 w-4 text-primary" />
-            </div>
-            <div className="mt-4 space-y-4">
-              {clients.map((c) => (
-                <div key={c.name} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground">{c.name}</p>
-                    <span className={cn("font-heading text-sm font-bold", c.color)}>
-                      {c.score}
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden bg-muted">
-                    <div
-                      className={cn(
-                        "h-full",
-                        c.score >= 80 ? "bg-primary" : c.score >= 50 ? "bg-foreground/60" : "bg-destructive"
-                      )}
-                      style={{ width: `${c.score}%` }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{c.label}</span>
-                    <span>Avg. {c.avg}</span>
-                  </div>
+          {/* Right column: in-app spotlight mock */}
+          <div className="space-y-4">
+            {/* Featured panel — mirrors PayBehaviorPanel */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="space-y-3 rounded-md border border-border bg-card p-5 shadow-2xl"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Client behavior
+                  </p>
+                  <p className="mt-1 font-heading text-base font-semibold text-foreground">
+                    {featured.name}
+                  </p>
                 </div>
-              ))}
-            </div>
-            <div className="mt-6 border-t border-border pt-4">
-              <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
-                Next predicted payments
-              </p>
-              <div className="mt-3 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-foreground">INV-218 · Acme Co.</span>
-                  <span className="text-primary">Mar 24</span>
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold uppercase tracking-wider",
+                    featuredCfg.badge
+                  )}
+                >
+                  <FeaturedIcon className="h-3 w-3" />
+                  {featured.score}/100
+                </span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 text-sm">
+                <div>
+                  <p className="text-xs text-muted-foreground">On-time rate</p>
+                  <p className="font-semibold text-foreground">{featured.onTime}%</p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-foreground">INV-221 · Globex Inc.</span>
-                  <span className="text-destructive">Apr 09</span>
+                <div>
+                  <p className="text-xs text-muted-foreground">Avg days late</p>
+                  <p className="font-semibold text-foreground">{featured.avgLate}</p>
                 </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Paid invoices</p>
+                  <p className="font-semibold text-foreground">{featured.paid}</p>
+                </div>
+              </div>
+
+              <div className="border-t border-border pt-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Predicted pay date
+                </p>
+                <p className="mt-1 font-heading text-lg font-bold text-primary">
+                  ~{featured.predicted}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Compact list of other clients */}
+            <div className="rounded-md border border-border bg-card p-5 shadow-xl">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Other clients
+                </p>
+                <LineChart className="h-4 w-4 text-primary" />
+              </div>
+              <div className="mt-4 space-y-4">
+                {clients.slice(1).map((c) => {
+                  const cfg = tierStyles[c.tier];
+                  const Icon = cfg.Icon;
+                  return (
+                    <div key={c.name} className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-foreground">{c.name}</p>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+                              cfg.badge
+                            )}
+                          >
+                            <Icon className="h-2.5 w-2.5" />
+                            {c.score}
+                          </span>
+                          <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground/70">
+                            <Lock className="h-2.5 w-2.5" />
+                            ~{c.predicted.split(",")[0]}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden bg-muted">
+                        <div className={cn("h-full", cfg.bar)} style={{ width: `${c.score}%` }} />
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{c.onTime}% on time · {c.paid} paid</span>
+                        <span>Avg {c.avgLate}d late</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
