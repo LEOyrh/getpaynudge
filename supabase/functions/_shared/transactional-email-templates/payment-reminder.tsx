@@ -14,6 +14,11 @@ interface PaymentReminderProps {
   businessName?: string
   payLink?: string
   tone?: 'friendly' | 'professional' | 'firm'
+  // When provided (from the AI Voice Trainer), the template renders this
+  // plain-text body instead of the canned tone copy. The invoice box and
+  // CTA are still rendered for clarity.
+  voiceBody?: string
+  voiceSubject?: string
 }
 
 const toneConfig = {
@@ -45,8 +50,10 @@ const PaymentReminderEmail = ({
   businessName = SITE_NAME,
   payLink,
   tone = 'friendly',
+  voiceBody,
 }: PaymentReminderProps) => {
   const t = toneConfig[tone] || toneConfig.friendly
+  const ctaLabel = voiceBody ? 'View & Pay Invoice' : t.cta
 
   return (
     <Html lang="en" dir="ltr">
@@ -56,8 +63,29 @@ const PaymentReminderEmail = ({
         <Container style={container}>
           <Heading style={logo}>{SITE_NAME}</Heading>
           <Hr style={hr} />
-          <Heading style={h1}>{t.greeting(clientName)}</Heading>
-          <Text style={text}>{t.body}</Text>
+          {voiceBody ? (
+            // Voice-rendered: preserve the writer's words. Split on blank lines
+            // into paragraphs so the layout still breathes.
+            <>
+              {voiceBody
+                .split(/\n{2,}/)
+                .map((para, i) => (
+                  <Text key={i} style={text}>
+                    {para.split('\n').map((line, j, arr) => (
+                      <React.Fragment key={j}>
+                        {line}
+                        {j < arr.length - 1 ? <br /> : null}
+                      </React.Fragment>
+                    ))}
+                  </Text>
+                ))}
+            </>
+          ) : (
+            <>
+              <Heading style={h1}>{t.greeting(clientName)}</Heading>
+              <Text style={text}>{t.body}</Text>
+            </>
+          )}
           <Section style={invoiceBox}>
             <Text style={invoiceDetail}><strong>Invoice:</strong> {invoiceNumber}</Text>
             <Text style={invoiceDetail}><strong>Amount:</strong> {amount}</Text>
@@ -66,10 +94,10 @@ const PaymentReminderEmail = ({
           </Section>
           {payLink && (
             <Section style={ctaSection}>
-              <Button style={button} href={payLink}>{t.cta}</Button>
+              <Button style={button} href={payLink}>{ctaLabel}</Button>
             </Section>
           )}
-          <Text style={text}>{t.closing}</Text>
+          {!voiceBody && <Text style={text}>{t.closing}</Text>}
           <Hr style={hr} />
           <Text style={footer}>
             Sent via {SITE_NAME} on behalf of {businessName}
@@ -83,6 +111,7 @@ const PaymentReminderEmail = ({
 export const template = {
   component: PaymentReminderEmail,
   subject: (data: Record<string, any>) =>
+    data.voiceSubject ||
     `Payment reminder: Invoice ${data.invoiceNumber || 'due'}`,
   displayName: 'Payment reminder',
   previewData: {
