@@ -19,13 +19,14 @@ const stagger = {
 
 const comparisonFeatures = [
   { name: "Active invoices", values: ["3", "25", "Unlimited"] },
+  { name: "Stripe sync (read-only key)", values: [true, true, true] },
   { name: "Open & click tracking", values: [true, true, true] },
   { name: "Pay link in reminders", values: [true, true, true] },
   { name: "Activity timeline", values: [true, true, true] },
   { name: "Automatic reminder cadence", values: [false, true, true] },
   { name: "Custom cadence + tone", values: [false, true, true] },
   { name: "AI-personalized in your voice", values: [false, true, true] },
-  { name: "Stripe / QuickBooks / Xero sync", values: [false, "1 integration", "All integrations"] },
+  { name: "QuickBooks / Xero sync (coming)", values: [false, false, true] },
   { name: "Predicted pay dates", values: [false, false, true] },
   { name: "Pay-Behavior Score per client", values: [false, false, true] },
   { name: "Weekly Receivables Health report", values: [false, false, true] },
@@ -252,12 +253,20 @@ export default function Pricing() {
           <div className="mx-auto max-w-2xl space-y-6">
             {[
               {
+                q: "How does Stripe sync work?",
+                a: "Paste a read-only Stripe restricted key in Settings. We pull every open and overdue invoice — with the customer, due date, amount, and Stripe-hosted pay link — and import them so reminders go out automatically. Read-only means we can never move your money.",
+              },
+              {
+                q: "Is Stripe sync available on the Free plan?",
+                a: "Yes. Stripe sync is included on every plan including Free. Your active-invoice limit still applies — Free is 3, Solo is 25, Studio is unlimited. Imports beyond your cap are skipped with a notice.",
+              },
+              {
                 q: "Can I switch plans anytime?",
                 a: "Yes. Upgrade or downgrade at any time. Changes apply to your next billing cycle.",
               },
               {
                 q: "What counts as an active invoice?",
-                a: "An active invoice is any invoice that is not marked as paid, archived, or disputed. Paused invoices still count as active.",
+                a: "An active invoice is any invoice that is not marked as paid, archived, or disputed. Paused invoices still count as active. Stripe-imported and manually-entered invoices both count toward your plan limit.",
               },
               {
                 q: "Do you offer a free trial?",

@@ -257,10 +257,10 @@ function FeaturesSection() {
       description: "Set it and forget it. Reminders go out on schedule without any manual work.",
     },
     {
-      icon: Link2,
-      title: "Your Payment Link",
+      icon: Plug,
+      title: "Stripe Sync",
       description:
-        "Include your Stripe, QuickBooks, Xero, or custom payment link in every reminder.",
+        "Connect Stripe with a read-only restricted key. Open and overdue invoices flow in automatically with the hosted pay link attached.",
     },
     {
       icon: TrendingUp,
@@ -686,6 +686,93 @@ function DifferentiatorSection() {
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StripeSyncSection() {
+  return (
+    <section className="border-t border-border bg-card/30 py-20 md:py-28">
+      <div className="container">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <span className="text-eyebrow text-muted-foreground">Stripe sync</span>
+            <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-5xl">
+              Your Stripe invoices, <span className="lime-underline">already in</span> PayNudge.
+            </h2>
+            <p className="mt-6 text-muted-foreground leading-relaxed">
+              Paste a read-only Stripe restricted key once. We pull every open and overdue
+              invoice — with the customer name, due date, amount, and Stripe-hosted pay link —
+              in seconds. Click <strong>Sync now</strong> any time to refresh.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Read-only restricted key — we can't move money",
+                "Encrypted at rest with a server-side secret",
+                "Open + overdue invoices imported automatically",
+                "Stripe-hosted pay link in every reminder",
+                "Idempotent re-sync: no duplicates, ever",
+                "Disconnect any time from Settings",
+              ].map((b) => (
+                <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="h-11 px-6 text-xs font-bold uppercase tracking-[0.15em]">
+                <Link to="/signup">
+                  Connect Stripe Free <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="h-11 px-6 text-xs font-bold uppercase tracking-[0.15em]">
+                <Link to="/templates/connect-stripe-invoices">Read the guide</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="border border-border bg-card p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Settings · Stripe Sync
+              </p>
+              <Plug className="h-4 w-4 text-primary" />
+            </div>
+            <div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-foreground">Acme Studio LLC</span>
+                <span className="font-mono text-xs text-muted-foreground">••••aT4f</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Last sync today at 9:42 AM · 14 imported
+              </p>
+            </div>
+            <div className="mt-4 space-y-2">
+              {[
+                { num: "INV-1042", client: "Northwind Ltd.", amt: "$2,400", state: "Overdue", color: "text-destructive" },
+                { num: "INV-1051", client: "Globex Inc.", amt: "$890", state: "Due in 3d", color: "text-foreground" },
+                { num: "INV-1058", client: "Acme Co.", amt: "$1,250", state: "Due today", color: "text-foreground" },
+                { num: "INV-1063", client: "Wayne Enterprises", amt: "$4,800", state: "Overdue", color: "text-destructive" },
+              ].map((row) => (
+                <div key={row.num} className="flex items-center justify-between border-b border-border/60 py-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-sm bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                      Stripe
+                    </span>
+                    <span className="font-mono text-xs text-foreground">{row.num}</span>
+                    <span className="text-muted-foreground">{row.client}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium text-foreground">{row.amt}</span>
+                    <span className={cn("text-xs", row.color)}>{row.state}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
