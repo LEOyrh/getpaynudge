@@ -90,15 +90,30 @@ export default function Voice() {
     }
   }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Hydrate sender_name from auth profile
+  // Fetch the user's profile for sender_name default
+  const { data: userProfile } = useQuery({
+    queryKey: ["profile-name", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Hydrate sender_name from profiles.full_name → user_metadata.full_name (no email-handle fallback)
   useEffect(() => {
     if (vars.sender_name || !user) return;
     const name =
-      (user.user_metadata?.full_name as string | undefined) ??
-      user.email?.split("@")[0] ??
+      userProfile?.full_name?.trim() ||
+      (user.user_metadata?.full_name as string | undefined)?.trim() ||
       "";
     if (name) setVars((v) => ({ ...v, sender_name: name }));
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, userProfile?.full_name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filledSamples = samples.map((s) => s.trim()).filter((s) => s.length >= 20);
 
