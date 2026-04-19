@@ -241,6 +241,38 @@ export default function Voice() {
         )}
       </div>
 
+      {/* Opt-in toggle: only meaningful once a voice profile exists */}
+      {tone && (
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 rounded-md bg-primary/15 p-2 text-primary">
+                <Zap className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">
+                  Use my trained voice for outgoing reminders
+                </p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  When on, scheduled reminders are written in your voice. If anything goes wrong,
+                  PayNudge silently falls back to the standard tone so the reminder still goes out.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 sm:flex-shrink-0">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                {profile?.voice_enabled ? "On" : "Off"}
+              </span>
+              <Switch
+                checked={!!profile?.voice_enabled}
+                disabled={toggleVoiceMutation.isPending}
+                onCheckedChange={(checked) => toggleVoiceMutation.mutate(checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* LEFT: samples + analyze */}
         <Card>
