@@ -47,6 +47,7 @@ export default function Index() {
       <HeroSection />
       <SocialProofStrip />
       <WhoItsForSection />
+      <StripeSyncSection />
       <DifferentiatorSection />
       <HowItWorksSection />
       <PayBehaviorScoreSection />
