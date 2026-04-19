@@ -439,6 +439,20 @@ export type Database = {
       }
     }
     Views: {
+      client_pay_behavior: {
+        Row: {
+          avg_days_late: number | null
+          client_name: string | null
+          last_paid_at: string | null
+          on_time_rate: number | null
+          outstanding_count: number | null
+          paid_count: number | null
+          score: number | null
+          total_invoices: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       stripe_connections_safe: {
         Row: {
           api_key_last4: string | null

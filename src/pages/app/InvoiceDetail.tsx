@@ -7,7 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
+import { useClientPayBehavior } from "@/hooks/useClientPayBehavior";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { PayBehaviorPanel } from "@/components/PayBehaviorBadge";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,7 +57,8 @@ export default function InvoiceDetail() {
   const queryClient = useQueryClient();
   const [sendingReminder, setSendingReminder] = useState(false);
   const [reminderTone, setReminderTone] = useState<"friendly" | "professional" | "firm">("friendly");
-  const { toneSelection, customCadence, emailTracking, activityTimeline } = usePlanFeatures();
+  const { toneSelection, customCadence, emailTracking, activityTimeline, predictedPayDate } = usePlanFeatures();
+  const { byClient: payBehavior } = useClientPayBehavior();
 
   const { data: invoice, isLoading } = useQuery({
     queryKey: ["invoice", id],
@@ -318,6 +321,14 @@ export default function InvoiceDetail() {
           {invoice.notes && <div className="sm:col-span-2"><p className="text-sm text-muted-foreground">Notes</p><p>{invoice.notes}</p></div>}
         </CardContent>
       </Card>
+
+      {/* Client pay behavior */}
+      <PayBehaviorPanel
+        clientName={invoice.client_name}
+        data={payBehavior.get(invoice.client_name)}
+        dueDate={invoice.due_date}
+        predictedPayDateUnlocked={predictedPayDate}
+      />
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2">

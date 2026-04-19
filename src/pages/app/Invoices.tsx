@@ -6,12 +6,14 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
+import { useClientPayBehavior } from "@/hooks/useClientPayBehavior";
 import { usePageMeta } from "@/hooks/usePageMeta";
 import { Button } from "@/components/ui/button";
 import { NewInvoiceButton } from "@/components/NewInvoiceButton";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PayBehaviorBadge } from "@/components/PayBehaviorBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Tables } from "@/integrations/supabase/types";
@@ -36,7 +38,8 @@ export default function Invoices() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const { emailTracking } = usePlanFeatures();
+  const { emailTracking, predictedPayDate } = usePlanFeatures();
+  const { byClient: payBehavior } = useClientPayBehavior();
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["invoices", user?.id],
@@ -162,7 +165,16 @@ export default function Invoices() {
                         <span>{inv.invoice_number}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{inv.client_name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <span>{inv.client_name}</span>
+                        <PayBehaviorBadge
+                          data={payBehavior.get(inv.client_name)}
+                          dueDate={inv.due_date}
+                          predictedPayDateUnlocked={predictedPayDate}
+                        />
+                      </div>
+                    </TableCell>
                     <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
                     <TableCell>{format(new Date(inv.due_date), "MMM d, yyyy")}</TableCell>
                     <TableCell>
