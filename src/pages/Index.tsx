@@ -872,7 +872,7 @@ function CompetitorComparisonSection() {
   const cols = ["PayNudge", "paynudges.com", "paynudge.app", "paynudge.xyz", "paynudge.eu"];
   const rows: Array<{ feature: string; values: (boolean | string)[] }> = [
     { feature: "Honest free tier", values: [true, true, true, false, true] },
-    { feature: "Stripe / QBO / Xero sync", values: [true, false, false, true, false] },
+    { feature: "Stripe sync (read-only key)", values: [true, false, false, true, false] },
     { feature: "AI written in your voice", values: [true, false, false, false, "generic"] },
     { feature: "Predicted pay dates", values: [true, false, false, false, false] },
     { feature: "Open & click tracking", values: [true, false, true, true, false] },

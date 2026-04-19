@@ -46,7 +46,7 @@ const competitors = [
 const matrix: Array<{ feature: string; values: (boolean | string)[] }> = [
   { feature: "Real automated sending", values: [true, true, true, true, false] },
   { feature: "Honest free tier (forever)", values: [true, true, true, false, true] },
-  { feature: "Stripe / QuickBooks / Xero sync", values: [true, false, false, true, false] },
+  { feature: "Stripe sync (read-only key)", values: [true, false, false, true, false] },
   { feature: "AI written in your voice", values: [true, false, false, false, "generic"] },
   { feature: "Predicted pay date per client", values: [true, false, false, false, false] },
   { feature: "Pay-Behavior Score", values: [true, false, false, false, false] },
