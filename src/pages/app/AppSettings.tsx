@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StripeConnectionCard } from "@/components/settings/StripeConnectionCard";
 
 export default function AppSettings() {
   usePageMeta({ title: "Settings" });
@@ -87,6 +88,8 @@ export default function AppSettings() {
           )}
         </CardContent>
       </Card>
+
+      <StripeConnectionCard />
     </div>
   );
 }

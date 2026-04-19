@@ -486,9 +486,17 @@ export type Database = {
       }
     }
     Functions: {
+      decrypt_stripe_key: {
+        Args: { _ciphertext: string; _secret: string }
+        Returns: string
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
+      }
+      encrypt_stripe_key: {
+        Args: { _plaintext: string; _secret: string }
+        Returns: string
       }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
