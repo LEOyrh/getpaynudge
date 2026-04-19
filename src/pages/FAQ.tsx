@@ -77,6 +77,43 @@ const faqCategories = [
     ],
   },
   {
+    title: "Stripe Sync",
+    items: [
+      {
+        q: "How do I connect my Stripe account?",
+        a: `Open Settings inside ${brand.name} and scroll to Stripe Sync. In your Stripe dashboard, create a Restricted API key with Invoices: Read and Customers: Read permissions (everything else set to None), then paste it back into ${brand.name}. We validate the key against Stripe immediately and encrypt it before storing.`,
+      },
+      {
+        q: "Is Stripe sync available on the Free plan?",
+        a: "Yes. Stripe sync is included on every plan, including Free. Your active-invoice limit still applies — Free is 3, Solo is 25, Studio is unlimited. If a sync would exceed your cap, the extra invoices are skipped with a notice.",
+      },
+      {
+        q: "What invoices does PayNudge import from Stripe?",
+        a: "Only invoices with status 'open' (open + overdue). Paid, void, and draft invoices are skipped because there's nothing to chase. We also pull the customer name, email, due date, amount, and the Stripe-hosted payment URL.",
+      },
+      {
+        q: "Can PayNudge move money or refund payments?",
+        a: "No. The restricted key you paste is read-only. Even if you wanted us to, the key has no permission to charge cards, issue refunds, or modify your Stripe settings. We only read invoices and customers.",
+      },
+      {
+        q: "How is my Stripe key stored?",
+        a: "Your key is encrypted at rest with a server-side secret using PostgreSQL's pgcrypto. The encrypted bytes are stored separately from the metadata view used by the app. Even our admins cannot read your plaintext key.",
+      },
+      {
+        q: "Can I edit a Stripe-imported invoice?",
+        a: "No — Stripe is the source of truth. Amount, client info, and dates are locked on Stripe-imported invoices to prevent drift between the two systems. You can still send manual reminders, mark them paid, or change the reminder cadence.",
+      },
+      {
+        q: "How often does sync run?",
+        a: "Today, sync is manual — click 'Sync now' in Settings any time. Re-syncing is idempotent: the same Stripe invoice is never imported twice. Real-time webhooks and hourly auto-sync are on the roadmap.",
+      },
+      {
+        q: "How do I disconnect Stripe?",
+        a: "Open Settings → Stripe Sync and click Disconnect. Your imported invoices stay (you can keep chasing them) but no further sync will happen. You can also rotate or delete the restricted key from your Stripe dashboard.",
+      },
+    ],
+  },
+  {
     title: "Reminders",
     items: [
       {
