@@ -93,7 +93,7 @@ function HeroSection() {
           <motion.div variants={fadeIn}>
             <span className="text-eyebrow inline-flex items-center gap-2 text-muted-foreground">
               <span className="h-1 w-1 bg-primary" aria-hidden />
-              Stripe-synced invoice reminders on autopilot
+              Invoice reminders on autopilot
             </span>
           </motion.div>
 
@@ -101,16 +101,15 @@ function HeroSection() {
             variants={fadeIn}
             className="text-display mt-8 text-5xl text-foreground sm:text-6xl md:text-7xl lg:text-8xl"
           >
-            Sync Stripe.{" "}
-            <span className="lime-underline">Get paid</span> without the awkward follow-up.
+            Get paid <span className="lime-underline">without</span> the awkward follow-up.
           </motion.h1>
 
           <motion.p
             variants={fadeIn}
             className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            Connect your Stripe account in 60 seconds. {brand.name} pulls every open and overdue
-            invoice and chases each one in your voice — until your client pays.
+            {brand.name} chases every open and overdue invoice in your voice — until your client
+            pays. Add invoices manually or sync them from Stripe in 60 seconds.
           </motion.p>
 
           <motion.div
@@ -119,7 +118,7 @@ function HeroSection() {
           >
             <Button size="lg" asChild className="h-12 px-8 text-sm font-bold uppercase tracking-[0.15em]">
               <Link to="/signup">
-                Sync Stripe Free <ArrowRight className="ml-1 h-4 w-4" />
+                Start Free <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -128,12 +127,12 @@ function HeroSection() {
               asChild
               className="h-12 border-foreground/20 px-8 text-sm font-bold uppercase tracking-[0.15em] hover:border-foreground hover:bg-transparent"
             >
-              <Link to="/templates/connect-stripe-invoices">See How Sync Works</Link>
+              <Link to="/how-it-works">How It Works</Link>
             </Button>
           </motion.div>
 
           <motion.p variants={fadeIn} className="mt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Free plan · Read-only Stripe key · No credit card
+            Free plan · No credit card · Stripe sync optional
           </motion.p>
         </motion.div>
       </div>
