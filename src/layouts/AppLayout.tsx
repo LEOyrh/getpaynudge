@@ -26,7 +26,7 @@ const adminLinks = [
   { label: "Logs", href: "/admin/logs", icon: ScrollText },
 ];
 
-function SidebarLink({
+const SidebarLink = ({
   link,
   active,
   onClick,
@@ -34,7 +34,7 @@ function SidebarLink({
   link: { label: string; href: string; icon: React.ComponentType<{ className?: string }> };
   active: boolean;
   onClick?: () => void;
-}) {
+}) => {
   return (
     <Link
       to={link.href}
@@ -51,7 +51,8 @@ function SidebarLink({
       {link.label}
     </Link>
   );
-}
+};
+SidebarLink.displayName = "SidebarLink";
 
 function Wordmark() {
   return (
