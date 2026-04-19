@@ -97,17 +97,15 @@ Deno.serve(async (req) => {
       year: 'numeric', month: 'long', day: 'numeric',
     })
 
-    // Check if user has opted into voice rendering
+    // Auto-use voice for anyone who has trained a profile.
+    // No opt-in required: if a tone_profile exists and the AI gateway is reachable, use it.
     const { data: voiceProfile } = await supabase
       .from('voice_profiles')
-      .select('voice_enabled, tone_profile')
+      .select('tone_profile')
       .eq('user_id', invoice.user_id)
       .maybeSingle()
 
-    const wantsVoice =
-      !!voiceProfile?.voice_enabled &&
-      !!voiceProfile?.tone_profile &&
-      !!lovableApiKey
+    const wantsVoice = !!voiceProfile?.tone_profile && !!lovableApiKey
 
     let voiceBody: string | null = null
     let voiceSubject: string | null = null

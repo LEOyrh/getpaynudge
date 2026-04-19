@@ -1,0 +1,1 @@
+ALTER TABLE public.voice_profiles DROP COLUMN IF EXISTS voice_enabled;
