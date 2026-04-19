@@ -149,9 +149,19 @@ export default function Invoices() {
             <TableBody>
               {filtered.map((inv) => {
                 const tracking = trackingByInvoice.get(inv.id);
+                const isStripe = (inv as any).source === "stripe";
                 return (
                   <TableRow key={inv.id} className="cursor-pointer" onClick={() => navigate(`/invoices/${inv.id}`)}>
-                    <TableCell className="font-medium">{inv.invoice_number}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {isStripe && (
+                          <span className="rounded-sm bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                            Stripe
+                          </span>
+                        )}
+                        <span>{inv.invoice_number}</span>
+                      </div>
+                    </TableCell>
                     <TableCell>{inv.client_name}</TableCell>
                     <TableCell>{formatCurrency(inv.amount, inv.currency)}</TableCell>
                     <TableCell>{format(new Date(inv.due_date), "MMM d, yyyy")}</TableCell>

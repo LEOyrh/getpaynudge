@@ -7,6 +7,12 @@ import { brand } from "@/config/brand";
 
 const templates = [
   {
+    slug: "connect-stripe-invoices",
+    title: "How to Sync Your Stripe Invoices Automatically",
+    description:
+      "Step-by-step guide to connecting Stripe with a read-only restricted key so PayNudge can pull and chase every open or overdue invoice for you.",
+  },
+  {
     slug: "past-due-invoice-email-template",
     title: "Past Due Invoice Email Template",
     description:

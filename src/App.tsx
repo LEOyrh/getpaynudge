@@ -35,6 +35,7 @@ import AdminUserDetail from "@/pages/app/admin/AdminUserDetail";
 import AdminInvoices from "@/pages/app/admin/AdminInvoices";
 import AdminLogs from "@/pages/app/admin/AdminLogs";
 import TemplatesHub from "@/pages/templates/TemplatesHub";
+import ConnectStripe from "@/pages/templates/ConnectStripe";
 import PastDueInvoiceEmail from "@/pages/templates/PastDueInvoiceEmail";
 import PolitePaymentReminder from "@/pages/templates/PolitePaymentReminder";
 import FinalInvoiceReminder from "@/pages/templates/FinalInvoiceReminder";
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/templates" element={<TemplatesHub />} />
+              <Route path="/templates/connect-stripe-invoices" element={<ConnectStripe />} />
               <Route path="/templates/past-due-invoice-email-template" element={<PastDueInvoiceEmail />} />
               <Route path="/templates/polite-payment-reminder-email" element={<PolitePaymentReminder />} />
               <Route path="/templates/final-invoice-reminder-template" element={<FinalInvoiceReminder />} />

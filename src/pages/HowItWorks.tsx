@@ -66,14 +66,14 @@ export default function HowItWorks() {
               {
                 step: "1",
                 icon: Plug,
-                title: "Connect your invoicing tool",
+                title: "Connect Stripe (or add invoices manually)",
                 description:
-                  "One-click sync with Stripe, QuickBooks, or Xero. New invoices flow in automatically — no double entry, no CSV imports, no manual setup.",
+                  "Paste a read-only Stripe restricted key. We pull every open and overdue invoice — with the customer name, due date, amount, and Stripe-hosted pay link — in seconds. No CSV imports, no double entry. Manual entry still works if you prefer it.",
                 details: [
-                  "Read-only OAuth — we never touch your funds",
-                  "Auto-imports new invoices on a 15-minute schedule",
-                  "Manual entry still works if you prefer it",
-                  "Studio plan: connect all integrations at once",
+                  "Read-only restricted key — we never touch your funds",
+                  "Open + overdue invoices imported automatically",
+                  "Click Sync now any time to refresh — no duplicates",
+                  "QuickBooks and Xero connectors coming next",
                 ],
               },
               {

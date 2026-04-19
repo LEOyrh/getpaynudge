@@ -47,6 +47,7 @@ export default function Index() {
       <HeroSection />
       <SocialProofStrip />
       <WhoItsForSection />
+      <StripeSyncSection />
       <DifferentiatorSection />
       <HowItWorksSection />
       <PayBehaviorScoreSection />
@@ -92,7 +93,7 @@ function HeroSection() {
           <motion.div variants={fadeIn}>
             <span className="text-eyebrow inline-flex items-center gap-2 text-muted-foreground">
               <span className="h-1 w-1 bg-primary" aria-hidden />
-              Invoice reminders on autopilot
+              Stripe-synced invoice reminders on autopilot
             </span>
           </motion.div>
 
@@ -100,16 +101,16 @@ function HeroSection() {
             variants={fadeIn}
             className="text-display mt-8 text-5xl text-foreground sm:text-6xl md:text-7xl lg:text-8xl"
           >
-            The accounts-receivable{" "}
-            <span className="lime-underline">autopilot</span> for solo operators
+            Sync Stripe.{" "}
+            <span className="lime-underline">Get paid</span> without the awkward follow-up.
           </motion.h1>
 
           <motion.p
             variants={fadeIn}
             className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground md:text-xl"
           >
-            Connect your invoicing tool. {brand.name} chases every late invoice for you in your
-            voice — and tells you exactly when each client will pay.
+            Connect your Stripe account in 60 seconds. {brand.name} pulls every open and overdue
+            invoice and chases each one in your voice — until your client pays.
           </motion.p>
 
           <motion.div
@@ -118,7 +119,7 @@ function HeroSection() {
           >
             <Button size="lg" asChild className="h-12 px-8 text-sm font-bold uppercase tracking-[0.15em]">
               <Link to="/signup">
-                Start Free <ArrowRight className="ml-1 h-4 w-4" />
+                Sync Stripe Free <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -127,12 +128,12 @@ function HeroSection() {
               asChild
               className="h-12 border-foreground/20 px-8 text-sm font-bold uppercase tracking-[0.15em] hover:border-foreground hover:bg-transparent"
             >
-              <Link to="/how-it-works">See How It Works</Link>
+              <Link to="/templates/connect-stripe-invoices">See How Sync Works</Link>
             </Button>
           </motion.div>
 
           <motion.p variants={fadeIn} className="mt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Free plan · No credit card · 60-second setup
+            Free plan · Read-only Stripe key · No credit card
           </motion.p>
         </motion.div>
       </div>
@@ -256,10 +257,10 @@ function FeaturesSection() {
       description: "Set it and forget it. Reminders go out on schedule without any manual work.",
     },
     {
-      icon: Link2,
-      title: "Your Payment Link",
+      icon: Plug,
+      title: "Stripe Sync",
       description:
-        "Include your Stripe, QuickBooks, Xero, or custom payment link in every reminder.",
+        "Connect Stripe with a read-only restricted key. Open and overdue invoices flow in automatically with the hosted pay link attached.",
     },
     {
       icon: TrendingUp,
@@ -646,9 +647,9 @@ function DifferentiatorSection() {
   const items = [
     {
       icon: Plug,
-      title: "Connect, don't re-enter",
+      title: "One-click Stripe sync",
       description:
-        "Sync invoices from Stripe, QuickBooks, or Xero in one click. Stop typing the same client three times.",
+        "Paste a read-only restricted key. We pull every open and overdue invoice — with customer, due date, and pay link — in seconds. No CSVs, no double entry.",
     },
     {
       icon: Sparkles,
@@ -685,6 +686,93 @@ function DifferentiatorSection() {
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StripeSyncSection() {
+  return (
+    <section className="border-t border-border bg-card/30 py-20 md:py-28">
+      <div className="container">
+        <div className="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <span className="text-eyebrow text-muted-foreground">Stripe sync</span>
+            <h2 className="mt-4 font-heading text-3xl font-bold text-foreground md:text-5xl">
+              Your Stripe invoices, <span className="lime-underline">already in</span> PayNudge.
+            </h2>
+            <p className="mt-6 text-muted-foreground leading-relaxed">
+              Paste a read-only Stripe restricted key once. We pull every open and overdue
+              invoice — with the customer name, due date, amount, and Stripe-hosted pay link —
+              in seconds. Click <strong>Sync now</strong> any time to refresh.
+            </p>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Read-only restricted key — we can't move money",
+                "Encrypted at rest with a server-side secret",
+                "Open + overdue invoices imported automatically",
+                "Stripe-hosted pay link in every reminder",
+                "Idempotent re-sync: no duplicates, ever",
+                "Disconnect any time from Settings",
+              ].map((b) => (
+                <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="h-11 px-6 text-xs font-bold uppercase tracking-[0.15em]">
+                <Link to="/signup">
+                  Connect Stripe Free <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button variant="outline" asChild className="h-11 px-6 text-xs font-bold uppercase tracking-[0.15em]">
+                <Link to="/templates/connect-stripe-invoices">Read the guide</Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="border border-border bg-card p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Settings · Stripe Sync
+              </p>
+              <Plug className="h-4 w-4 text-primary" />
+            </div>
+            <div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-foreground">Acme Studio LLC</span>
+                <span className="font-mono text-xs text-muted-foreground">••••aT4f</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Last sync today at 9:42 AM · 14 imported
+              </p>
+            </div>
+            <div className="mt-4 space-y-2">
+              {[
+                { num: "INV-1042", client: "Northwind Ltd.", amt: "$2,400", state: "Overdue", color: "text-destructive" },
+                { num: "INV-1051", client: "Globex Inc.", amt: "$890", state: "Due in 3d", color: "text-foreground" },
+                { num: "INV-1058", client: "Acme Co.", amt: "$1,250", state: "Due today", color: "text-foreground" },
+                { num: "INV-1063", client: "Wayne Enterprises", amt: "$4,800", state: "Overdue", color: "text-destructive" },
+              ].map((row) => (
+                <div key={row.num} className="flex items-center justify-between border-b border-border/60 py-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-sm bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                      Stripe
+                    </span>
+                    <span className="font-mono text-xs text-foreground">{row.num}</span>
+                    <span className="text-muted-foreground">{row.client}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium text-foreground">{row.amt}</span>
+                    <span className={cn("text-xs", row.color)}>{row.state}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -784,7 +872,7 @@ function CompetitorComparisonSection() {
   const cols = ["PayNudge", "paynudges.com", "paynudge.app", "paynudge.xyz", "paynudge.eu"];
   const rows: Array<{ feature: string; values: (boolean | string)[] }> = [
     { feature: "Honest free tier", values: [true, true, true, false, true] },
-    { feature: "Stripe / QBO / Xero sync", values: [true, false, false, true, false] },
+    { feature: "Stripe sync (read-only key)", values: [true, false, false, true, false] },
     { feature: "AI written in your voice", values: [true, false, false, false, "generic"] },
     { feature: "Predicted pay dates", values: [true, false, false, false, false] },
     { feature: "Open & click tracking", values: [true, false, true, true, false] },

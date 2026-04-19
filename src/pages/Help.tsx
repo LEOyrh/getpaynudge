@@ -57,6 +57,35 @@ const sections = [
     ],
   },
   {
+    title: "Stripe Sync",
+    items: [
+      {
+        heading: "Create a restricted Stripe key",
+        body: "In your Stripe dashboard go to Developers → API keys → Restricted keys → Create restricted key. Name it 'PayNudge Sync', set Invoices: Read and Customers: Read (everything else None), then click Create and copy the key — it starts with rk_live_ or rk_test_.",
+      },
+      {
+        heading: "Connect Stripe in PayNudge",
+        body: "Open Settings → Stripe Sync. Paste the restricted key into the field and click Connect Stripe. We validate it against Stripe immediately, encrypt it, and never expose it to anyone — including our admins.",
+      },
+      {
+        heading: "Run your first sync",
+        body: "After connecting, click 'Sync now'. PayNudge pulls every open and overdue Stripe invoice with the customer name, email, amount, due date, and Stripe-hosted pay link. Re-syncing is idempotent — the same invoice is never imported twice.",
+      },
+      {
+        heading: "Plan limits and Stripe sync",
+        body: "Your plan's active-invoice limit applies to all invoices, manual and Stripe-imported combined. If a sync would exceed your cap, the extra invoices are skipped and the toast tells you how many. Upgrade for a higher limit.",
+      },
+      {
+        heading: "Editing Stripe invoices",
+        body: "Stripe is the source of truth, so amount, client info, and dates are locked on Stripe-imported invoices. You can still mark them paid, pause reminders, change tone, and send manual reminders. To change the data, edit it in Stripe and re-sync.",
+      },
+      {
+        heading: "Disconnect Stripe",
+        body: "Settings → Stripe Sync → Disconnect. Imported invoices stay so you can keep chasing them, but no future sync will happen. You can also rotate or delete the restricted key from the Stripe dashboard.",
+      },
+    ],
+  },
+  {
     title: "Reminders & Tones",
     items: [
       {
