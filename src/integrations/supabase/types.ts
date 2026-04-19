@@ -446,7 +446,6 @@ export type Database = {
           tone_profile: Json | null
           updated_at: string
           user_id: string
-          voice_enabled: boolean
         }
         Insert: {
           analyzed_at?: string | null
@@ -456,7 +455,6 @@ export type Database = {
           tone_profile?: Json | null
           updated_at?: string
           user_id: string
-          voice_enabled?: boolean
         }
         Update: {
           analyzed_at?: string | null
@@ -466,7 +464,6 @@ export type Database = {
           tone_profile?: Json | null
           updated_at?: string
           user_id?: string
-          voice_enabled?: boolean
         }
         Relationships: []
       }
