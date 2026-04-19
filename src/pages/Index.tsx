@@ -73,13 +73,19 @@ function WorksWithStrip() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
             {/* Official Stripe wordmark — themed via currentColor */}
-            <span className="text-foreground/75" aria-label="Stripe">
+            <a
+              href="https://stripe.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Stripe"
+              className="group inline-flex items-center text-foreground/75 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:text-foreground focus-visible:-translate-y-0.5 focus-visible:text-foreground focus-visible:outline-none"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 60 25"
                 role="img"
                 aria-hidden="true"
-                className="h-5 w-auto fill-current"
+                className="h-5 w-auto fill-current transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               >
                 <path
                   fillRule="evenodd"
