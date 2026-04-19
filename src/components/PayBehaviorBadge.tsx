@@ -131,7 +131,7 @@ function PayBehaviorTooltip({
         Pay-Behavior Score: {data.score}/100
       </p>
       <ul className="space-y-0.5 text-muted-foreground">
-        <li>{onTimePct}% paid on time ({data.paid_count} invoices)</li>
+        <li>{onTimePct}% paid on time ({data.paid_count} {data.paid_count === 1 ? "invoice" : "invoices"})</li>
         <li>Avg {avgLate} days late</li>
         {predicted && predictedUnlocked && (
           <li className="text-foreground">
