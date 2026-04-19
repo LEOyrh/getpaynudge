@@ -49,11 +49,11 @@ export default function HowItWorks() {
               variants={fadeIn}
               className="text-display mt-6 text-5xl text-foreground md:text-6xl"
             >
-              Connect. Learn your voice. <span className="lime-underline">Predict & chase.</span>
+              Add invoices. Learn your voice. <span className="lime-underline">Get paid.</span>
             </motion.h1>
             <motion.p variants={fadeIn} className="mt-6 text-lg text-muted-foreground">
-              No copy-paste. No retyping clients. {brand.name} plugs into the tools you already
-              use and runs your accounts-receivable on autopilot.
+              {brand.name} writes the awkward follow-ups for you, in your tone, and stops the
+              moment a client pays. Add invoices manually or sync from Stripe — it's up to you.
             </motion.p>
           </motion.div>
         </div>
@@ -66,14 +66,14 @@ export default function HowItWorks() {
               {
                 step: "1",
                 icon: Plug,
-                title: "Connect Stripe (or add invoices manually)",
+                title: "Add your invoices",
                 description:
-                  "Paste a read-only Stripe restricted key. We pull every open and overdue invoice — with the customer name, due date, amount, and Stripe-hosted pay link — in seconds. No CSV imports, no double entry. Manual entry still works if you prefer it.",
+                  "Enter invoices manually in under 30 seconds — client, amount, due date, optional pay link. Already on Stripe? Paste a read-only restricted key and we'll import every open and overdue invoice automatically. QuickBooks and Xero are next.",
                 details: [
-                  "Read-only restricted key — we never touch your funds",
-                  "Open + overdue invoices imported automatically",
-                  "Click Sync now any time to refresh — no duplicates",
-                  "QuickBooks and Xero connectors coming next",
+                  "Manual entry: fast form, no setup required",
+                  "Stripe sync (optional): read-only key, never touches your funds",
+                  "Both sources live side by side in one list",
+                  "QuickBooks and Xero connectors coming soon",
                 ],
               },
               {

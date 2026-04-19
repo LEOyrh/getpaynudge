@@ -253,12 +253,12 @@ export default function Pricing() {
           <div className="mx-auto max-w-2xl space-y-6">
             {[
               {
-                q: "How does Stripe sync work?",
-                a: "Paste a read-only Stripe restricted key in Settings. We pull every open and overdue invoice — with the customer, due date, amount, and Stripe-hosted pay link — and import them so reminders go out automatically. Read-only means we can never move your money.",
+                q: "Do I have to use Stripe?",
+                a: "No. Most users add invoices manually — it takes about 30 seconds per invoice. Stripe sync is an optional shortcut if you already bill in Stripe. QuickBooks and Xero connectors are on the roadmap.",
               },
               {
-                q: "Is Stripe sync available on the Free plan?",
-                a: "Yes. Stripe sync is included on every plan including Free. Your active-invoice limit still applies — Free is 3, Solo is 25, Studio is unlimited. Imports beyond your cap are skipped with a notice.",
+                q: "How does Stripe sync work (if I want it)?",
+                a: "Paste a read-only Stripe restricted key in Settings. We pull every open and overdue invoice — with the customer, due date, amount, and Stripe-hosted pay link — so reminders go out automatically. Read-only means we can never move your money. Available on every plan, including Free.",
               },
               {
                 q: "Can I switch plans anytime?",
