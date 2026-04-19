@@ -188,6 +188,26 @@ export default function Voice() {
     },
   });
 
+  const toggleVoiceMutation = useMutation({
+    mutationFn: async (enabled: boolean) => {
+      const { error } = await supabase
+        .from("voice_profiles" as any)
+        .update({ voice_enabled: enabled })
+        .eq("user_id", user!.id);
+      if (error) throw error;
+      return enabled;
+    },
+    onSuccess: (enabled) => {
+      toast.success(
+        enabled
+          ? "Outgoing reminders will use your voice"
+          : "Outgoing reminders will use the standard tone"
+      );
+      qc.invalidateQueries({ queryKey: ["voice-profile", user?.id] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Could not update setting"),
+  });
+
   const tone = profile?.tone_profile ?? null;
 
   const reminder = previewMutation.data;
