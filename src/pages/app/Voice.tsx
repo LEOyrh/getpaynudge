@@ -39,6 +39,7 @@ type VoiceProfileRow = {
   samples: string[];
   tone_profile: ToneProfile | null;
   analyzed_at: string | null;
+  voice_enabled: boolean;
 };
 
 const STAGES = [
