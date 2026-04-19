@@ -29,6 +29,7 @@ const ALL_URLS = [
   "https://getpaynudge.com/templates/reminder-schedule-for-overdue-invoices",
   "https://getpaynudge.com/templates/invoice-follow-up-tips-for-freelancers",
   "https://getpaynudge.com/templates/small-business-late-payment-workflow",
+  "https://getpaynudge.com/templates/connect-stripe-invoices",
 ];
 
 const log = (step: string, details?: unknown) => {
