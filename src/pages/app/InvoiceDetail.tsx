@@ -322,6 +322,14 @@ export default function InvoiceDetail() {
         </CardContent>
       </Card>
 
+      {/* Client pay behavior */}
+      <PayBehaviorPanel
+        clientName={invoice.client_name}
+        data={payBehavior.get(invoice.client_name)}
+        dueDate={invoice.due_date}
+        predictedPayDateUnlocked={predictedPayDate}
+      />
+
       {/* Actions */}
       <div className="flex flex-wrap gap-2">
         {statusActions.map((action) => (
