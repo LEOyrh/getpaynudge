@@ -646,9 +646,9 @@ function DifferentiatorSection() {
   const items = [
     {
       icon: Plug,
-      title: "Connect, don't re-enter",
+      title: "One-click Stripe sync",
       description:
-        "Sync invoices from Stripe, QuickBooks, or Xero in one click. Stop typing the same client three times.",
+        "Paste a read-only restricted key. We pull every open and overdue invoice — with customer, due date, and pay link — in seconds. No CSVs, no double entry.",
     },
     {
       icon: Sparkles,

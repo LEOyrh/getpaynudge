@@ -1,8 +1,8 @@
 export const brand = {
   name: "PayNudge",
-  tagline: "Get paid without the awkward follow-up.",
+  tagline: "Sync Stripe. Get paid without the awkward follow-up.",
   description:
-    "The accounts-receivable autopilot for solo operators. Connect your invoicing tool — PayNudge chases every late invoice in your voice and predicts when each client will pay.",
+    "Connect your Stripe account in 60 seconds. PayNudge syncs every open and overdue invoice and chases each one in your voice — until your client pays.",
   domain: "getpaynudge.com",
   appDomain: "app.getpaynudge.com",
   url: "https://getpaynudge.com",
@@ -61,6 +61,7 @@ export const plans: PricingPlan[] = [
     activeInvoices: 3,
     features: [
       "3 active invoices",
+      "Stripe sync (read-only)",
       "Open & click tracking",
       "Manual reminders + pay link",
       "Activity timeline",
@@ -77,9 +78,9 @@ export const plans: PricingPlan[] = [
     activeInvoices: 25,
     features: [
       "25 active invoices",
+      "Stripe sync (read-only)",
       "Automatic reminder cadence",
       "AI-personalized in your voice",
-      "1 integration (Stripe / QBO / Xero)",
       "Email support",
     ],
     cta: "Start 7-Day Free Trial",
@@ -94,7 +95,8 @@ export const plans: PricingPlan[] = [
     activeInvoices: -1,
     features: [
       "Unlimited active invoices",
-      "All integrations",
+      "Stripe sync (read-only)",
+      "All integrations (QBO + Xero coming)",
       "Predicted pay dates",
       "Pay-Behavior Score per client",
       "Weekly Receivables Health report",
