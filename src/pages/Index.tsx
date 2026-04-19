@@ -47,6 +47,7 @@ export default function Index() {
       <HeroSection />
       <SocialProofStrip />
       <WhoItsForSection />
+      <WorksWithStrip />
       <StripeSyncSection />
       <DifferentiatorSection />
       <HowItWorksSection />
@@ -59,6 +60,31 @@ export default function Index() {
       <FAQPreview />
       <FinalCTA />
     </>
+  );
+}
+
+function WorksWithStrip() {
+  return (
+    <section className="border-b border-border py-10">
+      <div className="container">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Works with
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            <span className="font-heading text-xl font-bold tracking-tight text-foreground/70">
+              stripe
+            </span>
+            <span className="text-sm text-muted-foreground/60">+</span>
+            <span className="text-sm font-medium text-muted-foreground">Manual entry</span>
+            <span className="hidden text-sm text-muted-foreground/40 sm:inline">·</span>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground/70">
+              QuickBooks &amp; Xero <span className="text-primary">coming soon</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
