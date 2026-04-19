@@ -271,7 +271,14 @@ export default function InvoiceDetail() {
           <Link to="/invoices"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
-          <h1 className="font-heading text-2xl font-bold text-foreground">{invoice.invoice_number}</h1>
+          <div className="flex items-center gap-2">
+            {(invoice as any).source === "stripe" && (
+              <span className="rounded-sm bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                Stripe
+              </span>
+            )}
+            <h1 className="font-heading text-2xl font-bold text-foreground">{invoice.invoice_number}</h1>
+          </div>
           <p className="text-sm text-muted-foreground">{invoice.client_name}</p>
         </div>
         <div className="flex items-center gap-1.5">
@@ -290,6 +297,15 @@ export default function InvoiceDetail() {
           )}
         </div>
       </div>
+
+      {(invoice as any).source === "stripe" && (
+        <div className="rounded-md border border-primary/30 bg-primary/5 p-4 text-sm">
+          <p className="font-semibold text-foreground">Synced from Stripe</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Amount, client info, and dates are managed in your Stripe account. Edit the invoice in Stripe and click <strong>Sync now</strong> in Settings to refresh. You can still send reminders, change tone, and mark it paid here.
+          </p>
+        </div>
+      )}
 
       {/* Details */}
       <Card>
