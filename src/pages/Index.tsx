@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
+  AlertTriangle,
   ArrowRight,
   Bell,
   CalendarClock,
@@ -9,6 +10,7 @@ import {
   FileText,
   LineChart,
   Link2,
+  Lock,
   Mail,
   Minus,
   MousePointerClick,
