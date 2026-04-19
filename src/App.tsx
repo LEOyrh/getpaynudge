@@ -29,6 +29,7 @@ import NewInvoice from "@/pages/app/NewInvoice";
 import InvoiceDetail from "@/pages/app/InvoiceDetail";
 import AppSettings from "@/pages/app/AppSettings";
 import Billing from "@/pages/app/Billing";
+import Voice from "@/pages/app/Voice";
 import AdminFinance from "@/pages/app/admin/AdminFinance";
 import AdminUsers from "@/pages/app/admin/AdminUsers";
 import AdminUserDetail from "@/pages/app/admin/AdminUserDetail";
@@ -103,6 +104,7 @@ const App = () => (
               <Route path="/invoices/new" element={<NewInvoice />} />
               <Route path="/invoices/:id" element={<InvoiceDetail />} />
               <Route path="/settings" element={<AppSettings />} />
+              <Route path="/voice" element={<Voice />} />
               <Route path="/billing" element={<Billing />} />
               <Route path="/admin/finance" element={<AdminRoute><AdminFinance /></AdminRoute>} />
               <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />

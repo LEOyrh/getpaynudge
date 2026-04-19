@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X, Shield, Users, BarChart3, HelpCircle, ScrollText } from "lucide-react";
+import { LayoutDashboard, FileText, Settings, CreditCard, LogOut, Menu, X, Shield, Users, BarChart3, HelpCircle, ScrollText, Mic } from "lucide-react";
 import { useState } from "react";
 import { brand, isLocalDev } from "@/config/brand";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 const sidebarLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Invoices", href: "/invoices", icon: FileText },
+  { label: "AI Voice", href: "/voice", icon: Mic },
   { label: "Billing", href: "/billing", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: Settings },
 ];

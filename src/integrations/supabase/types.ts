@@ -437,6 +437,36 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_profiles: {
+        Row: {
+          analyzed_at: string | null
+          created_at: string
+          id: string
+          samples: Json
+          tone_profile: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analyzed_at?: string | null
+          created_at?: string
+          id?: string
+          samples?: Json
+          tone_profile?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analyzed_at?: string | null
+          created_at?: string
+          id?: string
+          samples?: Json
+          tone_profile?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       client_pay_behavior: {
