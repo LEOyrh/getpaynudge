@@ -211,17 +211,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Send via send-transactional-email — pass voiceOverride if we got one,
-    // otherwise the template renders the generic tone-based copy.
+    // Send via send-transactional-email — pass voice content via templateData
+    // so the payment-reminder template renders the AI body when present and
+    // falls back to the canned tone copy when absent.
     const usingVoice = !!voiceBody && !!voiceSubject
     const { error: sendErr } = await supabase.functions.invoke('send-transactional-email', {
       body: {
         templateName: 'payment-reminder',
         recipientEmail: invoice.client_email,
         idempotencyKey: `reminder-${reminder.id}-${today}`,
-        ...(usingVoice
-          ? { subjectOverride: voiceSubject, bodyOverride: voiceBody }
-          : {}),
         templateData: {
           invoiceId: invoice.id,
           clientName: invoice.client_name,
@@ -231,6 +229,7 @@ Deno.serve(async (req) => {
           businessName,
           tone,
           payLink: invoice.payment_link || undefined,
+          ...(usingVoice ? { voiceBody, voiceSubject } : {}),
         },
       },
     })
