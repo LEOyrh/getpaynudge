@@ -72,8 +72,21 @@ function WorksWithStrip() {
             Works with
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-            <span className="font-heading text-xl font-bold tracking-tight text-foreground/70">
-              stripe
+            {/* Official Stripe wordmark — themed via currentColor */}
+            <span className="text-foreground/75" aria-label="Stripe">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 60 25"
+                role="img"
+                aria-hidden="true"
+                className="h-5 w-auto fill-current"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.62l.21 1.03c.56-.52 1.59-1.27 3.17-1.27 2.84 0 5.52 2.55 5.52 7.24 0 5.12-2.65 7.74-5.48 7.74zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.27 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.47 1.86zm-8.36 4.78c0 2.41 2.58 1.66 3.11 1.44v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.14l.02 5.9zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.46 13.77 0 14.45 0 9.69 0 6.78 2.23 5 5.54 5c1.38 0 2.75.21 4.13.81v3.88a9.7 9.7 0 0 0-4.13-1.03c-.86 0-1.4.25-1.4.78 0 1.74 6.51.95 6.51 5.36z"
+                />
+              </svg>
             </span>
             <span className="text-sm text-muted-foreground/60">+</span>
             <span className="text-sm font-medium text-muted-foreground">Manual entry</span>
