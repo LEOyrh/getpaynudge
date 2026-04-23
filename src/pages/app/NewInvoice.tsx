@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InYourVoicePreview } from "@/components/InYourVoicePreview";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -306,6 +307,30 @@ export default function NewInvoice() {
           </Form>
         </CardContent>
       </Card>
+
+      {/* In your voice preview — only renders when user has trained a voice profile.
+          Watches live form values so the user sees their actual invoice rendered. */}
+      {(() => {
+        const watched = form.watch();
+        const hasMinimum =
+          !!watched.client_name?.trim() &&
+          !!watched.invoice_number?.trim() &&
+          typeof watched.amount === "number" &&
+          watched.amount > 0 &&
+          !!watched.due_date;
+        if (!hasMinimum) return null;
+        return (
+          <InYourVoicePreview
+            clientName={watched.client_name}
+            invoiceNumber={watched.invoice_number}
+            amount={Number(watched.amount)}
+            currency={watched.currency || "USD"}
+            dueDate={format(watched.due_date as Date, "yyyy-MM-dd")}
+            paymentLink={watched.payment_link}
+            hideWhenUntrained
+          />
+        );
+      })()}
     </div>
   );
 }

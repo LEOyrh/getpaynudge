@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell, Eye, MousePointerClick } from "lucide-react";
+import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell, Eye, MousePointerClick, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -10,6 +10,7 @@ import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { useClientPayBehavior } from "@/hooks/useClientPayBehavior";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { PayBehaviorPanel } from "@/components/PayBehaviorBadge";
+import { InYourVoicePreview } from "@/components/InYourVoicePreview";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -439,7 +440,18 @@ export default function InvoiceDetail() {
         </CardContent>
       </Card>
 
-      {/* Email Tracking Summary */}
+      {/* In your voice preview — only renders when user has trained a voice profile */}
+      <InYourVoicePreview
+        clientName={invoice.client_name}
+        invoiceNumber={invoice.invoice_number}
+        amount={Number(invoice.amount)}
+        currency={invoice.currency}
+        dueDate={invoice.due_date}
+        paymentLink={(invoice as any).payment_link}
+        hideWhenUntrained
+      />
+
+
       {emailTracking ? (
         totalSent > 0 && (
           <Card>
@@ -515,13 +527,45 @@ export default function InvoiceDetail() {
                   const iconColor = act.type === "email_open" ? "text-violet-600"
                     : act.type === "email_click" ? "text-blue-600"
                     : "text-muted-foreground";
+
+                  // Detect render type for reminder_sent activities so users can
+                  // audit which reminders were AI-personalized vs the canned template.
+                  let renderBadge: { label: string; variant: "voice" | "fallback" | "standard" } | null = null;
+                  if (act.type === "reminder_sent") {
+                    const desc = act.description.toLowerCase();
+                    if (desc.includes("voice tone")) {
+                      renderBadge = { label: "Voice", variant: "voice" };
+                    } else if (desc.includes("standard (voice fallback)")) {
+                      renderBadge = { label: "Standard · fallback", variant: "fallback" };
+                    } else if (desc.includes("standard tone") || desc.includes("manual payment reminder")) {
+                      renderBadge = { label: "Standard", variant: "standard" };
+                    }
+                  }
+
                   return (
                     <div key={act.id} className="flex gap-3">
                       <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
                         <Icon className={`h-4 w-4 ${iconColor}`} />
                       </div>
-                      <div>
-                        <p className="text-sm">{act.description}</p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm">{act.description}</p>
+                          {renderBadge && (
+                            <Badge
+                              variant="outline"
+                              className={
+                                renderBadge.variant === "voice"
+                                  ? "border-primary/40 bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider"
+                                  : renderBadge.variant === "fallback"
+                                    ? "border-foreground/20 bg-muted text-muted-foreground text-[10px] font-semibold uppercase tracking-wider"
+                                    : "border-foreground/20 text-muted-foreground text-[10px] font-semibold uppercase tracking-wider"
+                              }
+                            >
+                              {renderBadge.variant === "voice" && <Sparkles className="mr-0.5 h-2.5 w-2.5" />}
+                              {renderBadge.label}
+                            </Badge>
+                          )}
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           {format(new Date(act.created_at), "MMM d, yyyy 'at' h:mm a")}
                         </p>

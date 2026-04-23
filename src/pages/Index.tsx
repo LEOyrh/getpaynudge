@@ -12,6 +12,7 @@ import {
   Link2,
   Lock,
   Mail,
+  Mic,
   Minus,
   MousePointerClick,
   PauseCircle,
@@ -42,6 +43,30 @@ export default function Index() {
   usePageMeta({
     title: brand.name,
     description: brand.description,
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "PayNudge",
+        alternateName: ["Pay Nudge", "PayNudge app", "PayNudge invoice reminders", "getpaynudge"],
+        url: brand.url,
+        logo: `${brand.url}/apple-touch-icon.png`,
+        email: brand.supportEmail,
+        sameAs: [`https://twitter.com/${brand.social.twitter.replace("@", "")}`],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "PayNudge",
+        alternateName: "PayNudge — invoice reminders on autopilot",
+        url: brand.url,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${brand.url}/?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
   });
 
   return (
@@ -52,6 +77,7 @@ export default function Index() {
       <WorksWithStrip />
       <StripeSyncSection />
       <DifferentiatorSection />
+      <AIVoiceSpotlightSection />
       <HowItWorksSection />
       <PayBehaviorScoreSection />
       <FeaturesSection />
@@ -1085,6 +1111,159 @@ function CompetitorComparisonSection() {
             </Link>
           </p>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function AIVoiceSpotlightSection() {
+  const generic = {
+    subject: "Reminder: Invoice INV-218 due Mar 24, 2026",
+    body: `Hi Sarah,
+
+This is a friendly reminder that invoice INV-218 for $1,200.00 is due on Mar 24, 2026.
+
+Please let us know if you have any questions.
+
+Best regards,
+Acme Studio`,
+  };
+
+  const voice = {
+    subject: "quick heads-up — INV-218",
+    body: `hey Sarah!
+
+just a quick nudge — INV-218 ($1,200.00) is on track for Mar 24. no action needed yet, just wanted it on your radar.
+
+ping me if anything's off on your end.
+
+cheers,
+Alex`,
+  };
+
+  return (
+    <section
+      id="ai-voice"
+      className="border-t border-border bg-card/30 py-20 md:py-28"
+      aria-labelledby="ai-voice-heading"
+    >
+      <div className="container">
+        <motion.div
+          className="mx-auto max-w-3xl text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <motion.span variants={fadeIn} className="text-eyebrow inline-flex items-center gap-2 text-muted-foreground">
+            <Sparkles className="h-3 w-3 text-primary" />
+            AI in your voice
+          </motion.span>
+          <motion.h2
+            id="ai-voice-heading"
+            variants={fadeIn}
+            className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground md:text-5xl"
+          >
+            Reminders that sound like <span className="lime-underline">you wrote them</span>.
+          </motion.h2>
+          <motion.p variants={fadeIn} className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+            Paste 2–3 emails you've actually sent. {brand.name} learns your voice and writes every
+            reminder in your style — automatically. No prompts, no toggles, no robot-speak.
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="mx-auto mt-14 grid max-w-5xl gap-6 lg:grid-cols-2"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          {/* Generic */}
+          <motion.div variants={fadeIn}>
+            <div className="flex h-full flex-col border border-border bg-background p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Generic template
+                </span>
+                <span className="rounded-sm border border-border bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Standard
+                </span>
+              </div>
+              <div className="mb-3 border-b border-border pb-3">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground/70">Subject</p>
+                <p className="mt-1 font-mono text-sm text-foreground">{generic.subject}</p>
+              </div>
+              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-muted-foreground">
+                {generic.body}
+              </pre>
+              <p className="mt-auto pt-4 text-xs text-muted-foreground/70">
+                Polite. Professional. Forgettable.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Voice-matched */}
+          <motion.div variants={fadeIn}>
+            <div className="relative flex h-full flex-col border border-primary/40 bg-background p-6 shadow-lg">
+              <div className="absolute -top-3 left-6 inline-flex items-center gap-1 bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
+                <Sparkles className="h-2.5 w-2.5" />
+                In your voice
+              </div>
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-[0.15em] text-primary">
+                  AI-personalized
+                </span>
+                <span className="rounded-sm border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                  Voice
+                </span>
+              </div>
+              <div className="mb-3 border-b border-primary/20 pb-3">
+                <p className="text-xs uppercase tracking-wider text-muted-foreground/70">Subject</p>
+                <p className="mt-1 font-mono text-sm text-foreground">{voice.subject}</p>
+              </div>
+              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground">
+                {voice.body}
+              </pre>
+              <p className="mt-auto pt-4 text-xs text-primary/80">
+                Same client. Same invoice. Sounds like you.
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="mx-auto mt-12 max-w-3xl"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+        >
+          <motion.ul variants={fadeIn} className="grid gap-3 sm:grid-cols-3">
+            {[
+              { icon: Mic, title: "Paste 2–3 emails", desc: "Anything you've actually sent." },
+              { icon: Sparkles, title: "We learn your tone", desc: "Greeting, sign-off, signature phrases." },
+              { icon: Bell, title: "Every reminder, personalized", desc: "Auto-on. Silent fallback if anything fails." },
+            ].map((step) => (
+              <li key={step.title} className="flex flex-col items-start gap-2 border border-border bg-card p-4">
+                <step.icon className="h-4 w-4 text-primary" />
+                <p className="text-sm font-bold text-foreground">{step.title}</p>
+                <p className="text-xs text-muted-foreground">{step.desc}</p>
+              </li>
+            ))}
+          </motion.ul>
+
+          <motion.div variants={fadeIn} className="mt-8 text-center">
+            <Button asChild className="h-11 px-6 text-xs font-bold uppercase tracking-[0.15em]">
+              <Link to="/signup">
+                Train Your Voice — Free <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Included on every paid plan. No credit card to try.
+            </p>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
