@@ -10,6 +10,7 @@ import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 import { useClientPayBehavior } from "@/hooks/useClientPayBehavior";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { PayBehaviorPanel } from "@/components/PayBehaviorBadge";
+import { InYourVoicePreview } from "@/components/InYourVoicePreview";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
