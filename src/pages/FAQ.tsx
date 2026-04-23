@@ -10,7 +10,7 @@ const faqCategories = [
     items: [
       {
         q: `What is ${brand.name}?`,
-        a: `${brand.name} is automated invoice reminder software for freelancers and small businesses. You add your invoices, set a reminder cadence, and we send polite, escalating email reminders until the invoice is paid or you stop the sequence.`,
+        a: `${brand.name} is an automated invoice reminder service for freelancers and small businesses. You add your invoices, set a reminder cadence, and we send polite, escalating email reminders until the invoice is paid or you stop the sequence.`,
       },
       {
         q: "Who is this for?",

@@ -21,7 +21,7 @@ export default function Privacy() {
             <section>
               <h2 className="font-heading text-xl font-semibold text-foreground">1. Who We Are</h2>
               <p>
-                {brand.name} is operated by {brand.legal.companyName} ("{brand.name}," "we," "us," "our"). We provide automated invoice reminder software for freelancers and small businesses. For GDPR purposes, we act as the <strong>data controller</strong> for account and billing data, and as a <strong>data processor</strong> for the invoice/client data you enter into the Service.
+                {brand.name} is operated by {brand.legal.companyName} ("{brand.name}," "we," "us," "our"). We provide an automated invoice reminder service for freelancers and small businesses. For GDPR purposes, we act as the <strong>data controller</strong> for account and billing data, and as a <strong>data processor</strong> for the invoice/client data you enter into the Service.
               </p>
             </section>
 
