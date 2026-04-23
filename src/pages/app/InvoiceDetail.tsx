@@ -440,7 +440,18 @@ export default function InvoiceDetail() {
         </CardContent>
       </Card>
 
-      {/* Email Tracking Summary */}
+      {/* In your voice preview — only renders when user has trained a voice profile */}
+      <InYourVoicePreview
+        clientName={invoice.client_name}
+        invoiceNumber={invoice.invoice_number}
+        amount={Number(invoice.amount)}
+        currency={invoice.currency}
+        dueDate={invoice.due_date}
+        paymentLink={(invoice as any).payment_link}
+        hideWhenUntrained
+      />
+
+
       {emailTracking ? (
         totalSent > 0 && (
           <Card>
