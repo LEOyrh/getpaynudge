@@ -76,7 +76,7 @@ export function InYourVoicePreview({
         .select("id, tone_profile, analyzed_at")
         .maybeSingle();
       if (error) throw error;
-      return data as { id: string; tone_profile: unknown; analyzed_at: string | null } | null;
+      return (data as unknown) as { id: string; tone_profile: unknown; analyzed_at: string | null } | null;
     },
   });
 
