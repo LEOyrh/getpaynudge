@@ -12,6 +12,7 @@ import {
   Link2,
   Lock,
   Mail,
+  Mic,
   Minus,
   MousePointerClick,
   PauseCircle,
