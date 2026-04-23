@@ -42,6 +42,30 @@ export default function Index() {
   usePageMeta({
     title: brand.name,
     description: brand.description,
+    structuredData: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "PayNudge",
+        alternateName: ["Pay Nudge", "PayNudge app", "PayNudge invoice reminders", "getpaynudge"],
+        url: brand.url,
+        logo: `${brand.url}/apple-touch-icon.png`,
+        email: brand.supportEmail,
+        sameAs: [`https://twitter.com/${brand.social.twitter.replace("@", "")}`],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "PayNudge",
+        alternateName: "PayNudge — invoice reminders on autopilot",
+        url: brand.url,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${brand.url}/?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
   });
 
   return (
@@ -52,6 +76,7 @@ export default function Index() {
       <WorksWithStrip />
       <StripeSyncSection />
       <DifferentiatorSection />
+      <AIVoiceSpotlightSection />
       <HowItWorksSection />
       <PayBehaviorScoreSection />
       <FeaturesSection />
