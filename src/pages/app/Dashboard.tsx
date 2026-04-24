@@ -11,6 +11,8 @@ import { format, startOfMonth, endOfMonth } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useInvoiceLimits } from "@/hooks/useInvoiceLimits";
 import { usePlanFeatures } from "@/hooks/usePlanFeatures";
+import { useClientPayBehavior } from "@/hooks/useClientPayBehavior";
+import { PayBehaviorBadge } from "@/components/PayBehaviorBadge";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Invoice = Tables<"invoices">;
@@ -19,7 +21,8 @@ export default function Dashboard() {
   usePageMeta({ title: "Dashboard" });
   const { user, subscription } = useAuth();
   const { planKey, activeCount, limit, isUnlimited, atLimit } = useInvoiceLimits();
-  const { emailTracking, activityTimeline } = usePlanFeatures();
+  const { emailTracking, activityTimeline, predictedPayDate } = usePlanFeatures();
+  const { byClient: payBehavior } = useClientPayBehavior();
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["dashboard-invoices"],
@@ -200,13 +203,20 @@ export default function Dashboard() {
                 <Link
                   key={inv.id}
                   to={`/invoices/${inv.id}`}
-                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                  className="flex items-center justify-between gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                 >
-                  <div>
-                    <p className="text-sm font-medium">{inv.client_name}</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-sm font-medium">{inv.client_name}</p>
+                      <PayBehaviorBadge
+                        data={payBehavior.get(inv.client_name)}
+                        dueDate={inv.due_date}
+                        predictedPayDateUnlocked={predictedPayDate}
+                      />
+                    </div>
                     <p className="text-xs text-muted-foreground">{inv.invoice_number}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-2">
                     <span className="text-sm font-semibold">
                       {new Intl.NumberFormat("en-US", { style: "currency", currency: inv.currency }).format(inv.amount)}
                     </span>
