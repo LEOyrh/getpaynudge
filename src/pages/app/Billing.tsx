@@ -30,7 +30,7 @@ function formatSubDate(iso: string) {
 }
 
 export default function Billing() {
-  usePageMeta({ title: "Billing", description: "Manage your PayNudge subscription, trial, and billing details" });
+  usePageMeta({ title: "Billing", description: `Manage your ${brand.name} subscription, trial, and billing details` });
 
   const { subscription, checkSubscription } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();

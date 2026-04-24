@@ -52,8 +52,8 @@ const STAGES = [
 
 export default function Voice() {
   usePageMeta({
-    title: "AI Voice Trainer · PayNudge",
-    description: "Teach PayNudge your voice. Paste 2–3 sample emails and we'll write reminders that sound like you.",
+    title: "AI Voice Trainer",
+    description: `Teach ${brand.name} your voice. Paste 2–3 sample emails and we'll write reminders that sound like you.`,
   });
   const { user } = useAuth();
   const qc = useQueryClient();
