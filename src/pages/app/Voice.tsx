@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { brand } from "@/config/brand";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,8 +53,8 @@ const STAGES = [
 
 export default function Voice() {
   usePageMeta({
-    title: "AI Voice Trainer · PayNudge",
-    description: "Teach PayNudge your voice. Paste 2–3 sample emails and we'll write reminders that sound like you.",
+    title: "AI Voice Trainer",
+    description: `Teach ${brand.name} your voice. Paste 2–3 sample emails and we'll write reminders that sound like you.`,
   });
   const { user } = useAuth();
   const qc = useQueryClient();
