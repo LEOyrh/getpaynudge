@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell, Eye, MousePointerClick, Sparkles } from "lucide-react";
+import { ArrowLeft, Clock, Mail, CheckCircle, XCircle, Send, Bell, Eye, MousePointerClick, Sparkles, MessageSquare } from "lucide-react";
+import { buildInvoiceSmsBody, buildSmsHref } from "@/lib/smsDraft";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
@@ -354,6 +355,31 @@ export default function InvoiceDetail() {
           >
             <Bell className="mr-1.5 h-4 w-4" />
             {sendingReminder ? "Sending…" : "Send Reminder Now"}
+          </Button>
+        )}
+        {(invoice.status === "sent" || invoice.status === "overdue" || invoice.status === "draft") && (
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+          >
+            <a
+              href={buildSmsHref(
+                buildInvoiceSmsBody({
+                  clientName: invoice.client_name,
+                  invoiceNumber: invoice.invoice_number,
+                  amount: Number(invoice.amount),
+                  currency: invoice.currency,
+                  dueDate: invoice.due_date,
+                  paymentLink: (invoice as any).payment_link,
+                  businessName: profile?.business_name || profile?.full_name,
+                  payBehavior: predictedPayDate ? payBehavior.get(invoice.client_name) : undefined,
+                })
+              )}
+            >
+              <MessageSquare className="mr-1.5 h-4 w-4" />
+              Text Reminder
+            </a>
           </Button>
         )}
       </div>
