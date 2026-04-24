@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePageMeta } from "@/hooks/usePageMeta";
+import { brand } from "@/config/brand";
 import { plans } from "@/config/brand";
 import { stripePlans, planKeyFromProductId, StripePlanKey } from "@/config/stripe";
 import { supabase } from "@/integrations/supabase/client";
