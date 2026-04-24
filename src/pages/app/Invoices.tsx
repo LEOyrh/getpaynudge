@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { FileText, Search, Filter, Eye, MousePointerClick } from "lucide-react";
+import { FileText, Search, Filter, Eye, MousePointerClick, MessageSquare } from "lucide-react";
+import { buildInvoiceSmsBody, buildSmsHref } from "@/lib/smsDraft";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -40,6 +41,20 @@ export default function Invoices() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const { emailTracking, predictedPayDate } = usePlanFeatures();
   const { byClient: payBehavior } = useClientPayBehavior();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile-sms", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("business_name, full_name")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["invoices", user?.id],
@@ -147,6 +162,7 @@ export default function Invoices() {
                 <TableHead>Amount</TableHead>
                 <TableHead>Due Date</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="sm:hidden w-10"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -193,6 +209,34 @@ export default function Invoices() {
                           </Badge>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell className="sm:hidden p-1">
+                      {(inv.status === "sent" || inv.status === "overdue" || inv.status === "draft") && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label="Text reminder"
+                        >
+                          <a
+                            href={buildSmsHref(
+                              buildInvoiceSmsBody({
+                                clientName: inv.client_name,
+                                invoiceNumber: inv.invoice_number,
+                                amount: Number(inv.amount),
+                                currency: inv.currency,
+                                dueDate: inv.due_date,
+                                paymentLink: (inv as any).payment_link,
+                                businessName: profile?.business_name || profile?.full_name,
+                                payBehavior: predictedPayDate ? payBehavior.get(inv.client_name) : undefined,
+                              })
+                            )}
+                          >
+                            <MessageSquare className="h-4 w-4 text-primary" />
+                          </a>
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
