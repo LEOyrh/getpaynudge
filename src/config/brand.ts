@@ -34,7 +34,7 @@ export function isMarketingDomain() {
 /** True when running locally (dev / preview) */
 export function isLocalDev() {
   const h = window.location.hostname;
-  return h === "localhost" || h.includes("lovable.app") || h.includes("lovableproject.com") || h === "127.0.0.1";
+  return h === "localhost" || h === "127.0.0.1";
 }
 
 // --- pricing (unchanged) ---

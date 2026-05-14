@@ -163,7 +163,7 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     }
     canonicalLink.setAttribute("href", canonical);
 
-    document.querySelectorAll('script[data-lovable-seo="managed"]').forEach((script) => script.remove());
+    document.querySelectorAll('script[data-page-meta="managed"]').forEach((script) => script.remove());
 
     const schemas: StructuredData[] = [];
     const breadcrumbSchema = buildBreadcrumbSchema(pathname);
@@ -176,7 +176,7 @@ export function usePageMeta({ title, description, noIndex, structuredData }: Pag
     schemas.forEach((schema) => {
       const script = document.createElement("script");
       script.type = "application/ld+json";
-      script.dataset.lovableSeo = "managed";
+      script.dataset.pageMeta = "managed";
       script.textContent = JSON.stringify(schema);
       document.head.appendChild(script);
     });
